@@ -10,6 +10,8 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Button from '@shared/components/Button';
 import TextField from '@shared/components/TextField';
+import { login } from '@shared/services/auth.service';
+import { getApiErrorMessage } from '@shared/utils/apiError';
 import type { RootStackParamList } from '@typings/navigation';
 import useReload from '../../hooks/useReload';
 import { FONTS } from '../../theme/fonts';
@@ -26,16 +28,30 @@ function LoginScreen() {
   const [errors, setErrors] = useState<{ phone?: string; password?: string }>(
     {},
   );
+  const [formError, setFormError] = useState<string>();
+  const [loading, setLoading] = useState(false);
 
   const scrollRef = useRef<KeyboardAwareScrollViewRef>(null);
   const { progress } = useReanimatedKeyboardAnimation();
 
-  function handleSubmit() {
+  async function handleSubmit() {
     const nextErrors = {
       phone: validatePhone(phone),
       password: validatePassword(password),
     };
     setErrors(nextErrors);
+    if (Object.values(nextErrors).some(Boolean)) return;
+
+    setFormError(undefined);
+    setLoading(true);
+    try {
+      await login({ phone, password });
+      navigation.reset({ index: 0, routes: [{ name: 'Main' }] });
+    } catch (error) {
+      setFormError(getApiErrorMessage(error));
+    } finally {
+      setLoading(false);
+    }
   }
 
   function scrollToButton() {
@@ -85,7 +101,8 @@ function LoginScreen() {
       </View>
 
       <View style={styles.footer}>
-        <Button title="Daxil ol" onPress={handleSubmit} />
+        {formError ? <Text style={styles.formError}>{formError}</Text> : null}
+        <Button title="Daxil ol" onPress={handleSubmit} loading={loading} />
 
         <Text style={styles.registerText}>
           Hesabınız yoxdursa {' '}
@@ -124,6 +141,12 @@ const styles = StyleSheet.create({
   footer: {
     marginTop: 40,
     gap: 20,
+  },
+  formError: {
+    fontSize: 12,
+    textAlign: 'center',
+    color: '#E24C4C',
+    fontFamily: FONTS.regular,
   },
   registerText: {
     textAlign: 'center',

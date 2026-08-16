@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc *)",
+      "Bash(npx eslint *)",
+      "Bash(npm run typecheck)",
+      "Bash(npm run lint)",
+      "Bash(npx oxlint *)",
+      "Bash(adb pull *)",
+      "Bash(adb shell screencap *)",
+      "Bash(tasklist *)",
+      "Bash(adb devices *)",
+      "Bash(curl -s http://localhost:*)",
+      "Bash(adb reverse *)",
+      "Bash(adb logcat *)",
+      "Bash(npm ls *)",
+      "Bash(npx jest *)",
+      "Bash(npm view *)",
+      "Bash(npm root)"
+    ]
+  }
+}

@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { RefreshControl, StyleSheet, Text, View } from 'react-native';
+import { Alert, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import {
   KeyboardAwareScrollView,
   useReanimatedKeyboardAnimation,
@@ -10,6 +10,8 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Button from '@shared/components/Button';
 import TextField from '@shared/components/TextField';
+import { signup } from '@shared/services/auth.service';
+import { getApiErrorMessage } from '@shared/utils/apiError';
 import type { RootStackParamList } from '@typings/navigation';
 import useReload from '../../hooks/useReload';
 import { FONTS } from '../../theme/fonts';
@@ -33,17 +35,33 @@ function RegisterScreen() {
     phone?: string;
     password?: string;
   }>({});
+  const [formError, setFormError] = useState<string>();
+  const [loading, setLoading] = useState(false);
 
   const scrollRef = useRef<KeyboardAwareScrollViewRef>(null);
   const { progress } = useReanimatedKeyboardAnimation();
 
-  function handleSubmit() {
+  async function handleSubmit() {
     const nextErrors = {
       name: validateName(name),
       phone: validatePhone(phone),
       password: validatePassword(password),
     };
     setErrors(nextErrors);
+    if (Object.values(nextErrors).some(Boolean)) return;
+
+    setFormError(undefined);
+    setLoading(true);
+    try {
+      await signup({ full_name: name, phone, password });
+      Alert.alert('Qeydiyyat tamamlandı', 'İndi hesabınıza daxil ola bilərsiniz', [
+        { text: 'Ok', onPress: () => navigation.navigate('Login') },
+      ]);
+    } catch (error) {
+      setFormError(getApiErrorMessage(error));
+    } finally {
+      setLoading(false);
+    }
   }
 
   function scrollToButton() {
@@ -101,7 +119,8 @@ function RegisterScreen() {
       </View>
 
       <View style={styles.footer}>
-        <Button title="Qeydiyyat" onPress={handleSubmit} />
+        {formError ? <Text style={styles.formError}>{formError}</Text> : null}
+        <Button title="Qeydiyyat" onPress={handleSubmit} loading={loading} />
 
         <Text style={styles.loginText}>
           Hesabınız varsa {' '}
@@ -140,6 +159,12 @@ const styles = StyleSheet.create({
   footer: {
     marginTop: 40,
     gap: 20,
+  },
+  formError: {
+    fontSize: 12,
+    textAlign: 'center',
+    color: '#E24C4C',
+    fontFamily: FONTS.regular,
   },
   loginText: {
     textAlign: 'center',

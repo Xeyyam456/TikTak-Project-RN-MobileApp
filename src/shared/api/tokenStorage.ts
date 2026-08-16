@@ -15,12 +15,12 @@ export async function setTokens(
   accessToken: string,
   refreshToken: string,
 ): Promise<void> {
-  await AsyncStorage.setMany({
-    [ACCESS_TOKEN_KEY]: accessToken,
-    [REFRESH_TOKEN_KEY]: refreshToken,
-  });
+  await AsyncStorage.multiSet([
+    [ACCESS_TOKEN_KEY, accessToken],
+    [REFRESH_TOKEN_KEY, refreshToken],
+  ]);
 }
 
 export async function clearTokens(): Promise<void> {
-  await AsyncStorage.removeMany([ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY]);
+  await AsyncStorage.multiRemove([ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY]);
 }
