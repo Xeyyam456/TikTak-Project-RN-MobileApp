@@ -67,7 +67,7 @@ function HomeScreen() {
         style={styles.flex}
         contentContainerStyle={[
           styles.listContent,
-          { paddingTop: 16, paddingBottom: insets.bottom + 24 },
+          { paddingBottom: insets.bottom + 24 },
         ]}
         data={categories}
         keyExtractor={item => String(item.id)}
@@ -113,6 +113,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingHorizontal: HORIZONTAL_PADDING,
+    paddingTop: 16,
   },
   header: {
     flexDirection: 'row',
