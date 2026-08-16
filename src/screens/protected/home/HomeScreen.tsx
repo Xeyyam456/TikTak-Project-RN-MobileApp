@@ -77,27 +77,32 @@ function HomeScreen() {
         ListHeaderComponent={
           <>
             <View style={styles.addressCard}>
-            <Text style={styles.addressLabel}>Çatdırılma ünvanı:</Text>
-            <Text style={styles.addressValue} numberOfLines={1}>
-              {address ?? 'Ünvan seçilməyib'}
-            </Text>
-          </View>
-
-          <View style={styles.banner}>
-            <FruitImage width={118} height={109} style={styles.bannerImage} />
-            <View style={styles.bannerText}>
-              <Text style={styles.bannerTitle}>MEYVƏLƏRƏ</Text>
-              <Text style={styles.bannerSubtitle}>HƏFTƏ SONUNA KIMI</Text>
-              <Text style={styles.bannerDiscount}>20% ENDİRİM</Text>
+              <Text style={styles.addressLabel}>Çatdırılma ünvanı:</Text>
+              <Text style={styles.addressValue} numberOfLines={1}>
+                {address ?? 'Ünvan seçilməyib'}
+              </Text>
             </View>
-          </View>
 
-          {loading ? (
-            <ActivityIndicator color="#7BC043" style={styles.loader} />
-          ) : null}
-        </>
-      }
-    />
+            <View style={styles.banner}>
+              <FruitImage
+                width={118}
+                height={109}
+                style={styles.bannerImage}
+              />
+              <View style={styles.bannerText}>
+                <Text style={styles.bannerTitle}>MEYVƏLƏRƏ</Text>
+                <Text style={styles.bannerSubtitle}>HƏFTƏ SONUNA KIMI</Text>
+                <Text style={styles.bannerDiscount}>20% ENDİRİM</Text>
+              </View>
+            </View>
+
+            {loading ? (
+              <ActivityIndicator color="#7BC043" style={styles.loader} />
+            ) : null}
+          </>
+        }
+      />
+    </View>
   );
 }
 
