@@ -19,7 +19,7 @@ import { FONTS } from '../../../theme/fonts';
 
 const COLUMNS = 3;
 const GRID_GAP = 12;
-const HORIZONTAL_PADDING = 24;
+const HORIZONTAL_PADDING = 15;
 const CARD_WIDTH =
   (Dimensions.get('window').width -
     HORIZONTAL_PADDING * 2 -
@@ -143,25 +143,25 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   logo: {
-    fontSize: 22,
+    fontSize: 24,
     color: '#1A1A1A',
     fontFamily: FONTS.extraBold,
   },
   addressCard: {
     backgroundColor: '#F1F0F7',
-    borderRadius: 6,
+    borderRadius: 10,
     paddingHorizontal: 14,
-    paddingVertical: 8,
+    paddingVertical: 4,
     marginBottom: 21,
-    gap: 4,
+    gap: 0,
   },
   addressLabel: {
-    fontSize: 13,
+    fontSize: 17,
     color: '#1A1A1A',
-    fontFamily: FONTS.semiBold,
+    fontFamily: FONTS.bold,
   },
   addressValue: {
-    fontSize: 13,
+    fontSize: 15,
     color: '#555555',
     fontFamily: FONTS.regular,
   },
@@ -169,8 +169,8 @@ const styles = StyleSheet.create({
     position: 'relative',
     justifyContent: 'center',
     backgroundColor: '#B380FF',
-    borderRadius: 6,
-    paddingVertical: 28,
+    borderRadius: 10,
+    paddingVertical: 28.5,
     paddingRight: 20,
     paddingLeft: 148,
     marginBottom: 20,
@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   bannerText: {
-    paddingLeft: 8,
+    paddingLeft: 23,
     marginTop: 10,
   },
   bannerTitle: {
@@ -214,15 +214,16 @@ const styles = StyleSheet.create({
     width: CARD_WIDTH,
     borderWidth: 1,
     borderColor: '#EFEFEF',
-    borderRadius: 6,
-    padding: 8,
+    borderRadius: 10,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
     alignItems: 'center',
-    gap: 8,
+    gap: 6,
   },
   cardImage: {
     width: '100%',
     aspectRatio: 1,
-    borderRadius: 6,
+    borderRadius: 10,
   },
   cardImagePlaceholder: {
     backgroundColor: '#F1F0F7',
