@@ -9,6 +9,7 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 import FruitImage from '@assets/images/images1.svg';
 import { CartIcon } from '@shared/components/icons';
 import { listCategories } from '@shared/services/category.service';
@@ -24,6 +25,20 @@ const CARD_WIDTH =
     HORIZONTAL_PADDING * 2 -
     GRID_GAP * (COLUMNS - 1)) /
   COLUMNS;
+
+function HeaderShadow() {
+  return (
+    <Svg width="100%" height={10} style={styles.headerShadow}>
+      <Defs>
+        <LinearGradient id="headerShadowGradient" x1="0" y1="0" x2="0" y2="1">
+          <Stop offset="0" stopColor="#000000" stopOpacity={0.06} />
+          <Stop offset="1" stopColor="#000000" stopOpacity={0} />
+        </LinearGradient>
+      </Defs>
+      <Rect width="100%" height={10} fill="url(#headerShadowGradient)" />
+    </Svg>
+  );
+}
 
 function CategoryCard({ category }: { category: Category }) {
   return (
@@ -62,6 +77,7 @@ function HomeScreen() {
         <Text style={styles.logo}>TIK TAK</Text>
         <CartIcon size={24} />
       </View>
+      <HeaderShadow />
 
       <FlatList
         style={styles.flex}
@@ -85,8 +101,8 @@ function HomeScreen() {
 
             <View style={styles.banner}>
               <FruitImage
-                width={118}
-                height={109}
+                width={158}
+                height={146}
                 style={styles.bannerImage}
               />
               <View style={styles.bannerText}>
@@ -113,7 +129,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingHorizontal: HORIZONTAL_PADDING,
-    paddingTop: 16,
+    paddingTop: 14,
   },
   header: {
     flexDirection: 'row',
@@ -122,11 +138,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: HORIZONTAL_PADDING,
     paddingBottom: 16,
     backgroundColor: '#FFFFFF',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    elevation: 3,
+  },
+  headerShadow: {
+    zIndex: 1,
   },
   logo: {
     fontSize: 22,
@@ -135,9 +149,10 @@ const styles = StyleSheet.create({
   },
   addressCard: {
     backgroundColor: '#F1F0F7',
-    borderRadius: 12,
-    padding: 14,
-    marginBottom: 16,
+    borderRadius: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    marginBottom: 21,
     gap: 4,
   },
   addressLabel: {
@@ -151,38 +166,41 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.regular,
   },
   banner: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    position: 'relative',
+    justifyContent: 'center',
     backgroundColor: '#B380FF',
-    borderRadius: 16,
-    paddingVertical: 32,
+    borderRadius: 6,
+    paddingVertical: 28,
     paddingRight: 20,
+    paddingLeft: 148,
     marginBottom: 20,
     overflow: 'visible',
   },
   bannerImage: {
-    marginTop: -28,
-    marginLeft: -4,
-    marginRight: 16,
+    position: 'absolute',
+    left: -20,
+    top: 11,
+    zIndex: 1,
   },
   bannerText: {
-    flex: 1,
-    gap: 2,
+    paddingLeft: 8,
+    marginTop: 10,
   },
   bannerTitle: {
-    fontSize: 22,
+    fontSize: 28,
     color: '#FFFFFF',
     fontFamily: FONTS.extraBold,
   },
   bannerSubtitle: {
-    fontSize: 13,
+    fontSize: 17,
     color: '#FFFFFF',
     fontFamily: FONTS.medium,
+    marginTop: -2,
   },
   bannerDiscount: {
-    fontSize: 18,
+    fontSize: 28,
     color: '#FFFFFF',
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.extraBold,
     marginTop: 6,
   },
   loader: {
@@ -196,7 +214,7 @@ const styles = StyleSheet.create({
     width: CARD_WIDTH,
     borderWidth: 1,
     borderColor: '#EFEFEF',
-    borderRadius: 12,
+    borderRadius: 6,
     padding: 8,
     alignItems: 'center',
     gap: 8,
@@ -204,7 +222,7 @@ const styles = StyleSheet.create({
   cardImage: {
     width: '100%',
     aspectRatio: 1,
-    borderRadius: 8,
+    borderRadius: 6,
   },
   cardImagePlaceholder: {
     backgroundColor: '#F1F0F7',

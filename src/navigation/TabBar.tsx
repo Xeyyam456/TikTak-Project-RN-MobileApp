@@ -49,8 +49,6 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     backgroundColor: '#FFFFFF',
-    borderTopWidth: 1,
-    borderTopColor: '#EFEFEF',
     paddingTop: 10,
   },
   tab: {
