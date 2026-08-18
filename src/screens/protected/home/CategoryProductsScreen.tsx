@@ -42,6 +42,7 @@ const FALLBACK_IMAGE_URL =
   'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLvSMU5gdda6lqS8a-kjktyTUE6rLzlVr6LA&s';
 const SUMMARY_BAR_HEIGHT = 56;
 const SUMMARY_BAR_GAP = 8;
+const SUMMARY_BAR_TOP_GAP = 14;
 
 function ProductCard({
   product,
@@ -215,7 +216,8 @@ function CategoryProductsScreen() {
           style={[
             styles.list,
             showSummaryBar && {
-              marginBottom: SUMMARY_BAR_HEIGHT + SUMMARY_BAR_GAP,
+              marginBottom:
+                SUMMARY_BAR_HEIGHT + SUMMARY_BAR_GAP + SUMMARY_BAR_TOP_GAP,
             },
           ]}
           contentContainerStyle={[
@@ -437,8 +439,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#1A1A1A',
-    borderRadius: 16,
+    backgroundColor: '#7BC043',
+    borderRadius: 12,
     paddingVertical: 14,
     paddingHorizontal: 16,
   },
@@ -448,25 +450,25 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   summaryCountBadge: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
     backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
   },
   summaryCountText: {
-    fontSize: 12,
+    fontSize: 16,
     color: '#1A1A1A',
     fontFamily: FONTS.bold,
   },
   summaryBarLabel: {
-    fontSize: 15,
+    fontSize: 17,
     color: '#FFFFFF',
     fontFamily: FONTS.semiBold,
   },
   summaryBarTotal: {
-    fontSize: 15,
+    fontSize: 17,
     color: '#FFFFFF',
     fontFamily: FONTS.bold,
   },
