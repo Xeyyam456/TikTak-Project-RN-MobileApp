@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { HomeIcon, SearchIcon, UserIcon } from '@shared/components/icons';
@@ -35,10 +35,15 @@ function TabBar({ state, navigation }: BottomTabBarProps) {
         }
 
         return (
-          <Pressable key={route.key} style={styles.tab} onPress={handlePress}>
+          <TouchableOpacity
+            key={route.key}
+            style={styles.tab}
+            onPress={handlePress}
+            activeOpacity={0.7}
+          >
             <Icon size={24} color={color} />
             <Text style={[styles.label, { color }]}>{label}</Text>
-          </Pressable>
+          </TouchableOpacity>
         );
       })}
     </View>

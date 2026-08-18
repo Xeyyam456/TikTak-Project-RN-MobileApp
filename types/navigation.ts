@@ -10,3 +10,8 @@ export type ProtectedTabParamList = {
   Search: undefined;
   Profile: undefined;
 };
+
+export type HomeStackParamList = {
+  HomeMain: undefined;
+  CategoryProducts: { categoryId: number; categoryName: string };
+};

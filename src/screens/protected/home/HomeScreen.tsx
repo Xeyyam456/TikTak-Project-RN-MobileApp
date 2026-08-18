@@ -4,17 +4,24 @@ import {
   Dimensions,
   FlatList,
   Image,
+  Modal,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import FruitImage from '@assets/images/images1.svg';
-import { CartIcon } from '@shared/components/icons';
+import Button from '@shared/components/Button';
+import TextField from '@shared/components/TextField';
+import { ChevronRightIcon } from '@shared/components/icons';
 import { listCategories } from '@shared/services/category.service';
-import { getProfile } from '@shared/services/profile.service';
-import type { Category } from '@typings/api';
+import { getProfile, updateProfile } from '@shared/services/profile.service';
+import { getApiErrorMessage } from '@shared/utils/apiError';
+import type { Category, UserProfile } from '@typings/api';
+import type { HomeStackParamList } from '@typings/navigation';
 import { FONTS } from '../../../theme/fonts';
 
 const COLUMNS = 3;
@@ -26,23 +33,19 @@ const CARD_WIDTH =
     GRID_GAP * (COLUMNS - 1)) /
   COLUMNS;
 
-function HeaderShadow() {
+function CategoryCard({
+  category,
+  onPress,
+}: {
+  category: Category;
+  onPress: () => void;
+}) {
   return (
-    <Svg width="100%" height={10} style={styles.headerShadow}>
-      <Defs>
-        <LinearGradient id="headerShadowGradient" x1="0" y1="0" x2="0" y2="1">
-          <Stop offset="0" stopColor="#000000" stopOpacity={0.06} />
-          <Stop offset="1" stopColor="#000000" stopOpacity={0} />
-        </LinearGradient>
-      </Defs>
-      <Rect width="100%" height={10} fill="url(#headerShadowGradient)" />
-    </Svg>
-  );
-}
-
-function CategoryCard({ category }: { category: Category }) {
-  return (
-    <View style={styles.card}>
+    <TouchableOpacity
+      style={styles.card}
+      onPress={onPress}
+      activeOpacity={0.7}
+    >
       {category.img_url ? (
         <Image source={{ uri: category.img_url }} style={styles.cardImage} />
       ) : (
@@ -51,34 +54,65 @@ function CategoryCard({ category }: { category: Category }) {
       <Text style={styles.cardLabel} numberOfLines={1}>
         {category.name}
       </Text>
-    </View>
+    </TouchableOpacity>
   );
 }
 
 function HomeScreen() {
   const insets = useSafeAreaInsets();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
 
-  const [address, setAddress] = useState<string>();
+  const [profile, setProfile] = useState<UserProfile>();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const [addressModalVisible, setAddressModalVisible] = useState(false);
+  const [addressInput, setAddressInput] = useState('');
+  const [addressError, setAddressError] = useState<string>();
+  const [savingAddress, setSavingAddress] = useState(false);
+
   useEffect(() => {
     Promise.all([getProfile(), listCategories()])
-      .then(([profile, categoryList]) => {
-        setAddress(profile.address ?? undefined);
+      .then(([profileData, categoryList]) => {
+        setProfile(profileData);
         setCategories(categoryList);
       })
       .finally(() => setLoading(false));
   }, []);
 
+  function openAddressModal() {
+    setAddressInput(profile?.address ?? '');
+    setAddressError(undefined);
+    setAddressModalVisible(true);
+  }
+
+  async function handleSaveAddress() {
+    if (!profile) return;
+    const trimmed = addressInput.trim();
+    if (!trimmed) {
+      setAddressError('Ünvan daxil edin');
+      return;
+    }
+
+    setAddressError(undefined);
+    setSavingAddress(true);
+    try {
+      const updated = await updateProfile({
+        full_name: profile.full_name,
+        address: trimmed,
+      });
+      setProfile(updated);
+      setAddressModalVisible(false);
+    } catch (error) {
+      setAddressError(getApiErrorMessage(error));
+    } finally {
+      setSavingAddress(false);
+    }
+  }
+
   return (
     <View style={styles.flex}>
-      <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
-        <Text style={styles.logo}>TIK TAK</Text>
-        <CartIcon size={24} />
-      </View>
-      <HeaderShadow />
-
       <FlatList
         style={styles.flex}
         contentContainerStyle={[
@@ -89,15 +123,32 @@ function HomeScreen() {
         keyExtractor={item => String(item.id)}
         numColumns={COLUMNS}
         columnWrapperStyle={styles.row}
-        renderItem={({ item }) => <CategoryCard category={item} />}
+        renderItem={({ item }) => (
+          <CategoryCard
+            category={item}
+            onPress={() =>
+              navigation.navigate('CategoryProducts', {
+                categoryId: item.id,
+                categoryName: item.name,
+              })
+            }
+          />
+        )}
         ListHeaderComponent={
           <>
-            <View style={styles.addressCard}>
-              <Text style={styles.addressLabel}>Çatdırılma ünvanı:</Text>
-              <Text style={styles.addressValue} numberOfLines={1}>
-                {address ?? 'Ünvan seçilməyib'}
-              </Text>
-            </View>
+            <TouchableOpacity
+              style={styles.addressCard}
+              onPress={openAddressModal}
+              activeOpacity={0.7}
+            >
+              <View style={styles.addressTextGroup}>
+                <Text style={styles.addressLabel}>Çatdırılma ünvanı:</Text>
+                <Text style={styles.addressValue} numberOfLines={1}>
+                  {profile?.address ?? 'Ünvan seçilməyib'}
+                </Text>
+              </View>
+              <ChevronRightIcon size={20} color="#9B9B9B" />
+            </TouchableOpacity>
 
             <View style={styles.banner}>
               <FruitImage
@@ -118,6 +169,38 @@ function HomeScreen() {
           </>
         }
       />
+
+      <Modal
+        visible={addressModalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setAddressModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>Çatdırılma ünvanı</Text>
+            <TextField
+              label="Ünvan"
+              placeholder="Ünvanı daxil edin"
+              value={addressInput}
+              onChangeText={setAddressInput}
+              error={addressError}
+              autoFocus
+            />
+            <Button
+              title="Yadda saxla"
+              onPress={handleSaveAddress}
+              loading={savingAddress}
+            />
+            <Text
+              style={styles.modalCancel}
+              onPress={() => setAddressModalVisible(false)}
+            >
+              Ləğv et
+            </Text>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -131,28 +214,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: HORIZONTAL_PADDING,
     paddingTop: 14,
   },
-  header: {
+  addressCard: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: HORIZONTAL_PADDING,
-    paddingBottom: 16,
-    backgroundColor: '#FFFFFF',
-  },
-  headerShadow: {
-    zIndex: 1,
-  },
-  logo: {
-    fontSize: 24,
-    color: '#1A1A1A',
-    fontFamily: FONTS.extraBold,
-  },
-  addressCard: {
     backgroundColor: '#F1F0F7',
     borderRadius: 10,
     paddingHorizontal: 14,
     paddingVertical: 4,
     marginBottom: 21,
+    gap: 8,
+  },
+  addressTextGroup: {
+    flex: 1,
     gap: 0,
   },
   addressLabel: {
@@ -231,6 +305,29 @@ const styles = StyleSheet.create({
   cardLabel: {
     fontSize: 12,
     color: '#1A1A1A',
+    fontFamily: FONTS.medium,
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    paddingHorizontal: 24,
+  },
+  modalCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 14,
+    padding: 20,
+    gap: 16,
+  },
+  modalTitle: {
+    fontSize: 18,
+    color: '#1A1A1A',
+    fontFamily: FONTS.bold,
+  },
+  modalCancel: {
+    textAlign: 'center',
+    fontSize: 14,
+    color: '#9B9B9B',
     fontFamily: FONTS.medium,
   },
 });

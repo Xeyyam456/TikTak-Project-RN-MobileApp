@@ -3,7 +3,7 @@ import {
   type BottomTabBarProps,
 } from '@react-navigation/bottom-tabs';
 import type { ProtectedTabParamList } from '@typings/navigation';
-import HomeScreen from '../screens/protected/home/HomeScreen';
+import HomeStackNavigator from './HomeStackNavigator';
 import SearchScreen from '../screens/protected/search/SearchScreen';
 import ProfileScreen from '../screens/protected/profile/ProfileScreen';
 import TabBar from './TabBar';
@@ -21,7 +21,7 @@ function renderTabBar(props: BottomTabBarProps) {
 function BottomTabNavigator() {
   return (
     <Tab.Navigator screenOptions={{ headerShown: false }} tabBar={renderTabBar}>
-      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Home" component={HomeStackNavigator} />
       <Tab.Screen name="Search" component={SearchScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>

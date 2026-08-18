@@ -2,8 +2,8 @@ import httpClient from '@shared/api/httpClient';
 import type { ApiEnvelope, Basket } from '@typings/api';
 
 export async function getBasket(): Promise<Basket> {
-  const { data } = await httpClient.get<Basket>('/basket');
-  return data;
+  const { data } = await httpClient.get<ApiEnvelope<Basket>>('/basket');
+  return data.data;
 }
 
 export async function addToBasket(productId: number): Promise<Basket> {

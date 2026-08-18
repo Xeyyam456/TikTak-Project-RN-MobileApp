@@ -1,5 +1,12 @@
 import { useRef } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text } from 'react-native';
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  type StyleProp,
+  type ViewStyle,
+} from 'react-native';
 import { FONTS } from '../../theme/fonts';
 
 type ButtonProps = {
@@ -7,11 +14,12 @@ type ButtonProps = {
   onPress?: () => void;
   disabled?: boolean;
   loading?: boolean;
+  style?: StyleProp<ViewStyle>;
 };
 
 const DOUBLE_PRESS_GUARD_MS = 600;
 
-function Button({ title, onPress, disabled, loading }: ButtonProps) {
+function Button({ title, onPress, disabled, loading, style }: ButtonProps) {
   const lastPressRef = useRef(0);
   const isDisabled = disabled || loading;
 
@@ -23,21 +31,18 @@ function Button({ title, onPress, disabled, loading }: ButtonProps) {
   }
 
   return (
-    <Pressable
-      style={({ pressed }) => [
-        styles.button,
-        pressed && styles.buttonPressed,
-        isDisabled && styles.buttonDisabled,
-      ]}
+    <TouchableOpacity
+      style={[styles.button, isDisabled && styles.buttonDisabled, style]}
       onPress={handlePress}
       disabled={isDisabled}
+      activeOpacity={0.75}
     >
       {loading ? (
         <ActivityIndicator color="#FFFFFF" />
       ) : (
         <Text style={styles.title}>{title}</Text>
       )}
-    </Pressable>
+    </TouchableOpacity>
   );
 }
 
@@ -48,9 +53,6 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  buttonPressed: {
-    opacity: 0.75,
   },
   buttonDisabled: {
     opacity: 0.5,

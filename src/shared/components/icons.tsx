@@ -1,4 +1,4 @@
-import Svg, { Circle, Path } from 'react-native-svg';
+import Svg, { Circle, Path, Rect } from 'react-native-svg';
 
 type IconProps = {
   size?: number;
@@ -47,13 +47,57 @@ export function UserIcon({ size = 24, color = '#9B9B9B' }: IconProps) {
   );
 }
 
+export function ChevronRightIcon({ size = 24, color = '#9B9B9B' }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M9 5l7 7-7 7"
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
+export function GridIcon({ size = 24, color = '#FFFFFF' }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Rect x={3} y={3} width={8} height={8} rx={2} fill={color} />
+      <Rect x={13} y={3} width={8} height={8} rx={2} fill={color} />
+      <Rect x={3} y={13} width={8} height={8} rx={2} fill={color} />
+      <Rect x={13} y={13} width={8} height={8} rx={2} fill={color} />
+    </Svg>
+  );
+}
+
+export function HeartIcon({
+  size = 24,
+  color = '#1A1A1A',
+  filled = false,
+}: IconProps & { filled?: boolean }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0016.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 002 8.5c0 2.3 1.5 4.05 3 5.5l7 7z"
+        fill={filled ? color : 'none'}
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
 export function CartIcon({ size = 24, color = '#1A1A1A' }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Circle cx={10} cy={21} r={1.3} fill={color} />
-      <Circle cx={19} cy={21} r={1.3} fill={color} />
+      <Circle cx={8} cy={21} r={1} stroke={color} strokeWidth={2} />
+      <Circle cx={19} cy={21} r={1} stroke={color} strokeWidth={2} />
       <Path
-        d="M1.5 2h2.4l2.2 12.4a2 2 0 002 1.6h9.6a2 2 0 002-1.7L21.5 6.5H5.2"
+        d="M2.05 2.05h2l2.66 12.42a2 2 0 002 1.58h9.78a2 2 0 001.95-1.57l1.65-7.43H5.12"
         stroke={color}
         strokeWidth={2}
         strokeLinecap="round"

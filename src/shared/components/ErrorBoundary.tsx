@@ -30,6 +30,13 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
           <Text style={styles.message}>
             Tətbiqdə gözlənilməz xəta baş verdi. Yenidən cəhd edin.
           </Text>
+          {__DEV__ ? (
+            <Text style={styles.debug}>
+              {this.state.error.message}
+              {'\n'}
+              {this.state.error.stack}
+            </Text>
+          ) : null}
           <Button title="Yenidən cəhd et" onPress={this.handleRetry} />
         </View>
       );
@@ -59,6 +66,11 @@ const styles = StyleSheet.create({
     color: '#333333',
     fontFamily: FONTS.regular,
     marginBottom: 12,
+  },
+  debug: {
+    fontSize: 11,
+    color: '#E24C4C',
+    fontFamily: FONTS.regular,
   },
 });
 
