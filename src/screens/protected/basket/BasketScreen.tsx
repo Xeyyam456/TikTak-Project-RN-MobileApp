@@ -1,5 +1,5 @@
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -76,6 +77,7 @@ function BasketScreen() {
   }, [fetchBasket]);
 
   const items = basket?.items ?? [];
+  const [footerHeight, setFooterHeight] = useState(0);
 
   return (
     <View style={[styles.flex, { paddingTop: insets.top }]}>
@@ -95,12 +97,25 @@ function BasketScreen() {
         <ActivityIndicator color="#7BC043" style={styles.loader} />
       ) : items.length === 0 ? (
         <View style={styles.emptyState}>
-          <Text style={styles.emptyStateText}>Səbətiniz boşdur</Text>
+          <View style={styles.emptyStateIconCircle}>
+            <Svg width={32} height={32} viewBox="0 0 24 24" fill="none">
+              <Path
+                d="M6 6l12 12M18 6L6 18"
+                stroke="#C4C4CE"
+                strokeWidth={2}
+                strokeLinecap="round"
+              />
+            </Svg>
+          </View>
+          <Text style={styles.emptyStateText}>Səbətinizdə məhsul yoxdur</Text>
         </View>
       ) : (
         <ScrollView
           style={styles.list}
-          contentContainerStyle={styles.listContent}
+          contentContainerStyle={[
+            styles.listContent,
+            { paddingBottom: footerHeight + 16 },
+          ]}
           showsVerticalScrollIndicator={false}
         >
           {items.map(item => (
@@ -115,7 +130,11 @@ function BasketScreen() {
       )}
 
       {items.length > 0 && (
-        <View style={[styles.footer, { paddingBottom: insets.bottom + 16 }]}>
+        <View
+          style={[styles.footer, { paddingBottom: insets.bottom + 16 }]}
+          onLayout={event => setFooterHeight(event.nativeEvent.layout.height)}
+        >
+          <View style={styles.footerDivider} />
           <View style={styles.summaryRow}>
             <View>
               <Text style={styles.summaryLabel}>Ümumi: {basket?.total} AZN</Text>
@@ -126,7 +145,11 @@ function BasketScreen() {
               <Text style={styles.summaryTotalValue}>{basket?.total} AZN</Text>
             </View>
           </View>
-          <Button title="Sifarişi tamamla" style={styles.checkoutButton} />
+          <Button
+            title="Sifarişi tamamla"
+            style={styles.checkoutButton}
+            onPress={() => navigation.navigate('Checkout')}
+          />
         </View>
       )}
     </View>
@@ -166,10 +189,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 32,
   },
+  emptyStateIconCircle: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    backgroundColor: '#F1F0F7',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
   emptyStateText: {
     fontSize: 14,
     color: '#B8B8C2',
     fontFamily: FONTS.medium,
+    textAlign: 'center',
   },
   list: {
     flex: 1,
@@ -234,10 +267,19 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   footer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
     paddingHorizontal: 15,
     paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#F0F0F0',
+    backgroundColor: '#FFFFFF',
+    zIndex: 1,
+  },
+  footerDivider: {
+    height: 1,
+    backgroundColor: '#F0F0F0',
+    marginBottom: 16,
   },
   summaryRow: {
     flexDirection: 'row',
