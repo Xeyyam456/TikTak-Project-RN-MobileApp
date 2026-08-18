@@ -25,7 +25,7 @@ import { listCategories } from '@shared/services/category.service';
 import { listProducts } from '@shared/services/product.service';
 import { quantityForProduct, useBasketStore } from '@shared/store/basket.store';
 import type { Category, Product } from '@typings/api';
-import type { HomeStackParamList } from '@typings/navigation';
+import type { HomeStackParamList, RootStackParamList } from '@typings/navigation';
 import { FONTS } from '../../../theme/fonts';
 import EmptyCategoryState from './EmptyCategoryState';
 import ProductDetailSheet from './ProductDetailSheet';
@@ -151,6 +151,16 @@ function CategoryProductsScreen() {
     product => product.category?.id === selectedCategoryId,
   );
 
+  const basketItemCount =
+    basket?.items?.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
+  const showSummaryBar = basketItemCount > 0;
+
+  function goToBasket() {
+    (
+      navigation as unknown as NativeStackNavigationProp<RootStackParamList>
+    ).navigate('Basket');
+  }
+
   return (
     <View style={styles.flex}>
       <TouchableOpacity
@@ -203,7 +213,7 @@ function CategoryProductsScreen() {
           style={styles.list}
           contentContainerStyle={[
             styles.listContent,
-            { paddingBottom: insets.bottom + 24 },
+            { paddingBottom: insets.bottom + 24 + (showSummaryBar ? 84 : 0) },
           ]}
           renderItem={({ item, index }) => (
             <View
@@ -231,6 +241,22 @@ function CategoryProductsScreen() {
         onClose={() => setSelectedProduct(null)}
         onAdd={() => selectedProduct && handleAdd(selectedProduct.id)}
       />
+
+      {showSummaryBar && (
+        <TouchableOpacity
+          style={[styles.summaryBar, { marginBottom: insets.bottom + 12 }]}
+          activeOpacity={0.85}
+          onPress={goToBasket}
+        >
+          <View style={styles.summaryBarLeft}>
+            <View style={styles.summaryCountBadge}>
+              <Text style={styles.summaryCountText}>{basketItemCount}</Text>
+            </View>
+            <Text style={styles.summaryBarLabel}>Sifarişlər</Text>
+          </View>
+          <Text style={styles.summaryBarTotal}>₼ {basket?.total}</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
@@ -392,6 +418,47 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#FFFFFF',
     fontFamily: FONTS.semiBold,
+  },
+  summaryBar: {
+    position: 'absolute',
+    left: HORIZONTAL_PADDING,
+    right: HORIZONTAL_PADDING,
+    bottom: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#1A1A1A',
+    borderRadius: 16,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+  },
+  summaryBarLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  summaryCountBadge: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  summaryCountText: {
+    fontSize: 12,
+    color: '#1A1A1A',
+    fontFamily: FONTS.bold,
+  },
+  summaryBarLabel: {
+    fontSize: 15,
+    color: '#FFFFFF',
+    fontFamily: FONTS.semiBold,
+  },
+  summaryBarTotal: {
+    fontSize: 15,
+    color: '#FFFFFF',
+    fontFamily: FONTS.bold,
   },
 });
 

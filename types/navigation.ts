@@ -3,6 +3,7 @@ export type RootStackParamList = {
   Register: undefined;
   Login: undefined;
   Main: undefined;
+  Basket: undefined;
 };
 
 export type ProtectedTabParamList = {
