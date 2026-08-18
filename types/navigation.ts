@@ -5,6 +5,7 @@ export type RootStackParamList = {
   Main: undefined;
   Basket: undefined;
   Checkout: undefined;
+  OrderSuccess: undefined;
 };
 
 export type ProtectedTabParamList = {

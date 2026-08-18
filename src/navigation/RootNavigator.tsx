@@ -5,6 +5,7 @@ import LoginScreen from '../screens/auth/LoginScreen';
 import BottomTabNavigator from './BottomTabNavigator';
 import BasketScreen from '../screens/protected/basket/BasketScreen';
 import CheckoutScreen from '../screens/protected/checkout/CheckoutScreen';
+import OrderSuccessScreen from '../screens/protected/checkout/OrderSuccessScreen';
 import { RootStackParamList } from '@typings/navigation';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -23,6 +24,7 @@ function RootNavigator() {
       <Stack.Screen name="Main" component={BottomTabNavigator} />
       <Stack.Screen name="Basket" component={BasketScreen} />
       <Stack.Screen name="Checkout" component={CheckoutScreen} />
+      <Stack.Screen name="OrderSuccess" component={OrderSuccessScreen} />
     </Stack.Navigator>
   );
 }

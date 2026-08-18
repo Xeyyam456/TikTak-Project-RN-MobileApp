@@ -19,15 +19,8 @@ const PAYMENT_OPTIONS: { value: PaymentMethod; label: string }[] = [
   { value: 'CARD', label: 'Qapıda kart' },
 ];
 
-const VISIBLE_ORDER_ROWS = 10;
 const ORDER_ROW_HEIGHT = 30;
 const ORDER_ROW_GAP = 4;
-const ORDER_ITEMS_LIST_EXTRA_HEIGHT = 180;
-const ORDER_ITEMS_LIST_MAX_HEIGHT =
-  VISIBLE_ORDER_ROWS * ORDER_ROW_HEIGHT +
-  (VISIBLE_ORDER_ROWS - 1) * ORDER_ROW_GAP +
-  28 +
-  ORDER_ITEMS_LIST_EXTRA_HEIGHT;
 
 function CheckoutScreen() {
   const insets = useSafeAreaInsets();
@@ -41,6 +34,7 @@ function CheckoutScreen() {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('CASH');
   const [submitting, setSubmitting] = useState(false);
   const [footerHeight, setFooterHeight] = useState(0);
+  const [boxHeight, setBoxHeight] = useState<number | undefined>(undefined);
 
   useEffect(() => {
     getProfile().then(setProfile);
@@ -59,9 +53,7 @@ function CheckoutScreen() {
         note: note || undefined,
       });
       await fetchBasket();
-      Alert.alert('Sifariş qəbul edildi', undefined, [
-        { text: 'Tamam', onPress: () => navigation.popToTop() },
-      ]);
+      navigation.navigate('OrderSuccess');
     } catch (error) {
       Alert.alert('Xəta', getApiErrorMessage(error));
     } finally {
@@ -128,9 +120,21 @@ function CheckoutScreen() {
         </View>
       </View>
 
-      <View style={[styles.orderItemsBox, { marginBottom: footerHeight + 16 }]}>
+      <View
+        style={[
+          styles.orderItemsBox,
+          boxHeight === undefined
+            ? { marginBottom: footerHeight + 6 }
+            : { height: boxHeight, flex: undefined },
+        ]}
+        onLayout={event => {
+          if (boxHeight === undefined) {
+            setBoxHeight(event.nativeEvent.layout.height);
+          }
+        }}
+      >
         <ScrollView
-          nestedScrollEnabled
+          style={styles.orderItemsScroll}
           contentContainerStyle={styles.orderItemsContent}
           showsVerticalScrollIndicator={false}
         >
@@ -249,19 +253,22 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.medium,
   },
   orderItemsBox: {
-    maxHeight: ORDER_ITEMS_LIST_MAX_HEIGHT,
-    marginTop: 20,
-    marginBottom: 16,
+    flex: 1,
+    marginTop: 17,
     marginHorizontal: 15,
-    // paddingTop: 10,
-    // paddingBottom: 10,
-    backgroundColor: '#cf5757',
+    backgroundColor: '#b8bbb5',
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  orderItemsScroll: {
+    flex: 1,
     borderRadius: 12,
     overflow: 'hidden',
   },
   orderItemsContent: {
     paddingLeft: 8,
     paddingRight: 15,
+    paddingVertical: 14,
     gap: ORDER_ROW_GAP,
   },
   orderItemRow: {
