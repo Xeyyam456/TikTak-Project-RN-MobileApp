@@ -123,6 +123,8 @@ function CategoryProductsScreen() {
   const [loading, setLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const listRef = useRef<FlashListRef<Product>>(null);
+  const chipsScrollRef = useRef<ScrollView>(null);
+  const chipLayouts = useRef<Record<number, { x: number; width: number }>>({});
 
   const basket = useBasketStore(state => state.basket);
   const fetchBasket = useBasketStore(state => state.fetchBasket);
@@ -137,6 +139,22 @@ function CategoryProductsScreen() {
       })
       .finally(() => setLoading(false));
   }, [fetchBasket]);
+
+  function scrollToChip(categoryId: number, animated: boolean) {
+    const layout = chipLayouts.current[categoryId];
+    if (!layout) return;
+    chipsScrollRef.current?.scrollTo({
+      x: Math.max(0, layout.x - 20),
+      animated,
+    });
+  }
+
+  useEffect(() => {
+    if (categories.length === 0) return;
+    const timeout = setTimeout(() => scrollToChip(selectedCategoryId, false), 50);
+    return () => clearTimeout(timeout);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categories]);
 
   function quantityFor(productId: number) {
     return quantityForProduct(basket, productId);
@@ -175,6 +193,7 @@ function CategoryProductsScreen() {
       </TouchableOpacity>
 
       <ScrollView
+        ref={chipsScrollRef}
         horizontal
         showsHorizontalScrollIndicator={false}
         bounces={false}
@@ -188,9 +207,16 @@ function CategoryProductsScreen() {
             <TouchableOpacity
               key={category.id}
               style={[styles.chip, active && styles.chipActive]}
+              onLayout={event => {
+                chipLayouts.current[category.id] = {
+                  x: event.nativeEvent.layout.x,
+                  width: event.nativeEvent.layout.width,
+                };
+              }}
               onPress={() => {
                 setSelectedCategoryId(category.id);
                 listRef.current?.scrollToTop({ animated: false });
+                scrollToChip(category.id, true);
               }}
             >
               <Text style={[styles.chipText, active && styles.chipTextActive]}>
