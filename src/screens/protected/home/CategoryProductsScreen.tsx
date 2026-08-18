@@ -40,6 +40,8 @@ const CARD_WIDTH =
   COLUMNS;
 const FALLBACK_IMAGE_URL =
   'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLvSMU5gdda6lqS8a-kjktyTUE6rLzlVr6LA&s';
+const SUMMARY_BAR_HEIGHT = 56;
+const SUMMARY_BAR_GAP = 8;
 
 function ProductCard({
   product,
@@ -210,10 +212,15 @@ function CategoryProductsScreen() {
           showsVerticalScrollIndicator={false}
           onLoad={() => listRef.current?.scrollToTop({ animated: false })}
           ListEmptyComponent={EmptyCategoryState}
-          style={styles.list}
+          style={[
+            styles.list,
+            showSummaryBar && {
+              marginBottom: SUMMARY_BAR_HEIGHT + SUMMARY_BAR_GAP,
+            },
+          ]}
           contentContainerStyle={[
             styles.listContent,
-            { paddingBottom: insets.bottom + 24 + (showSummaryBar ? 84 : 0) },
+            { paddingBottom: insets.bottom + 24 },
           ]}
           renderItem={({ item, index }) => (
             <View
@@ -244,7 +251,10 @@ function CategoryProductsScreen() {
 
       {showSummaryBar && (
         <TouchableOpacity
-          style={[styles.summaryBar, { marginBottom: insets.bottom + 12 }]}
+          style={[
+            styles.summaryBar,
+            { height: SUMMARY_BAR_HEIGHT, marginBottom: SUMMARY_BAR_GAP },
+          ]}
           activeOpacity={0.85}
           onPress={goToBasket}
         >
