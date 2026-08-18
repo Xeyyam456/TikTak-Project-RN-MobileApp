@@ -33,7 +33,6 @@ function CheckoutScreen() {
   const [note, setNote] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('CASH');
   const [submitting, setSubmitting] = useState(false);
-  const [footerHeight, setFooterHeight] = useState(0);
   const [boxHeight, setBoxHeight] = useState<number | undefined>(undefined);
 
   useEffect(() => {
@@ -123,9 +122,8 @@ function CheckoutScreen() {
       <View
         style={[
           styles.orderItemsBox,
-          boxHeight === undefined
-            ? { marginBottom: footerHeight + 6 }
-            : { height: boxHeight, flex: undefined },
+          boxHeight !== undefined && styles.orderItemsBoxFixed,
+          boxHeight !== undefined && { height: boxHeight },
         ]}
         onLayout={event => {
           if (boxHeight === undefined) {
@@ -133,6 +131,7 @@ function CheckoutScreen() {
           }
         }}
       >
+        <View style={styles.orderItemsBoxBackground} />
         <ScrollView
           style={styles.orderItemsScroll}
           contentContainerStyle={styles.orderItemsContent}
@@ -149,10 +148,7 @@ function CheckoutScreen() {
         </ScrollView>
       </View>
 
-      <View
-        style={[styles.footer, { paddingBottom: insets.bottom + 16 }]}
-        onLayout={event => setFooterHeight(event.nativeEvent.layout.height)}
-      >
+      <View style={[styles.footer, { paddingBottom: insets.bottom + 16 }]}>
         <View style={styles.footerDivider} />
         <View style={styles.summaryRow}>
           <View>
@@ -255,15 +251,23 @@ const styles = StyleSheet.create({
   orderItemsBox: {
     flex: 1,
     marginTop: 17,
+    marginBottom: 6,
     marginHorizontal: 15,
+  },
+  orderItemsBoxFixed: {
+    flex: 0,
+  },
+  orderItemsBoxBackground: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     backgroundColor: '#b8bbb5',
     borderRadius: 12,
-    overflow: 'hidden',
   },
   orderItemsScroll: {
     flex: 1,
-    borderRadius: 12,
-    overflow: 'hidden',
   },
   orderItemsContent: {
     paddingLeft: 8,
@@ -292,15 +296,10 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.semiBold,
   },
   footer: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
     paddingHorizontal: 15,
     paddingTop: 16,
     backgroundColor: '#FFFFFF',
     gap: 16,
-    zIndex: 1,
   },
   footerDivider: {
     height: 1,

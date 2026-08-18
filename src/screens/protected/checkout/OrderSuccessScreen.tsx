@@ -40,7 +40,12 @@ function OrderSuccessScreen() {
       <View style={[styles.footer, { paddingBottom: insets.bottom + 16 }]}>
         <Button
           title="Əsas səhifəyə qayıt"
-          onPress={() => navigation.popToTop()}
+          onPress={() =>
+            navigation.navigate('Main', {
+              screen: 'Home',
+              params: { screen: 'HomeMain' },
+            })
+          }
         />
       </View>
     </View>
