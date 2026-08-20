@@ -76,6 +76,22 @@ export function EyeIcon({ size = 24, color = '#9B9B9B' }: IconProps) {
   );
 }
 
+export function ImageIcon({ size = 24, color = '#1A1A1A' }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Rect x={3} y={3} width={18} height={18} rx={3} stroke={color} strokeWidth={2} />
+      <Circle cx={8.5} cy={9} r={1.5} stroke={color} strokeWidth={2} />
+      <Path
+        d="M21 15l-5.5-5.5a1 1 0 00-1.4 0L4 19"
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
 export function GridIcon({ size = 24, color = '#FFFFFF' }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">

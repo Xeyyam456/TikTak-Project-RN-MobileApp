@@ -19,10 +19,12 @@ export async function uploadFile(file: UploadFile): Promise<string> {
     type: file.type,
   } as unknown as Blob);
 
+  // Don't set Content-Type manually — axios auto-generates the multipart
+  // boundary from the FormData instance. A hardcoded 'multipart/form-data'
+  // with no boundary produces a body the backend can't parse.
   const { data } = await httpClient.post<ApiEnvelope<UploadResult>>(
     '/upload',
     formData,
-    { headers: { 'Content-Type': 'multipart/form-data' } },
   );
   return data.data.url;
 }

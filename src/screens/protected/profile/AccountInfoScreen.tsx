@@ -26,6 +26,10 @@ function AccountInfoScreen() {
 
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
+  // Not sent on save — the backend's `PUT /profile` has no email field
+  // (docs/api.md, `UserProfile` type), so there's nowhere for it to persist
+  // yet. Kept purely for design fidelity until the API supports it.
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordRepeat, setPasswordRepeat] = useState('');
   const [errors, setErrors] = useState<{
@@ -49,13 +53,15 @@ function AccountInfoScreen() {
       .finally(() => setLoading(false));
   }, []);
 
-  function scrollToButton() {
-    scrollRef.current?.scrollToEnd({ animated: true });
-  }
-
-  function handleFieldFocus() {
+  // Only the password fields (near the bottom, right above the button) get
+  // the scroll-to-end nudge — applying it to every field also pushed
+  // "Ünvan" (near the top) off-screen behind the keyboard when focused.
+  function handlePasswordFieldFocus() {
     const keyboardAlreadyOpen = progress.value > 0.5;
-    setTimeout(scrollToButton, keyboardAlreadyOpen ? 0 : 300);
+    setTimeout(
+      () => scrollRef.current?.scrollToEnd({ animated: true }),
+      keyboardAlreadyOpen ? 0 : 300,
+    );
   }
 
   async function handleSubmit() {
@@ -125,7 +131,6 @@ function AccountInfoScreen() {
               placeholder="Ad, Soyad"
               value={name}
               onChangeText={setName}
-              onFocus={handleFieldFocus}
               error={errors.name}
             />
             <TextField
@@ -133,8 +138,15 @@ function AccountInfoScreen() {
               placeholder="ünvan"
               value={address}
               onChangeText={setAddress}
-              onFocus={handleFieldFocus}
               error={errors.address}
+            />
+            <TextField
+              label="E-mail"
+              placeholder="E-mail"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              value={email}
+              onChangeText={setEmail}
             />
             <TextField
               label="Telefon nömrəsi"
@@ -148,7 +160,7 @@ function AccountInfoScreen() {
               secureTextEntry
               value={password}
               onChangeText={setPassword}
-              onFocus={handleFieldFocus}
+              onFocus={handlePasswordFieldFocus}
               error={errors.password}
             />
             <TextField
@@ -156,7 +168,7 @@ function AccountInfoScreen() {
               secureTextEntry
               value={passwordRepeat}
               onChangeText={setPasswordRepeat}
-              onFocus={handleFieldFocus}
+              onFocus={handlePasswordFieldFocus}
               error={errors.passwordRepeat}
             />
           </View>

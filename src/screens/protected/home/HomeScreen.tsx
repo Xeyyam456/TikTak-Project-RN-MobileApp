@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Dimensions,
@@ -11,7 +11,7 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation, useScrollToTop } from '@react-navigation/native';
+import { useFocusEffect, useNavigation, useScrollToTop } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Button from '@shared/components/Button';
 import TextField from '@shared/components/TextField';
@@ -117,6 +117,15 @@ function HomeScreen() {
       })
       .finally(() => setLoading(false));
   }, []);
+
+  // HomeScreen stays mounted while switching tabs, so without this the
+  // address shown here (and used as the checkout default) would go stale
+  // after editing it from Hesabım → Hesab məlumatlarım.
+  useFocusEffect(
+    useCallback(() => {
+      getProfile().then(setProfile);
+    }, []),
+  );
 
   useEffect(() => {
     if (campaigns.length <= 1) return;
