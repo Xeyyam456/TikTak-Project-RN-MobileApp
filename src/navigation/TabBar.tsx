@@ -31,7 +31,11 @@ function TabBar({ state, navigation }: BottomTabBarProps) {
         const color = focused ? ACTIVE_COLOR : INACTIVE_COLOR;
 
         function handlePress() {
-          if (!focused) navigation.navigate(route.name);
+          // Always navigate, even when already focused — React Navigation's
+          // default behavior for a tab containing a nested stack is to pop
+          // that stack back to its first screen, which is what lets tapping
+          // "Əsas" while deep in CategoryProducts return to HomeMain.
+          navigation.navigate(route.name);
         }
 
         return (

@@ -7,7 +7,6 @@ import { StatusBar } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import BootSplash from 'react-native-bootsplash';
 import RootNavigator from './src/navigation/RootNavigator';
@@ -24,11 +23,9 @@ function App() {
         <KeyboardProvider>
           <SafeAreaProvider>
             <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
-            <BottomSheetModalProvider>
-              <NavigationContainer>
-                <RootNavigator />
-              </NavigationContainer>
-            </BottomSheetModalProvider>
+            <NavigationContainer>
+              <RootNavigator />
+            </NavigationContainer>
           </SafeAreaProvider>
         </KeyboardProvider>
       </GestureHandlerRootView>

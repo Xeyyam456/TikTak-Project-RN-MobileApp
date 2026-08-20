@@ -11,7 +11,7 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useScrollToTop } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Button from '@shared/components/Button';
 import TextField from '@shared/components/TextField';
@@ -102,6 +102,11 @@ function HomeScreen() {
 
   const campaignListRef = useRef<FlatList<Campaign>>(null);
   const campaignIndexRef = useRef(0);
+  const categoryListRef = useRef<FlatList<Category>>(null);
+
+  // Lets tapping the already-focused "Əsas" tab scroll back to the top
+  // (the category cards), matching native tab-bar "tap again to go top".
+  useScrollToTop(categoryListRef);
 
   useEffect(() => {
     Promise.all([getProfile(), listCategories(), listCampaigns()])
@@ -158,6 +163,7 @@ function HomeScreen() {
   return (
     <View style={styles.flex}>
       <FlatList
+        ref={categoryListRef}
         style={styles.flex}
         contentContainerStyle={[
           styles.listContent,

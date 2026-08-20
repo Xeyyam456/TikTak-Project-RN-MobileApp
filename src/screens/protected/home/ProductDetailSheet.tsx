@@ -1,11 +1,20 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
 import {
-  BottomSheetBackdrop,
-  BottomSheetModal,
-  BottomSheetView,
-  type BottomSheetBackdropProps,
-} from '@gorhom/bottom-sheet';
+  Animated,
+  Dimensions,
+  Image,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import {
+  PanGestureHandler,
+  type PanGestureHandlerGestureEvent,
+  type PanGestureHandlerStateChangeEvent,
+  State,
+} from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Button from '@shared/components/Button';
 import { HeartIcon } from '@shared/components/icons';
@@ -15,6 +24,11 @@ import { FONTS } from '../../../theme/fonts';
 
 const FALLBACK_IMAGE_URL =
   'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLvSMU5gdda6lqS8a-kjktyTUE6rLzlVr6LA&s';
+// Any value at least as tall as the sheet's rendered content works as the
+// off-screen starting point — using the full window height guarantees that
+// regardless of how much text a given product has.
+const OFFSCREEN_Y = Dimensions.get('window').height;
+const DRAG_CLOSE_THRESHOLD = 100;
 
 type ProductDetailSheetProps = {
   product: Product | null;
@@ -30,32 +44,53 @@ function ProductDetailSheet({
   onAdd,
 }: ProductDetailSheetProps) {
   const insets = useSafeAreaInsets();
-  const sheetRef = useRef<BottomSheetModal>(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [togglingFavorite, setTogglingFavorite] = useState(false);
+  const translateY = useRef(new Animated.Value(OFFSCREEN_Y)).current;
 
   useEffect(() => {
-    if (!product) {
-      sheetRef.current?.dismiss();
-      return;
-    }
+    if (!product) return;
     setIsFavorite(false);
     getProduct(product.id).then(detail => setIsFavorite(detail.is_favorite));
-    sheetRef.current?.present();
-  }, [product]);
 
-  const renderBackdrop = useCallback(
-    (props: BottomSheetBackdropProps) => (
-      <BottomSheetBackdrop
-        {...props}
-        appearsOnIndex={0}
-        disappearsOnIndex={-1}
-        opacity={0.4}
-        pressBehavior="close"
-      />
-    ),
-    [],
+    translateY.setValue(OFFSCREEN_Y);
+    Animated.spring(translateY, {
+      toValue: 0,
+      useNativeDriver: true,
+      bounciness: 4,
+    }).start();
+  }, [product, translateY]);
+
+  function closeWithAnimation() {
+    Animated.timing(translateY, {
+      toValue: OFFSCREEN_Y,
+      duration: 200,
+      useNativeDriver: true,
+    }).start(({ finished }) => {
+      if (finished) onClose();
+    });
+  }
+
+  // Sheet is at rest (translateY === 0) whenever a drag can start, so the
+  // gesture's translationY can drive translateY directly with no offset
+  // bookkeeping — 0 at touch-down, growing as the finger moves down.
+  const onHandleGestureEvent = Animated.event(
+    [{ nativeEvent: { translationY: translateY } }],
+    { useNativeDriver: true },
   );
+
+  function onHandleStateChange(event: PanGestureHandlerStateChangeEvent) {
+    if (event.nativeEvent.oldState !== State.ACTIVE) return;
+    const { translationY, velocityY } = event.nativeEvent;
+    if (translationY > DRAG_CLOSE_THRESHOLD || velocityY > 800) {
+      closeWithAnimation();
+    } else {
+      Animated.spring(translateY, {
+        toValue: 0,
+        useNativeDriver: true,
+      }).start();
+    }
+  }
 
   async function handleToggleFavorite() {
     if (!product || togglingFavorite) return;
@@ -74,64 +109,100 @@ function ProductDetailSheet({
   }
 
   return (
-    <BottomSheetModal
-      ref={sheetRef}
-      enableDynamicSizing
-      backdropComponent={renderBackdrop}
-      onDismiss={onClose}
-      handleIndicatorStyle={styles.handle}
+    <Modal
+      visible={!!product}
+      transparent
+      animationType="fade"
+      onRequestClose={closeWithAnimation}
     >
-      <BottomSheetView
-        style={[styles.sheet, { paddingBottom: insets.bottom + 20 }]}
+      <TouchableOpacity
+        style={styles.overlay}
+        activeOpacity={1}
+        onPress={closeWithAnimation}
       >
-        <TouchableOpacity
-          style={styles.favoriteButton}
-          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-          onPress={handleToggleFavorite}
-        >
-          <HeartIcon
-            size={22}
-            filled={isFavorite}
-            color={isFavorite ? '#E24C4C' : '#B8B8C2'}
-          />
-        </TouchableOpacity>
+        <Animated.View style={{ transform: [{ translateY }] }}>
+          <TouchableOpacity
+            style={[styles.sheet, { paddingBottom: insets.bottom + 20 }]}
+            activeOpacity={1}
+            onPress={() => {}}
+          >
+            <PanGestureHandler
+              onGestureEvent={
+                onHandleGestureEvent as (
+                  event: PanGestureHandlerGestureEvent,
+                ) => void
+              }
+              onHandlerStateChange={onHandleStateChange}
+              activeOffsetY={10}
+              failOffsetX={[-20, 20]}
+            >
+              <Animated.View style={styles.handleArea}>
+                <View style={styles.handle} />
+              </Animated.View>
+            </PanGestureHandler>
 
-        {product && (
-          <>
-            <Image
-              source={{ uri: product.img_url || FALLBACK_IMAGE_URL }}
-              style={styles.image}
-              resizeMode="cover"
-            />
-            <Text style={styles.title}>{product.title}</Text>
-            <Text style={styles.description} numberOfLines={3}>
-              {product.description}
-            </Text>
-            <Text style={styles.price}>{product.price} AZN</Text>
+            <TouchableOpacity
+              style={styles.favoriteButton}
+              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+              onPress={handleToggleFavorite}
+            >
+              <HeartIcon
+                size={22}
+                filled={isFavorite}
+                color={isFavorite ? '#E24C4C' : '#B8B8C2'}
+              />
+            </TouchableOpacity>
 
-            {quantity > 0 ? (
-              <View style={styles.inBasket}>
-                <Text style={styles.inBasketText}>Artıq səbətdədir</Text>
-              </View>
-            ) : (
-              <Button title="Səbətə əlavə et" onPress={onAdd} />
+            {product && (
+              <>
+                <Image
+                  source={{ uri: product.img_url || FALLBACK_IMAGE_URL }}
+                  style={styles.image}
+                  resizeMode="cover"
+                />
+                <Text style={styles.title}>{product.title}</Text>
+                <Text style={styles.description} numberOfLines={3}>
+                  {product.description}
+                </Text>
+                <Text style={styles.price}>{product.price} AZN</Text>
+
+                {quantity > 0 ? (
+                  <View style={styles.inBasket}>
+                    <Text style={styles.inBasketText}>Artıq səbətdədir</Text>
+                  </View>
+                ) : (
+                  <Button title="Səbətə əlavə et" onPress={onAdd} />
+                )}
+              </>
             )}
-          </>
-        )}
-      </BottomSheetView>
-    </BottomSheetModal>
+          </TouchableOpacity>
+        </Animated.View>
+      </TouchableOpacity>
+    </Modal>
   );
 }
 
 const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+  },
   sheet: {
     backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
     paddingHorizontal: 20,
-    paddingTop: 4,
+    paddingTop: 10,
+  },
+  handleArea: {
+    paddingVertical: 8,
   },
   handle: {
+    alignSelf: 'center',
     width: 40,
     height: 4,
+    borderRadius: 2,
     backgroundColor: '#EFEFEF',
   },
   favoriteButton: {
