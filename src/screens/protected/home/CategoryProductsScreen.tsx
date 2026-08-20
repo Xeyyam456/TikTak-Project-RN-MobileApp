@@ -125,6 +125,8 @@ function CategoryProductsScreen() {
   const listRef = useRef<FlashListRef<Product>>(null);
   const chipsScrollRef = useRef<ScrollView>(null);
   const chipLayouts = useRef<Record<number, { x: number; width: number }>>({});
+  const hasScrolledToInitialChip = useRef(false);
+  const chipsContentReady = useRef(false);
 
   const basket = useBasketStore(state => state.basket);
   const fetchBasket = useBasketStore(state => state.fetchBasket);
@@ -143,18 +145,30 @@ function CategoryProductsScreen() {
   function scrollToChip(categoryId: number, animated: boolean) {
     const layout = chipLayouts.current[categoryId];
     if (!layout) return;
-    chipsScrollRef.current?.scrollTo({
-      x: Math.max(0, layout.x - 20),
-      animated,
+    // A scrollTo issued in the same commit as the chips' own layout can be
+    // silently dropped — the native ScrollView hasn't settled its content
+    // size yet and resets the offset once it does. Defer one frame so the
+    // native layout is stable before applying the offset.
+    requestAnimationFrame(() => {
+      chipsScrollRef.current?.scrollTo({
+        x: Math.max(0, layout.x - 20),
+        animated,
+      });
     });
   }
 
-  useEffect(() => {
-    if (categories.length === 0) return;
-    const timeout = setTimeout(() => scrollToChip(selectedCategoryId, false), 50);
-    return () => clearTimeout(timeout);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [categories]);
+  // The ScrollView won't scroll past its currently-known content width, so
+  // scrolling to a chip near the end before every chip has been measured
+  // (onContentSizeChange not fired yet) silently clamps to a no-op. Wait for
+  // both signals — full content width settled AND this chip's own position
+  // known — before attempting the one-time initial scroll.
+  function maybeScrollToInitialChip() {
+    if (hasScrolledToInitialChip.current) return;
+    if (!chipsContentReady.current) return;
+    if (!chipLayouts.current[selectedCategoryId]) return;
+    hasScrolledToInitialChip.current = true;
+    scrollToChip(selectedCategoryId, false);
+  }
 
   function quantityFor(productId: number) {
     return quantityForProduct(basket, productId);
@@ -200,6 +214,10 @@ function CategoryProductsScreen() {
         overScrollMode="never"
         style={styles.chipsRow}
         contentContainerStyle={styles.chipsContent}
+        onContentSizeChange={() => {
+          chipsContentReady.current = true;
+          maybeScrollToInitialChip();
+        }}
       >
         {categories.map(category => {
           const active = category.id === selectedCategoryId;
@@ -212,6 +230,7 @@ function CategoryProductsScreen() {
                   x: event.nativeEvent.layout.x,
                   width: event.nativeEvent.layout.width,
                 };
+                maybeScrollToInitialChip();
               }}
               onPress={() => {
                 setSelectedCategoryId(category.id);

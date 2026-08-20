@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Dimensions,
@@ -13,14 +13,14 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import FruitImage from '@assets/images/images1.svg';
 import Button from '@shared/components/Button';
 import TextField from '@shared/components/TextField';
 import { ChevronRightIcon } from '@shared/components/icons';
+import { listCampaigns } from '@shared/services/campaign.service';
 import { listCategories } from '@shared/services/category.service';
 import { getProfile, updateProfile } from '@shared/services/profile.service';
 import { getApiErrorMessage } from '@shared/utils/apiError';
-import type { Category, UserProfile } from '@typings/api';
+import type { Campaign, Category, UserProfile } from '@typings/api';
 import type { HomeStackParamList } from '@typings/navigation';
 import { FONTS } from '../../../theme/fonts';
 
@@ -32,6 +32,11 @@ const CARD_WIDTH =
     HORIZONTAL_PADDING * 2 -
     GRID_GAP * (COLUMNS - 1)) /
   COLUMNS;
+const BANNER_WIDTH = Dimensions.get('window').width - HORIZONTAL_PADDING * 2;
+const BANNER_HEIGHT = 160;
+const CAMPAIGN_AUTOPLAY_MS = 3000;
+const FALLBACK_CAMPAIGN_IMAGE =
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLvSMU5gdda6lqS8a-kjktyTUE6rLzlVr6LA&s';
 
 function CategoryCard({
   category,
@@ -58,6 +63,28 @@ function CategoryCard({
   );
 }
 
+function CampaignCard({ campaign }: { campaign: Campaign }) {
+  return (
+    <View style={styles.campaignCard}>
+      <Image
+        source={{ uri: campaign.img_url || FALLBACK_CAMPAIGN_IMAGE }}
+        style={StyleSheet.absoluteFill}
+        resizeMode="cover"
+      />
+      <View style={styles.campaignOverlay}>
+        <Text style={styles.campaignTitle} numberOfLines={1}>
+          {campaign.title}
+        </Text>
+        {campaign.description ? (
+          <Text style={styles.campaignDescription} numberOfLines={2}>
+            {campaign.description}
+          </Text>
+        ) : null}
+      </View>
+    </View>
+  );
+}
+
 function HomeScreen() {
   const insets = useSafeAreaInsets();
   const navigation =
@@ -65,6 +92,7 @@ function HomeScreen() {
 
   const [profile, setProfile] = useState<UserProfile>();
   const [categories, setCategories] = useState<Category[]>([]);
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [addressModalVisible, setAddressModalVisible] = useState(false);
@@ -72,14 +100,30 @@ function HomeScreen() {
   const [addressError, setAddressError] = useState<string>();
   const [savingAddress, setSavingAddress] = useState(false);
 
+  const campaignListRef = useRef<FlatList<Campaign>>(null);
+  const campaignIndexRef = useRef(0);
+
   useEffect(() => {
-    Promise.all([getProfile(), listCategories()])
-      .then(([profileData, categoryList]) => {
+    Promise.all([getProfile(), listCategories(), listCampaigns()])
+      .then(([profileData, categoryList, campaignList]) => {
         setProfile(profileData);
         setCategories(categoryList);
+        setCampaigns(campaignList);
       })
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    if (campaigns.length <= 1) return;
+    const interval = setInterval(() => {
+      campaignIndexRef.current = (campaignIndexRef.current + 1) % campaigns.length;
+      campaignListRef.current?.scrollToIndex({
+        index: campaignIndexRef.current,
+        animated: true,
+      });
+    }, CAMPAIGN_AUTOPLAY_MS);
+    return () => clearInterval(interval);
+  }, [campaigns]);
 
   function openAddressModal() {
     setAddressInput(profile?.address ?? '');
@@ -150,18 +194,19 @@ function HomeScreen() {
               <ChevronRightIcon size={20} color="#9B9B9B" />
             </TouchableOpacity>
 
-            <View style={styles.banner}>
-              <FruitImage
-                width={158}
-                height={146}
-                style={styles.bannerImage}
+            {campaigns.length > 0 && (
+              <FlatList
+                ref={campaignListRef}
+                data={campaigns}
+                horizontal
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+                keyExtractor={item => String(item.id)}
+                style={styles.campaignCarousel}
+                renderItem={({ item }) => <CampaignCard campaign={item} />}
+                onScrollToIndexFailed={() => {}}
               />
-              <View style={styles.bannerText}>
-                <Text style={styles.bannerTitle}>MEYVƏLƏRƏ</Text>
-                <Text style={styles.bannerSubtitle}>HƏFTƏ SONUNA KIMI</Text>
-                <Text style={styles.bannerDiscount}>20% ENDİRİM</Text>
-              </View>
-            </View>
+            )}
 
             {loading ? (
               <ActivityIndicator color="#7BC043" style={styles.loader} />
@@ -239,43 +284,34 @@ const styles = StyleSheet.create({
     color: '#555555',
     fontFamily: FONTS.regular,
   },
-  banner: {
-    position: 'relative',
-    justifyContent: 'center',
-    backgroundColor: '#B380FF',
+  campaignCarousel: {
+    height: BANNER_HEIGHT,
     borderRadius: 10,
-    paddingVertical: 28.5,
-    paddingRight: 20,
-    paddingLeft: 148,
     marginBottom: 20,
-    overflow: 'visible',
   },
-  bannerImage: {
-    position: 'absolute',
-    left: -20,
-    top: 11,
-    zIndex: 1,
+  campaignCard: {
+    width: BANNER_WIDTH,
+    height: BANNER_HEIGHT,
+    borderRadius: 10,
+    overflow: 'hidden',
+    backgroundColor: '#B380FF',
+    justifyContent: 'flex-end',
   },
-  bannerText: {
-    paddingLeft: 23,
-    marginTop: 10,
+  campaignOverlay: {
+    paddingHorizontal: 18,
+    paddingVertical: 14,
+    backgroundColor: 'rgba(0, 0, 0, 0.35)',
   },
-  bannerTitle: {
-    fontSize: 28,
+  campaignTitle: {
+    fontSize: 20,
     color: '#FFFFFF',
     fontFamily: FONTS.extraBold,
   },
-  bannerSubtitle: {
-    fontSize: 17,
+  campaignDescription: {
+    fontSize: 14,
     color: '#FFFFFF',
     fontFamily: FONTS.medium,
-    marginTop: -2,
-  },
-  bannerDiscount: {
-    fontSize: 28,
-    color: '#FFFFFF',
-    fontFamily: FONTS.extraBold,
-    marginTop: 6,
+    marginTop: 2,
   },
   loader: {
     marginTop: 24,
