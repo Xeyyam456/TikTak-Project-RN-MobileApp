@@ -16,6 +16,12 @@ import { validateName, validatePassword } from '@shared/utils/validation';
 import type { UserProfile } from '@typings/api';
 import { FONTS } from '../../../theme/fonts';
 
+// Not editable and not sent on save — the backend's `PUT /profile` has no
+// email field (docs/api.md, `UserProfile` type), so there's nowhere for a
+// user-entered value to persist yet. Fixed placeholder for design fidelity
+// until the API supports it, same treatment as the read-only phone field.
+const PLACEHOLDER_EMAIL = 'Xeyyamelizade5@gmail.com';
+
 function AccountInfoScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
@@ -26,10 +32,6 @@ function AccountInfoScreen() {
 
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
-  // Not sent on save — the backend's `PUT /profile` has no email field
-  // (docs/api.md, `UserProfile` type), so there's nowhere for it to persist
-  // yet. Kept purely for design fidelity until the API supports it.
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordRepeat, setPasswordRepeat] = useState('');
   const [errors, setErrors] = useState<{
@@ -142,11 +144,9 @@ function AccountInfoScreen() {
             />
             <TextField
               label="E-mail"
-              placeholder="E-mail"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              value={email}
-              onChangeText={setEmail}
+              value={PLACEHOLDER_EMAIL}
+              editable={false}
+              style={styles.disabledInput}
             />
             <TextField
               label="Telefon nömrəsi"
