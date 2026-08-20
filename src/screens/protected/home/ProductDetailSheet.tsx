@@ -36,6 +36,7 @@ type ProductDetailSheetProps = {
   quantity: number;
   onClose: () => void;
   onAdd: () => void;
+  onFavoriteChange?: (productId: number, isFavorite: boolean) => void;
 };
 
 function ProductDetailSheet({
@@ -43,6 +44,7 @@ function ProductDetailSheet({
   quantity,
   onClose,
   onAdd,
+  onFavoriteChange,
 }: ProductDetailSheetProps) {
   const insets = useSafeAreaInsets();
   const [isFavorite, setIsFavorite] = useState(false);
@@ -102,6 +104,7 @@ function ProductDetailSheet({
       await toggleFavorite(product.id);
       const detail = await getProduct(product.id);
       setIsFavorite(detail.is_favorite);
+      onFavoriteChange?.(product.id, detail.is_favorite);
     } catch {
       setIsFavorite(!nextValue);
     } finally {

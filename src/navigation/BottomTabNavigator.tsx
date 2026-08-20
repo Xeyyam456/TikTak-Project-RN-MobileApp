@@ -5,7 +5,7 @@ import {
 import type { ProtectedTabParamList } from '@typings/navigation';
 import HomeStackNavigator from './HomeStackNavigator';
 import SearchScreen from '../screens/protected/search/SearchScreen';
-import ProfileScreen from '../screens/protected/profile/ProfileScreen';
+import ProfileStackNavigator from './ProfileStackNavigator';
 import TabBar from './TabBar';
 
 const Tab = createBottomTabNavigator<ProtectedTabParamList>();
@@ -23,7 +23,7 @@ function BottomTabNavigator() {
     <Tab.Navigator screenOptions={{ headerShown: false }} tabBar={renderTabBar}>
       <Tab.Screen name="Home" component={HomeStackNavigator} />
       <Tab.Screen name="Search" component={SearchScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen name="Profile" component={ProfileStackNavigator} />
     </Tab.Navigator>
   );
 }

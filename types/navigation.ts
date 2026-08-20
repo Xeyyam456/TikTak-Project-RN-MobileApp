@@ -13,10 +13,17 @@ export type RootStackParamList = {
 export type ProtectedTabParamList = {
   Home: NavigatorScreenParams<HomeStackParamList> | undefined;
   Search: undefined;
-  Profile: undefined;
+  Profile: NavigatorScreenParams<ProfileStackParamList> | undefined;
 };
 
 export type HomeStackParamList = {
   HomeMain: undefined;
   CategoryProducts: { categoryId: number; categoryName: string };
+};
+
+export type ProfileStackParamList = {
+  ProfileMain: undefined;
+  AccountInfo: undefined;
+  MyLists: undefined;
+  OrderHistory: undefined;
 };

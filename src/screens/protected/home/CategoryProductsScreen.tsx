@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
-  Dimensions,
-  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -19,7 +17,16 @@ import {
 
 
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import Button from '@shared/components/Button';
+import BasketSummaryBar, {
+  SUMMARY_BAR_GAP,
+  SUMMARY_BAR_HEIGHT,
+  SUMMARY_BAR_TOP_GAP,
+} from '@shared/components/BasketSummaryBar';
+import ProductCard, {
+  COLUMNS,
+  GRID_GAP,
+  HORIZONTAL_PADDING,
+} from '@shared/components/ProductCard';
 import { GridIcon } from '@shared/components/icons';
 import { listCategories } from '@shared/services/category.service';
 import { listProducts } from '@shared/services/product.service';
@@ -29,84 +36,6 @@ import type { HomeStackParamList, RootStackParamList } from '@typings/navigation
 import { FONTS } from '../../../theme/fonts';
 import EmptyCategoryState from './EmptyCategoryState';
 import ProductDetailSheet from './ProductDetailSheet';
-
-const COLUMNS = 2;
-const GRID_GAP = 12;
-const HORIZONTAL_PADDING = 15;
-const CARD_WIDTH =
-  (Dimensions.get('window').width -
-    HORIZONTAL_PADDING * 2 -
-    GRID_GAP * (COLUMNS - 1)) /
-  COLUMNS;
-const FALLBACK_IMAGE_URL =
-  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLvSMU5gdda6lqS8a-kjktyTUE6rLzlVr6LA&s';
-const SUMMARY_BAR_HEIGHT = 56;
-const SUMMARY_BAR_GAP = 8;
-const SUMMARY_BAR_TOP_GAP = 14;
-
-function ProductCard({
-  product,
-  quantity,
-  onPress,
-  onAdd,
-  onIncrement,
-  onDecrement,
-}: {
-  product: Product;
-  quantity: number;
-  onPress: () => void;
-  onAdd: () => void;
-  onIncrement: () => void;
-  onDecrement: () => void;
-}) {
-  const total = (Number(product.price) * quantity).toFixed(2);
-
-  return (
-    <TouchableOpacity style={styles.card} activeOpacity={0.85} onPress={onPress}>
-      <View style={styles.cardImage}>
-        <Image
-          source={{ uri: product.img_url || FALLBACK_IMAGE_URL }}
-          style={StyleSheet.absoluteFill}
-          resizeMode="cover"
-        />
-      </View>
-      <Text style={styles.cardTitle} numberOfLines={2}>
-        {product.title}
-      </Text>
-
-      {quantity > 0 ? (
-        <>
-          <Text style={styles.bulkPriceLine}>
-            <Text style={styles.bulkPriceQty}>
-              {quantity} {product.type}
-            </Text>
-            <Text style={styles.bulkPriceEquals}> = </Text>
-            <Text style={styles.bulkPriceTotal}>{total} AZN</Text>
-          </Text>
-          <View style={styles.stepper}>
-            <TouchableOpacity style={styles.stepperMinus} onPress={onDecrement}>
-              <Text style={styles.stepperMinusText}>−</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.stepperPlus} onPress={onIncrement}>
-              <Text style={styles.stepperPlusText}>
-                + {quantity} {product.type}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </>
-      ) : (
-        <>
-          <Text style={styles.cardPrice}>{product.price} AZN</Text>
-          <Button
-            title="Səbətə əlavə et"
-            onPress={onAdd}
-            style={styles.addButton}
-          />
-        </>
-      )}
-    </TouchableOpacity>
-  );
-}
 
 function CategoryProductsScreen() {
   const insets = useSafeAreaInsets();
@@ -297,22 +226,11 @@ function CategoryProductsScreen() {
       />
 
       {showSummaryBar && (
-        <TouchableOpacity
-          style={[
-            styles.summaryBar,
-            { height: SUMMARY_BAR_HEIGHT, marginBottom: SUMMARY_BAR_GAP },
-          ]}
-          activeOpacity={0.85}
+        <BasketSummaryBar
+          itemCount={basketItemCount}
+          total={basket?.total}
           onPress={goToBasket}
-        >
-          <View style={styles.summaryBarLeft}>
-            <View style={styles.summaryCountBadge}>
-              <Text style={styles.summaryCountText}>{basketItemCount}</Text>
-            </View>
-            <Text style={styles.summaryBarLabel}>Sifarişlər</Text>
-          </View>
-          <Text style={styles.summaryBarTotal}>₼ {basket?.total}</Text>
-        </TouchableOpacity>
+        />
       )}
     </View>
   );
@@ -389,133 +307,6 @@ const styles = StyleSheet.create({
   },
   cardWrapperRight: {
     marginLeft: GRID_GAP,
-  },
-  card: {
-    width: CARD_WIDTH,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#EFEFEF',
-    borderRadius: 14,
-    padding: 6,
-    gap: 3,
-  },
-  cardImage: {
-    width: '92%',
-    aspectRatio: 1,
-    alignSelf: 'center',
-    borderRadius: 10,
-    overflow: 'hidden',
-  },
-  cardTitle: {
-    fontSize: 13,
-    lineHeight: 17,
-    height: 34,
-    color: '#1A1A1A',
-    fontFamily: FONTS.medium,
-    textAlign: 'center',
-  },
-  cardPrice: {
-    fontSize: 14,
-    lineHeight: 18,
-    height: 18,
-    color: '#1A1A1A',
-    fontFamily: FONTS.bold,
-    textAlign: 'center',
-  },
-  addButton: {
-    height: 34,
-    paddingVertical: 0,
-  },
-  bulkPriceLine: {
-    fontSize: 12,
-    lineHeight: 18,
-    height: 18,
-    textAlign: 'center',
-  },
-  bulkPriceQty: {
-    color: '#B85C5C',
-    fontFamily: FONTS.medium,
-  },
-  bulkPriceEquals: {
-    color: '#E24C4C',
-    fontFamily: FONTS.semiBold,
-  },
-  bulkPriceTotal: {
-    fontSize: 13,
-    color: '#E24C4C',
-    fontFamily: FONTS.extraBold,
-  },
-  stepper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  stepperMinus: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: '#F6D9D9',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  stepperMinusText: {
-    fontSize: 18,
-    color: '#E24C4C',
-    fontFamily: FONTS.bold,
-  },
-  stepperPlus: {
-    flex: 1,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: '#7BC043',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  stepperPlusText: {
-    fontSize: 12,
-    color: '#FFFFFF',
-    fontFamily: FONTS.semiBold,
-  },
-  summaryBar: {
-    position: 'absolute',
-    left: HORIZONTAL_PADDING,
-    right: HORIZONTAL_PADDING,
-    bottom: 0,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#7BC043',
-    borderRadius: 12,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-  },
-  summaryBarLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  summaryCountBadge: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  summaryCountText: {
-    fontSize: 16,
-    color: '#1A1A1A',
-    fontFamily: FONTS.bold,
-  },
-  summaryBarLabel: {
-    fontSize: 17,
-    color: '#FFFFFF',
-    fontFamily: FONTS.semiBold,
-  },
-  summaryBarTotal: {
-    fontSize: 17,
-    color: '#FFFFFF',
-    fontFamily: FONTS.bold,
   },
 });
 
