@@ -25,7 +25,11 @@ const apkSource = path.join(
 const outDir = path.join(projectRoot, 'apk');
 
 console.log('Building release APK (gradlew.bat assembleRelease)...');
-execSync('gradlew.bat assembleRelease', {
+// Use the full path rather than relying on cwd + relative-name resolution
+// — with Node 24 + shell:true on this machine, cmd.exe's implicit
+// cwd-search for gradlew.bat wasn't finding it even with `cwd` set.
+const gradlewPath = path.join(androidDir, 'gradlew.bat');
+execSync(`"${gradlewPath}" assembleRelease`, {
   cwd: androidDir,
   stdio: 'inherit',
   shell: true,
