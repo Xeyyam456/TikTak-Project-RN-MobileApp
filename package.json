@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
+    "apk": "node scripts/build-apk.js",
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "postinstall": "patch-package",

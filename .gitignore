@@ -66,6 +66,9 @@ yarn-error.log
 # testing
 /coverage
 
+# APKs exported via `npm run apk`
+/apk
+
 # Yarn
 .yarn/*
 !.yarn/patches
