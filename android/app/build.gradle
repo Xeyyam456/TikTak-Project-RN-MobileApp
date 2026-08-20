@@ -105,6 +105,18 @@ android {
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
+
+    // CMake intermediate object paths for autolinked libraries (e.g.
+    // react-native-gesture-handler's New Architecture codegen) nest deep
+    // enough that combined with this project's absolute path, Windows'
+    // 260-char MAX_PATH limit is exceeded and ninja fails with
+    // "Filename longer than 260 characters". Redirect the staging dir to a
+    // short, drive-root path to keep the full object paths under the limit.
+    externalNativeBuild {
+        cmake {
+            buildStagingDirectory "C:/rnbuild/tiktak-cxx"
+        }
+    }
 }
 
 dependencies {

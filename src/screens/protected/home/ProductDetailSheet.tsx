@@ -1,12 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import {
-  Image,
-  Modal,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+  BottomSheetBackdrop,
+  BottomSheetModal,
+  BottomSheetView,
+  type BottomSheetBackdropProps,
+} from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Button from '@shared/components/Button';
 import { HeartIcon } from '@shared/components/icons';
@@ -31,14 +30,32 @@ function ProductDetailSheet({
   onAdd,
 }: ProductDetailSheetProps) {
   const insets = useSafeAreaInsets();
+  const sheetRef = useRef<BottomSheetModal>(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [togglingFavorite, setTogglingFavorite] = useState(false);
 
   useEffect(() => {
-    if (!product) return;
+    if (!product) {
+      sheetRef.current?.dismiss();
+      return;
+    }
     setIsFavorite(false);
     getProduct(product.id).then(detail => setIsFavorite(detail.is_favorite));
+    sheetRef.current?.present();
   }, [product]);
+
+  const renderBackdrop = useCallback(
+    (props: BottomSheetBackdropProps) => (
+      <BottomSheetBackdrop
+        {...props}
+        appearsOnIndex={0}
+        disappearsOnIndex={-1}
+        opacity={0.4}
+        pressBehavior="close"
+      />
+    ),
+    [],
+  );
 
   async function handleToggleFavorite() {
     if (!product || togglingFavorite) return;
@@ -57,84 +74,65 @@ function ProductDetailSheet({
   }
 
   return (
-    <Modal
-      visible={!!product}
-      transparent
-      animationType="slide"
-      onRequestClose={onClose}
+    <BottomSheetModal
+      ref={sheetRef}
+      enableDynamicSizing
+      backdropComponent={renderBackdrop}
+      onDismiss={onClose}
+      handleIndicatorStyle={styles.handle}
     >
-      <TouchableOpacity
-        style={styles.overlay}
-        activeOpacity={1}
-        onPress={onClose}
+      <BottomSheetView
+        style={[styles.sheet, { paddingBottom: insets.bottom + 20 }]}
       >
         <TouchableOpacity
-          style={[styles.sheet, { paddingBottom: insets.bottom + 20 }]}
-          activeOpacity={1}
-          onPress={() => {}}
+          style={styles.favoriteButton}
+          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+          onPress={handleToggleFavorite}
         >
-          <View style={styles.handle} />
-
-          <TouchableOpacity
-            style={styles.favoriteButton}
-            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-            onPress={handleToggleFavorite}
-          >
-            <HeartIcon
-              size={22}
-              filled={isFavorite}
-              color={isFavorite ? '#E24C4C' : '#B8B8C2'}
-            />
-          </TouchableOpacity>
-
-          {product && (
-            <>
-              <Image
-                source={{ uri: product.img_url || FALLBACK_IMAGE_URL }}
-                style={styles.image}
-                resizeMode="cover"
-              />
-              <Text style={styles.title}>{product.title}</Text>
-              <Text style={styles.description} numberOfLines={3}>
-                {product.description}
-              </Text>
-              <Text style={styles.price}>{product.price} AZN</Text>
-
-              {quantity > 0 ? (
-                <View style={styles.inBasket}>
-                  <Text style={styles.inBasketText}>Artıq səbətdədir</Text>
-                </View>
-              ) : (
-                <Button title="Səbətə əlavə et" onPress={onAdd} />
-              )}
-            </>
-          )}
+          <HeartIcon
+            size={22}
+            filled={isFavorite}
+            color={isFavorite ? '#E24C4C' : '#B8B8C2'}
+          />
         </TouchableOpacity>
-      </TouchableOpacity>
-    </Modal>
+
+        {product && (
+          <>
+            <Image
+              source={{ uri: product.img_url || FALLBACK_IMAGE_URL }}
+              style={styles.image}
+              resizeMode="cover"
+            />
+            <Text style={styles.title}>{product.title}</Text>
+            <Text style={styles.description} numberOfLines={3}>
+              {product.description}
+            </Text>
+            <Text style={styles.price}>{product.price} AZN</Text>
+
+            {quantity > 0 ? (
+              <View style={styles.inBasket}>
+                <Text style={styles.inBasketText}>Artıq səbətdədir</Text>
+              </View>
+            ) : (
+              <Button title="Səbətə əlavə et" onPress={onAdd} />
+            )}
+          </>
+        )}
+      </BottomSheetView>
+    </BottomSheetModal>
   );
 }
 
 const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-  },
   sheet: {
     backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
     paddingHorizontal: 20,
-    paddingTop: 10,
+    paddingTop: 4,
   },
   handle: {
-    alignSelf: 'center',
     width: 40,
     height: 4,
-    borderRadius: 2,
     backgroundColor: '#EFEFEF',
-    marginBottom: 8,
   },
   favoriteButton: {
     position: 'absolute',
