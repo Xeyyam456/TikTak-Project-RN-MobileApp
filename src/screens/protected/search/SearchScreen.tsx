@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -54,9 +54,17 @@ function SearchScreen() {
   const basket = useBasketStore(state => state.basket);
   const addItem = useBasketStore(state => state.addItem);
 
+  // Debouncing only stops queued timeouts from piling up — if the user
+  // pauses mid-typing (e.g. "al", pause, "ma"), two requests can still be
+  // in flight at once, and a slower response for the earlier, broader query
+  // can land after the later one and overwrite it with stale results. Track
+  // the most recently *fired* query and drop any response that isn't for it.
+  const latestQueryRef = useRef('');
+
   useEffect(() => {
     const trimmed = query.trim();
     if (!trimmed) {
+      latestQueryRef.current = '';
       setResults([]);
       setLoading(false);
       return;
@@ -64,9 +72,23 @@ function SearchScreen() {
 
     setLoading(true);
     const timeout = setTimeout(() => {
+      latestQueryRef.current = trimmed;
+      const lowerTrimmed = trimmed.toLowerCase();
       listProducts({ search: trimmed })
-        .then(response => setResults(response.data))
-        .finally(() => setLoading(false));
+        .then(response => {
+          if (latestQueryRef.current !== trimmed) return;
+          // The backend's `search` param apparently matches on more than
+          // just title (e.g. searching "alma" returned "Ciyelek"), so
+          // narrow to title-only matches client-side.
+          setResults(
+            response.data.filter(product =>
+              product.title.toLowerCase().includes(lowerTrimmed),
+            ),
+          );
+        })
+        .finally(() => {
+          if (latestQueryRef.current === trimmed) setLoading(false);
+        });
     }, SEARCH_DEBOUNCE_MS);
 
     return () => clearTimeout(timeout);
@@ -102,6 +124,8 @@ function SearchScreen() {
 
         {loading ? (
           <ActivityIndicator color="#7BC043" style={styles.loader} />
+        ) : query.trim() && results.length === 0 ? (
+          <Text style={styles.emptyText}>Heç bir nəticə tapılmadı</Text>
         ) : (
           <View style={styles.results}>
             {results.map(product => (
@@ -139,6 +163,13 @@ const styles = StyleSheet.create({
   },
   loader: {
     marginTop: 32,
+  },
+  emptyText: {
+    marginTop: 32,
+    fontSize: 14,
+    color: '#9B9B9B',
+    fontFamily: FONTS.regular,
+    textAlign: 'center',
   },
   results: {
     marginTop: 18,
