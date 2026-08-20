@@ -1,5 +1,5 @@
 import httpClient from '@shared/api/httpClient';
-import type { Order, PaymentMethod } from '@typings/api';
+import type { ApiEnvelope, Order, PaymentMethod } from '@typings/api';
 
 export interface CheckoutPayload {
   paymentMethod: PaymentMethod;
@@ -14,11 +14,18 @@ export async function checkout(payload: CheckoutPayload): Promise<Order> {
 }
 
 export async function listOrders(): Promise<Order[]> {
-  const { data } = await httpClient.get<Order[]>('/orders/user');
-  return data;
+  // docs/api.md documents this as a raw array with no envelope, but the
+  // backend now wraps it in `{ message, data, result }` like most other
+  // list endpoints (confirmed via raw response log while debugging orders
+  // not showing up despite existing on the account) — same kind of
+  // contract drift already seen once on GET /basket.
+  const { data } = await httpClient.get<ApiEnvelope<Order[]>>('/orders/user');
+  return data.data;
 }
 
 export async function getOrder(id: number): Promise<Order> {
-  const { data } = await httpClient.get<Order>(`/orders/user/${id}`);
-  return data;
+  const { data } = await httpClient.get<ApiEnvelope<Order>>(
+    `/orders/user/${id}`,
+  );
+  return data.data;
 }

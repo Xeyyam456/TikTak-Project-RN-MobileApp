@@ -19,6 +19,16 @@ const LABELS = {
   Profile: 'Hesabım',
 } as const;
 
+// Tabs backed by a nested stack need their initial screen named explicitly —
+// `navigate(route.name)` on an already-focused tab does NOT reset a nested
+// stack back to its first screen by itself; that popToTop behavior only
+// happens for the library's own tab bar reacting to a real `tabPress` event,
+// not a bare `navigate()` call from a custom tab bar like this one.
+const INITIAL_SCREEN: Partial<Record<keyof typeof LABELS, string>> = {
+  Home: 'HomeMain',
+  Profile: 'ProfileMain',
+};
+
 function TabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
 
@@ -31,11 +41,13 @@ function TabBar({ state, navigation }: BottomTabBarProps) {
         const color = focused ? ACTIVE_COLOR : INACTIVE_COLOR;
 
         function handlePress() {
-          // Always navigate, even when already focused — React Navigation's
-          // default behavior for a tab containing a nested stack is to pop
-          // that stack back to its first screen, which is what lets tapping
-          // "Əsas" while deep in CategoryProducts return to HomeMain.
-          navigation.navigate(route.name);
+          const initialScreen =
+            INITIAL_SCREEN[route.name as keyof typeof INITIAL_SCREEN];
+          if (initialScreen) {
+            navigation.navigate(route.name, { screen: initialScreen } as never);
+          } else {
+            navigation.navigate(route.name);
+          }
         }
 
         return (

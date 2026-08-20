@@ -61,6 +61,21 @@ export function ChevronRightIcon({ size = 24, color = '#9B9B9B' }: IconProps) {
   );
 }
 
+export function EyeIcon({ size = 24, color = '#9B9B9B' }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <Circle cx={12} cy={12} r={3} stroke={color} strokeWidth={2} />
+    </Svg>
+  );
+}
+
 export function GridIcon({ size = 24, color = '#FFFFFF' }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
