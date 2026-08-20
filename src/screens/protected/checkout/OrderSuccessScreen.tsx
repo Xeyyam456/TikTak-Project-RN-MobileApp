@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -7,9 +8,30 @@ import { ArrowLeftIcon, CheckIcon } from '@shared/components/icons';
 import type { RootStackParamList } from '@typings/navigation';
 import { FONTS } from '../../../theme/fonts';
 
+const REDIRECT_SECONDS = 3;
+
+function goToOrderHistory(
+  navigation: NativeStackNavigationProp<RootStackParamList>,
+) {
+  navigation.navigate('Main', {
+    screen: 'Profile',
+    params: { screen: 'OrderHistory' },
+  });
+}
+
 function OrderSuccessScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const [secondsLeft, setSecondsLeft] = useState(REDIRECT_SECONDS);
+
+  useEffect(() => {
+    if (secondsLeft <= 0) {
+      goToOrderHistory(navigation);
+      return;
+    }
+    const timeout = setTimeout(() => setSecondsLeft(s => s - 1), 1000);
+    return () => clearTimeout(timeout);
+  }, [secondsLeft, navigation]);
 
   return (
     <View style={[styles.flex, { paddingTop: insets.top }]}>
@@ -34,6 +56,9 @@ function OrderSuccessScreen() {
         <Text style={styles.title}>Sifariş uğurla tamamlandı</Text>
         <Text style={styles.subtitle}>
           Əməkdaşlarımız sizinlə əlaqə saxlayıb sifarişinizi göndərəcəklər.
+        </Text>
+        <Text style={styles.countdown}>
+          {secondsLeft} saniyə sonra Sifarişlərim bölməsinə yönləndiriləcəksiniz
         </Text>
       </View>
 
@@ -111,6 +136,13 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     color: '#9B9B9B',
     fontFamily: FONTS.regular,
+    textAlign: 'center',
+  },
+  countdown: {
+    marginTop: 16,
+    fontSize: 13,
+    color: '#7BC043',
+    fontFamily: FONTS.semiBold,
     textAlign: 'center',
   },
   footer: {
