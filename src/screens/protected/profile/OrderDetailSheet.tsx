@@ -1,4 +1,5 @@
-import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import BottomSheet from '@shared/components/BottomSheet';
 import { formatOrderDate, getOrderStatusMeta } from '@shared/utils/order';
 import type { Order } from '@typings/api';

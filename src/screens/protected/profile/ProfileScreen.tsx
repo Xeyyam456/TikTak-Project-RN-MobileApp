@@ -10,6 +10,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import ConfirmModal from '@shared/components/ConfirmModal';
 import {
   ClockIcon,
   DocumentIcon,
@@ -47,6 +48,8 @@ function ProfileScreen() {
 
   const [profile, setProfile] = useState<UserProfile>();
   const [loading, setLoading] = useState(true);
+  const [logoutModalVisible, setLogoutModalVisible] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   useEffect(() => {
     getProfile()
@@ -54,7 +57,8 @@ function ProfileScreen() {
       .finally(() => setLoading(false));
   }, []);
 
-  async function handleLogout() {
+  async function handleConfirmLogout() {
+    setLoggingOut(true);
     await logout();
     navigation
       .getParent<NativeStackNavigationProp<RootStackParamList>>()
@@ -104,9 +108,21 @@ function ProfileScreen() {
         <MenuRow
           icon={<LogoutIcon size={22} />}
           label="Çıxış"
-          onPress={handleLogout}
+          onPress={() => setLogoutModalVisible(true)}
         />
       </View>
+
+      <ConfirmModal
+        visible={logoutModalVisible}
+        icon={<LogoutIcon size={28} color="#E24C4C" />}
+        title="Çıxış"
+        message="Hesabdan çıxmaq istədiyinizə əminsiniz?"
+        confirmLabel="Çıxış"
+        destructive
+        loading={loggingOut}
+        onConfirm={handleConfirmLogout}
+        onCancel={() => setLogoutModalVisible(false)}
+      />
     </View>
   );
 }

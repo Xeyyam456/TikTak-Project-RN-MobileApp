@@ -14,12 +14,20 @@ type ButtonProps = {
   onPress?: () => void;
   disabled?: boolean;
   loading?: boolean;
+  variant?: 'primary' | 'danger';
   style?: StyleProp<ViewStyle>;
 };
 
 const DOUBLE_PRESS_GUARD_MS = 600;
 
-function Button({ title, onPress, disabled, loading, style }: ButtonProps) {
+function Button({
+  title,
+  onPress,
+  disabled,
+  loading,
+  variant = 'primary',
+  style,
+}: ButtonProps) {
   const lastPressRef = useRef(0);
   const isDisabled = disabled || loading;
 
@@ -32,7 +40,12 @@ function Button({ title, onPress, disabled, loading, style }: ButtonProps) {
 
   return (
     <TouchableOpacity
-      style={[styles.button, isDisabled && styles.buttonDisabled, style]}
+      style={[
+        styles.button,
+        variant === 'danger' && styles.buttonDanger,
+        isDisabled && styles.buttonDisabled,
+        style,
+      ]}
       onPress={handlePress}
       disabled={isDisabled}
       activeOpacity={0.75}
@@ -53,6 +66,9 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  buttonDanger: {
+    backgroundColor: '#E24C4C',
   },
   buttonDisabled: {
     opacity: 0.5,
