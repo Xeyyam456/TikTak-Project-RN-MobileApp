@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import {
+  GestureHandlerRootView,
   PanGestureHandler,
   type PanGestureHandlerGestureEvent,
   type PanGestureHandlerStateChangeEvent,
@@ -71,13 +72,13 @@ function ProductDetailSheet({
     });
   }
 
-  // Sheet is at rest (translateY === 0) whenever a drag can start, so the
-  // gesture's translationY can drive translateY directly with no offset
-  // bookkeeping — 0 at touch-down, growing as the finger moves down.
-  const onHandleGestureEvent = Animated.event(
-    [{ nativeEvent: { translationY: translateY } }],
-    { useNativeDriver: true },
-  );
+  // Sheet is at rest (translateY === 0) whenever a drag can start. Clamp to
+  // 0 here (JS thread, not Animated.event) so dragging down then back up
+  // before releasing can't push translateY negative, which would raise the
+  // sheet above its resting position.
+  function onHandleGestureEvent(event: PanGestureHandlerGestureEvent) {
+    translateY.setValue(Math.max(0, event.nativeEvent.translationY));
+  }
 
   function onHandleStateChange(event: PanGestureHandlerStateChangeEvent) {
     if (event.nativeEvent.oldState !== State.ACTIVE) return;
@@ -115,74 +116,78 @@ function ProductDetailSheet({
       animationType="fade"
       onRequestClose={closeWithAnimation}
     >
-      <TouchableOpacity
-        style={styles.overlay}
-        activeOpacity={1}
-        onPress={closeWithAnimation}
-      >
-        <Animated.View style={{ transform: [{ translateY }] }}>
-          <TouchableOpacity
-            style={[styles.sheet, { paddingBottom: insets.bottom + 20 }]}
-            activeOpacity={1}
-            onPress={() => {}}
-          >
-            <PanGestureHandler
-              onGestureEvent={
-                onHandleGestureEvent as (
-                  event: PanGestureHandlerGestureEvent,
-                ) => void
-              }
-              onHandlerStateChange={onHandleStateChange}
-              activeOffsetY={10}
-              failOffsetX={[-20, 20]}
-            >
-              <Animated.View style={styles.handleArea}>
-                <View style={styles.handle} />
-              </Animated.View>
-            </PanGestureHandler>
-
+      <GestureHandlerRootView style={styles.gestureRoot}>
+        <TouchableOpacity
+          style={styles.overlay}
+          activeOpacity={1}
+          onPress={closeWithAnimation}
+        >
+          <Animated.View style={{ transform: [{ translateY }] }}>
             <TouchableOpacity
-              style={styles.favoriteButton}
-              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-              onPress={handleToggleFavorite}
+              style={[styles.sheet, { paddingBottom: insets.bottom + 20 }]}
+              activeOpacity={1}
+              onPress={() => {}}
             >
-              <HeartIcon
-                size={22}
-                filled={isFavorite}
-                color={isFavorite ? '#E24C4C' : '#B8B8C2'}
-              />
-            </TouchableOpacity>
+              <PanGestureHandler
+                onGestureEvent={onHandleGestureEvent}
+                onHandlerStateChange={onHandleStateChange}
+                activeOffsetY={10}
+                failOffsetX={[-20, 20]}
+                hitSlop={{ top: 20, bottom: 20, left: 60, right: 60 }}
+              >
+                <Animated.View style={styles.handleArea}>
+                  <View style={styles.handle} />
+                </Animated.View>
+              </PanGestureHandler>
 
-            {product && (
-              <>
-                <Image
-                  source={{ uri: product.img_url || FALLBACK_IMAGE_URL }}
-                  style={styles.image}
-                  resizeMode="cover"
+              <TouchableOpacity
+                style={styles.favoriteButton}
+                hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                onPress={handleToggleFavorite}
+              >
+                <HeartIcon
+                  size={22}
+                  filled={isFavorite}
+                  color={isFavorite ? '#E24C4C' : '#B8B8C2'}
                 />
-                <Text style={styles.title}>{product.title}</Text>
-                <Text style={styles.description} numberOfLines={3}>
-                  {product.description}
-                </Text>
-                <Text style={styles.price}>{product.price} AZN</Text>
+              </TouchableOpacity>
 
-                {quantity > 0 ? (
-                  <View style={styles.inBasket}>
-                    <Text style={styles.inBasketText}>Artıq səbətdədir</Text>
-                  </View>
-                ) : (
-                  <Button title="Səbətə əlavə et" onPress={onAdd} />
-                )}
-              </>
-            )}
-          </TouchableOpacity>
-        </Animated.View>
-      </TouchableOpacity>
+              {product && (
+                <>
+                  <Image
+                    source={{ uri: product.img_url || FALLBACK_IMAGE_URL }}
+                    style={styles.image}
+                    resizeMode="cover"
+                  />
+                  <Text style={styles.title}>{product.title}</Text>
+                  <Text style={styles.description} numberOfLines={3}>
+                    {product.description}
+                  </Text>
+                  <Text style={styles.price}>{product.price} AZN</Text>
+
+                  {quantity > 0 ? (
+                    <View style={styles.inBasket}>
+                      <Text style={styles.inBasketText}>
+                        Artıq səbətdədir
+                      </Text>
+                    </View>
+                  ) : (
+                    <Button title="Səbətə əlavə et" onPress={onAdd} />
+                  )}
+                </>
+              )}
+            </TouchableOpacity>
+          </Animated.View>
+        </TouchableOpacity>
+      </GestureHandlerRootView>
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
+  gestureRoot: {
+    flex: 1,
+  },
   overlay: {
     flex: 1,
     justifyContent: 'flex-end',
