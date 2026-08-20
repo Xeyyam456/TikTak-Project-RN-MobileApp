@@ -122,7 +122,15 @@ function MyListsScreen() {
         onFavoriteChange={(productId, isFavorite) => {
           if (!isFavorite) {
             setFavorites(current => current.filter(p => p.id !== productId));
+            return;
           }
+          // Re-favorited within the same sheet session — put it back
+          // instead of requiring a full re-fetch to see it again.
+          setFavorites(current => {
+            if (current.some(p => p.id === productId)) return current;
+            if (!selectedProduct || selectedProduct.id !== productId) return current;
+            return [selectedProduct, ...current];
+          });
         }}
       />
 
