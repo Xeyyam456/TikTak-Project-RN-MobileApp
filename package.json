@@ -2,9 +2,6 @@
   "name": "Tiktak",
   "version": "0.0.1",
   "private": true,
-
-
-
   "scripts": {
     "android": "react-native run-android",
     "apk": "node scripts/build-apk.js",
@@ -28,6 +25,8 @@
     "react-native-gesture-handler": "^3.2.1",
     "react-native-image-picker": "^8.2.1",
     "react-native-keyboard-controller": "^1.22.2",
+    "react-native-mmkv": "^4.3.2",
+    "react-native-nitro-modules": "^0.37.0",
     "react-native-reanimated": "^4.5.3",
     "react-native-safe-area-context": "^5.5.2",
     "react-native-screens": "^4.26.2",

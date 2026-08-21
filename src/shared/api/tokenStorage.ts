@@ -1,26 +1,24 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { MMKV } from 'react-native-mmkv';
 
 const ACCESS_TOKEN_KEY = 'tiktak_access_token';
 const REFRESH_TOKEN_KEY = 'tiktak_refresh_token';
 
-export function getAccessToken(): Promise<string | null> {
-  return AsyncStorage.getItem(ACCESS_TOKEN_KEY);
+export const storage = new MMKV({ id: 'tiktak-storage' });
+
+export function getAccessToken(): string | null {
+  return storage.getString(ACCESS_TOKEN_KEY) ?? null;
 }
 
-export function getRefreshToken(): Promise<string | null> {
-  return AsyncStorage.getItem(REFRESH_TOKEN_KEY);
+export function getRefreshToken(): string | null {
+  return storage.getString(REFRESH_TOKEN_KEY) ?? null;
 }
 
-export async function setTokens(
-  accessToken: string,
-  refreshToken: string,
-): Promise<void> {
-  await AsyncStorage.multiSet([
-    [ACCESS_TOKEN_KEY, accessToken],
-    [REFRESH_TOKEN_KEY, refreshToken],
-  ]);
+export function setTokens(accessToken: string, refreshToken: string): void {
+  storage.set(ACCESS_TOKEN_KEY, accessToken);
+  storage.set(REFRESH_TOKEN_KEY, refreshToken);
 }
 
-export async function clearTokens(): Promise<void> {
-  await AsyncStorage.multiRemove([ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY]);
+export function clearTokens(): void {
+  storage.delete(ACCESS_TOKEN_KEY);
+  storage.delete(REFRESH_TOKEN_KEY);
 }

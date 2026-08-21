@@ -7,15 +7,16 @@ import BasketScreen from '../screens/protected/basket/BasketScreen';
 import CheckoutScreen from '../screens/protected/checkout/CheckoutScreen';
 import OrderSuccessScreen from '../screens/protected/checkout/OrderSuccessScreen';
 import { RootStackParamList } from '@typings/navigation';
+import { getAccessToken } from '@shared/api/tokenStorage';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
+  const initialRouteName = getAccessToken() ? 'Main' : 'Welcome';
+
   return (
     <Stack.Navigator
-      // TODO: revert to Welcome once basket/checkout work is done —
-      // starting on Main skips login while we already have a token.
-      initialRouteName="Main"
+      initialRouteName={initialRouteName}
       screenOptions={{ headerShown: false, animation: 'fade_from_bottom' }}
     >
       <Stack.Screen name="Welcome" component={WelcomeScreen} />
