@@ -1,5 +1,5 @@
 import httpClient from '@shared/api/httpClient';
-import { clearTokens, setTokens } from '@shared/api/tokenStorage';
+import { clearTokens, setRememberMe, setTokens } from '@shared/api/tokenStorage';
 import type { ApiEnvelope, AuthTokens, UserProfile } from '@typings/api';
 
 export interface SignupPayload {
@@ -22,11 +22,15 @@ export async function signup(payload: SignupPayload): Promise<void> {
   await httpClient.post<ApiEnvelope<null>>('/auth/signup', payload);
 }
 
-export async function login(payload: LoginPayload): Promise<LoginResponse> {
+export async function login(
+  payload: LoginPayload,
+  rememberMe: boolean,
+): Promise<LoginResponse> {
   const { data } = await httpClient.post<ApiEnvelope<LoginResponse>>(
     '/auth/login',
     payload,
   );
+  setRememberMe(rememberMe);
   await setTokens(data.data.tokens.access_token, data.data.tokens.refresh_token);
   return data.data;
 }

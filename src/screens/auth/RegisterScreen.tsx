@@ -16,6 +16,7 @@ import type { RootStackParamList } from '@typings/navigation';
 import useReload from '../../hooks/useReload';
 import { FONTS } from '../../theme/fonts';
 import {
+  applyAzPhonePrefix,
   validateName,
   validatePassword,
   validatePhone,
@@ -28,7 +29,7 @@ function RegisterScreen() {
   const { refreshing, onRefresh } = useReload();
 
   const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
+  const [phone, setPhone] = useState('+994');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<{
     name?: string;
@@ -103,7 +104,7 @@ function RegisterScreen() {
           placeholder="telefon"
           keyboardType="phone-pad"
           value={phone}
-          onChangeText={setPhone}
+          onChangeText={text => setPhone(applyAzPhonePrefix(text))}
           onFocus={handleFieldFocus}
           error={errors.phone}
         />

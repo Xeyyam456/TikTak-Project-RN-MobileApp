@@ -9,13 +9,18 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Button from '@shared/components/Button';
+import Checkbox from '@shared/components/Checkbox';
 import TextField from '@shared/components/TextField';
 import { login } from '@shared/services/auth.service';
 import { getApiErrorMessage } from '@shared/utils/apiError';
 import type { RootStackParamList } from '@typings/navigation';
 import useReload from '../../hooks/useReload';
 import { FONTS } from '../../theme/fonts';
-import { validatePassword, validatePhone } from '@shared/utils/validation';
+import {
+  applyAzPhonePrefix,
+  validatePassword,
+  validatePhone,
+} from '@shared/utils/validation';
 
 function LoginScreen() {
   const insets = useSafeAreaInsets();
@@ -23,13 +28,14 @@ function LoginScreen() {
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { refreshing, onRefresh } = useReload();
 
-  const [phone, setPhone] = useState('');
+  const [phone, setPhone] = useState('+994');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<{ phone?: string; password?: string }>(
     {},
   );
   const [formError, setFormError] = useState<string>();
   const [loading, setLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
   const scrollRef = useRef<KeyboardAwareScrollViewRef>(null);
   const { progress } = useReanimatedKeyboardAnimation();
@@ -45,7 +51,7 @@ function LoginScreen() {
     setFormError(undefined);
     setLoading(true);
     try {
-      await login({ phone, password });
+      await login({ phone, password }, rememberMe);
       navigation.reset({ index: 0, routes: [{ name: 'Main' }] });
     } catch (error) {
       setFormError(getApiErrorMessage(error));
@@ -85,7 +91,7 @@ function LoginScreen() {
           placeholder="telefon"
           keyboardType="phone-pad"
           value={phone}
-          onChangeText={setPhone}
+          onChangeText={text => setPhone(applyAzPhonePrefix(text))}
           onFocus={handleFieldFocus}
           error={errors.phone}
         />
@@ -97,6 +103,11 @@ function LoginScreen() {
           onChangeText={setPassword}
           onFocus={handleFieldFocus}
           error={errors.password}
+        />
+        <Checkbox
+          label="Sessiyanı aktiv saxla"
+          checked={rememberMe}
+          onChange={setRememberMe}
         />
       </View>
 
