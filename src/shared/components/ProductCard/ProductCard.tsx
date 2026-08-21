@@ -1,19 +1,10 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import type { Product } from '@typings/api';
 import Button from '../Button';
 import { styles } from './ProductCard.styles';
+import type { ProductCardProps } from './ProductCard.types';
 
 const FALLBACK_IMAGE_URL =
   'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLvSMU5gdda6lqS8a-kjktyTUE6rLzlVr6LA&s';
-
-type ProductCardProps = {
-  product: Product;
-  quantity: number;
-  onPress: () => void;
-  onAdd: () => void;
-  onIncrement: () => void;
-  onDecrement: () => void;
-};
 
 function ProductCard({
   product,

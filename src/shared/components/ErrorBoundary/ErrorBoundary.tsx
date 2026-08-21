@@ -1,15 +1,8 @@
-import { Component, ReactNode } from 'react';
+import { Component } from 'react';
 import { Text, View } from 'react-native';
 import Button from '../Button';
 import { styles } from './ErrorBoundary.styles';
-
-type ErrorBoundaryProps = {
-  children: ReactNode;
-};
-
-type ErrorBoundaryState = {
-  error: Error | null;
-};
+import type { ErrorBoundaryProps, ErrorBoundaryState } from './ErrorBoundary.types';
 
 class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   state: ErrorBoundaryState = { error: null };

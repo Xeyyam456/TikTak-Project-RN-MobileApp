@@ -1,21 +1,7 @@
 import { useRef } from 'react';
-import {
-  ActivityIndicator,
-  Text,
-  TouchableOpacity,
-  type StyleProp,
-  type ViewStyle,
-} from 'react-native';
+import { ActivityIndicator, Text, TouchableOpacity } from 'react-native';
 import { styles } from './Button.styles';
-
-type ButtonProps = {
-  title: string;
-  onPress?: () => void;
-  disabled?: boolean;
-  loading?: boolean;
-  variant?: 'primary' | 'danger';
-  style?: StyleProp<ViewStyle>;
-};
+import type { ButtonProps } from './Button.types';
 
 const DOUBLE_PRESS_GUARD_MS = 600;
 

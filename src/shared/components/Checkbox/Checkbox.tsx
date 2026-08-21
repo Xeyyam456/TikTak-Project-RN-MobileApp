@@ -1,12 +1,7 @@
 import { Pressable, Text, View } from 'react-native';
 import { CheckIcon } from '../icons';
 import { styles } from './Checkbox.styles';
-
-type CheckboxProps = {
-  label: string;
-  checked: boolean;
-  onChange: (checked: boolean) => void;
-};
+import type { CheckboxProps } from './Checkbox.types';
 
 function Checkbox({ label, checked, onChange }: CheckboxProps) {
   return (

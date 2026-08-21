@@ -4,6 +4,7 @@ import BottomSheet from '@shared/components/BottomSheet';
 import { formatOrderDate, getOrderStatusMeta } from '@shared/utils/order';
 import type { Order } from '@typings/api';
 import { styles } from './OrderDetailSheet.styles';
+import type { OrderDetailSheetProps } from './OrderDetailSheet.types';
 
 const FALLBACK_IMAGE_URL =
   'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLvSMU5gdda6lqS8a-kjktyTUE6rLzlVr6LA&s';
@@ -74,11 +75,6 @@ function OrderDetailContent({ order }: { order: Order }) {
     </>
   );
 }
-
-type OrderDetailSheetProps = {
-  order: Order | null;
-  onClose: () => void;
-};
 
 function OrderDetailSheet({ order, onClose }: OrderDetailSheetProps) {
   return (

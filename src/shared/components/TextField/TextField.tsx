@@ -1,12 +1,8 @@
-import { Text, TextInputProps, View } from 'react-native';
+import { Text, View } from 'react-native';
 import InputLabel from '../InputLabel';
 import Input from '../Input';
 import { styles } from './TextField.styles';
-
-type TextFieldProps = TextInputProps & {
-  label: string;
-  error?: string;
-};
+import type { TextFieldProps } from './TextField.types';
 
 function TextField({ label, error, style, ...inputProps }: TextFieldProps) {
   return (

@@ -4,19 +4,11 @@ import BottomSheet from '@shared/components/BottomSheet';
 import Button from '@shared/components/Button';
 import { HeartIcon } from '@shared/components/icons';
 import { getProduct, toggleFavorite } from '@shared/services/product.service';
-import type { Product } from '@typings/api';
 import { styles } from './ProductDetailSheet.styles';
+import type { ProductDetailSheetProps } from './ProductDetailSheet.types';
 
 const FALLBACK_IMAGE_URL =
   'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLvSMU5gdda6lqS8a-kjktyTUE6rLzlVr6LA&s';
-
-type ProductDetailSheetProps = {
-  product: Product | null;
-  quantity: number;
-  onClose: () => void;
-  onAdd: () => void;
-  onFavoriteChange?: (productId: number, isFavorite: boolean) => void;
-};
 
 function ProductDetailSheet({
   product,

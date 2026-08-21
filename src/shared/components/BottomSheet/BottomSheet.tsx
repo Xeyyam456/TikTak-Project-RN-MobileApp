@@ -1,12 +1,10 @@
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useRef } from 'react';
 import {
   Animated,
   Dimensions,
   Modal,
   TouchableOpacity,
   View,
-  type StyleProp,
-  type ViewStyle,
 } from 'react-native';
 import {
   GestureHandlerRootView,
@@ -17,19 +15,13 @@ import {
 } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { styles } from './BottomSheet.styles';
+import type { BottomSheetProps } from './BottomSheet.types';
 
 // Any value at least as tall as the sheet's rendered content works as the
 // off-screen starting point — using the full window height guarantees that
 // regardless of how much content a given sheet has.
 const OFFSCREEN_Y = Dimensions.get('window').height;
 const DRAG_CLOSE_THRESHOLD = 100;
-
-type BottomSheetProps = {
-  visible: boolean;
-  onClose: () => void;
-  children: ReactNode;
-  contentStyle?: StyleProp<ViewStyle>;
-};
 
 function BottomSheet({ visible, onClose, children, contentStyle }: BottomSheetProps) {
   const insets = useSafeAreaInsets();

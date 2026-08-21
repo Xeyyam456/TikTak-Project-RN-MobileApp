@@ -1,11 +1,6 @@
 import { Text, TouchableOpacity, View } from 'react-native';
 import { styles, SUMMARY_BAR_GAP, SUMMARY_BAR_HEIGHT } from './BasketSummaryBar.styles';
-
-type BasketSummaryBarProps = {
-  itemCount: number;
-  total: number | string | undefined;
-  onPress: () => void;
-};
+import type { BasketSummaryBarProps } from './BasketSummaryBar.types';
 
 function BasketSummaryBar({ itemCount, total, onPress }: BasketSummaryBarProps) {
   return (
