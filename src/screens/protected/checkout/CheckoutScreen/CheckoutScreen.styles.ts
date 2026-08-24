@@ -6,6 +6,9 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
+  loader: {
+    marginTop: 32,
+  },
   formSection: {
     paddingHorizontal: 15,
     paddingTop: 8,
@@ -58,53 +61,6 @@ export const styles = StyleSheet.create({
     fontSize: 15,
     color: '#1A1A1A',
     fontFamily: FONTS.medium,
-  },
-  orderItemsBox: {
-    flex: 1,
-    marginTop: 17,
-    marginBottom: 6,
-    marginHorizontal: 15,
-  },
-  orderItemsBoxFixed: {
-    flex: 0,
-  },
-  orderItemsBoxBackground: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: '#b8bbb5',
-    borderRadius: 12,
-  },
-  orderItemsScroll: {
-    flex: 1,
-  },
-  orderItemsContent: {
-    paddingLeft: 8,
-    paddingRight: 15,
-    paddingVertical: 14,
-    gap: ORDER_ROW_GAP,
-  },
-  orderItemRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    gap: 12,
-    height: ORDER_ROW_HEIGHT,
-  },
-  orderItemLabel: {
-    flex: 1,
-    fontSize: 14,
-    lineHeight: ORDER_ROW_HEIGHT,
-    color: '#1A1A1A',
-    fontFamily: FONTS.regular,
-  },
-  orderItemPrice: {
-    fontSize: 13,
-    lineHeight: ORDER_ROW_HEIGHT,
-    color: '#1A1A1A',
-    fontFamily: FONTS.semiBold,
   },
   footer: {
     paddingHorizontal: 15,
