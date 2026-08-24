@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Button from '@shared/components/Button';
-import { ArrowLeftIcon, CheckIcon } from '@shared/components/icons';
+import ScreenHeader from '@shared/components/ScreenHeader';
+import { CheckIcon } from '@shared/components/icons';
 import type { RootStackParamList } from '@typings/navigation';
 import { styles } from './OrderSuccessScreen.styles';
 
@@ -35,17 +36,7 @@ function OrderSuccessScreen() {
 
   return (
     <View style={[styles.flex, { paddingTop: insets.top }]}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-          onPress={() => navigation.popToTop()}
-        >
-          <ArrowLeftIcon size={22} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Sifarişi tamamla</Text>
-        <View style={styles.headerSpacer} />
-      </View>
+      <ScreenHeader title="Sifarişi tamamla" onBack={() => navigation.popToTop()} />
 
       <View style={styles.content}>
         <View style={styles.iconHalo}>

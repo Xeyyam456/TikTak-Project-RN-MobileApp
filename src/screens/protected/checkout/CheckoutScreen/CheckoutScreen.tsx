@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Button from '@shared/components/Button';
 import Input from '@shared/components/Input';
-import { ArrowLeftIcon } from '@shared/components/icons';
+import ScreenHeader from '@shared/components/ScreenHeader';
 import { checkout } from '@shared/services/order.service';
 import { getProfile } from '@shared/services/profile.service';
 import { useBasketStore } from '@shared/store/basket.store';
@@ -59,17 +59,7 @@ function CheckoutScreen() {
 
   return (
     <View style={[styles.flex, { paddingTop: insets.top }]}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-          onPress={() => navigation.goBack()}
-        >
-          <ArrowLeftIcon size={22} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Sifarişi tamamla</Text>
-        <View style={styles.headerSpacer} />
-      </View>
+      <ScreenHeader title="Sifarişi tamamla" onBack={() => navigation.goBack()} />
 
       <View style={styles.formSection}>
         <View style={styles.field}>

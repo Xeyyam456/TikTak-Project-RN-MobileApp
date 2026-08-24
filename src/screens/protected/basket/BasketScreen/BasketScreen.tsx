@@ -12,7 +12,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Button from '@shared/components/Button';
-import { ArrowLeftIcon, TrashIcon } from '@shared/components/icons';
+import ScreenHeader from '@shared/components/ScreenHeader';
+import { TrashIcon } from '@shared/components/icons';
 import { useBasketStore } from '@shared/store/basket.store';
 import type { BasketItem } from '@typings/api';
 import type { RootStackParamList } from '@typings/navigation';
@@ -79,17 +80,7 @@ function BasketScreen() {
 
   return (
     <View style={[styles.flex, { paddingTop: insets.top }]}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-          onPress={() => navigation.goBack()}
-        >
-          <ArrowLeftIcon size={22} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Səbətim</Text>
-        <View style={styles.headerSpacer} />
-      </View>
+      <ScreenHeader title="Səbətim" onBack={() => navigation.goBack()} />
 
       {loading && !basket ? (
         <ActivityIndicator color="#7BC043" style={styles.loader} />

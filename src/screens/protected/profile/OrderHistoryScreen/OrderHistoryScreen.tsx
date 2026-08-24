@@ -66,17 +66,7 @@ function OrderHistoryScreen() {
 
   return (
     <View style={[styles.flex, { paddingTop: insets.top }]}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-          onPress={() => navigation.goBack()}
-        >
-          <ArrowLeftIcon size={22} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Sifariş tarixçəsi</Text>
-        <View style={styles.headerSpacer} />
-      </View>
+      <ScreenHeader title="Sifariş tarixçəsi" onBack={() => navigation.goBack()} />
 
       {loading ? (
         <ActivityIndicator color="#7BC043" style={styles.loader} />
