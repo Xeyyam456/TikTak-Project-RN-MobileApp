@@ -42,11 +42,13 @@ if (!fs.existsSync(apkSource)) {
 
 fs.mkdirSync(outDir, { recursive: true });
 
-const timestamp = new Date()
-  .toISOString()
-  .replace(/[:.]/g, '-')
-  .slice(0, 19);
-const destPath = path.join(outDir, `tiktak-${timestamp}.apk`);
+const now = new Date();
+const pad = n => String(n).padStart(2, '0');
+// Windows filenames can't contain ':', so the time uses dots too
+// (25.08.2026 00.45) instead of the more natural 00:45.
+const dateStr = `${pad(now.getDate())}.${pad(now.getMonth() + 1)}.${now.getFullYear()}`;
+const timeStr = `${pad(now.getHours())}.${pad(now.getMinutes())}`;
+const destPath = path.join(outDir, `tiktak_project ${dateStr} ${timeStr}.apk`);
 fs.copyFileSync(apkSource, destPath);
 
 console.log(`\nAPK ready: ${destPath}`);
