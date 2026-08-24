@@ -1,9 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { FONTS } from '../../../../theme/fonts';
 
-const ORDER_ROW_HEIGHT = 30;
-const ORDER_ROW_GAP = 4;
-
 export const styles = StyleSheet.create({
   flex: {
     flex: 1,
