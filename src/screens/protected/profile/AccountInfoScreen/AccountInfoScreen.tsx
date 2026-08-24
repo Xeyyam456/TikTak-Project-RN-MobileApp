@@ -47,15 +47,22 @@ function AccountInfoScreen() {
   const scrollRef = useRef<KeyboardAwareScrollViewRef>(null);
   const { progress } = useReanimatedKeyboardAnimation();
 
-  useEffect(() => {
+  const loadProfile = useCallback(() => {
+    setLoading(true);
+    setLoadError(undefined);
     getProfile()
       .then(data => {
         setProfile(data);
         setName(data.full_name);
         setAddress(data.address ?? '');
       })
+      .catch(err => setLoadError(getApiErrorMessage(err)))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    loadProfile();
+  }, [loadProfile]);
 
   // Only the password fields (near the bottom, right above the button) get
   // the scroll-to-end nudge — applying it to every field also pushed
@@ -108,7 +115,11 @@ function AccountInfoScreen() {
     <View style={[styles.flex, { paddingTop: insets.top }]}>
       <ScreenHeader title="Hesab" onBack={() => navigation.goBack()} />
 
-      {!loading && (
+      {loadError ? (
+        <ErrorState message={loadError} onRetry={loadProfile} />
+      ) : loading ? (
+        <ActivityIndicator color="#7BC043" style={styles.loader} />
+      ) : (
         <KeyboardAwareScrollView
           ref={scrollRef}
           style={styles.flex}
