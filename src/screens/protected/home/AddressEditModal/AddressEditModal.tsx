@@ -4,6 +4,7 @@ import Button from '@shared/components/Button';
 import TextField from '@shared/components/TextField';
 import { updateProfile } from '@shared/services/profile.service';
 import { getApiErrorMessage } from '@shared/utils/apiError';
+import { showSuccessToast } from '@shared/utils/toast';
 import { styles } from './AddressEditModal.styles';
 import type { AddressEditModalProps } from './AddressEditModal.types';
 
@@ -35,6 +36,7 @@ function AddressEditModal({ visible, profile, onClose, onSaved }: AddressEditMod
         address: trimmed,
       });
       onSaved(updated);
+      showSuccessToast('Çatdırılma ünvanı yeniləndi');
     } catch (error) {
       setAddressError(getApiErrorMessage(error));
     } finally {
