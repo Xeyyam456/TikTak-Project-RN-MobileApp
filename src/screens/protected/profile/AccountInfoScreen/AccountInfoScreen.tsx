@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { Text, View } from 'react-native';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, Text, View } from 'react-native';
 import {
   KeyboardAwareScrollView,
   useReanimatedKeyboardAnimation,
@@ -8,6 +8,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import Button from '@shared/components/Button';
+import ErrorState from '@shared/components/ErrorState';
 import ScreenHeader from '@shared/components/ScreenHeader';
 import TextField from '@shared/components/TextField';
 import { getProfile, updateProfile } from '@shared/services/profile.service';
@@ -28,6 +29,7 @@ function AccountInfoScreen() {
 
   const [profile, setProfile] = useState<UserProfile>();
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string>();
   const [saving, setSaving] = useState(false);
 
   const [name, setName] = useState('');

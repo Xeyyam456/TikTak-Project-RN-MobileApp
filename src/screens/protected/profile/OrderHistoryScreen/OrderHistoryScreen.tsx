@@ -78,7 +78,9 @@ function OrderHistoryScreen() {
     <View style={[styles.flex, { paddingTop: insets.top }]}>
       <ScreenHeader title="Sifariş tarixçəsi" onBack={() => navigation.goBack()} />
 
-      {loading ? (
+      {error ? (
+        <ErrorState message={error} onRetry={loadOrders} />
+      ) : loading ? (
         <ActivityIndicator color="#7BC043" style={styles.loader} />
       ) : (
         <FlatList
