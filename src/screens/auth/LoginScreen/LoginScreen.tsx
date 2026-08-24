@@ -8,6 +8,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import AuthSwitchLink from '@shared/components/AuthSwitchLink';
 import Button from '@shared/components/Button';
 import Checkbox from '@shared/components/Checkbox';
 import TextField from '@shared/components/TextField';
@@ -117,15 +118,11 @@ function LoginScreen() {
         {formError ? <Text style={styles.formError}>{formError}</Text> : null}
         <Button title="Daxil ol" onPress={handleSubmit} loading={loading} />
 
-        <Text style={styles.registerText}>
-          Hesabınız yoxdursa {' '}
-          <Text
-            style={styles.registerLink}
-            onPress={() => navigation.navigate('Register')}
-          >
-            Qeydiyyatdan keç
-          </Text>
-        </Text>
+        <AuthSwitchLink
+          promptText="Hesabınız yoxdursa"
+          linkText="Qeydiyyatdan keç"
+          onPress={() => navigation.navigate('Register')}
+        />
       </View>
     </KeyboardAwareScrollView>
   );

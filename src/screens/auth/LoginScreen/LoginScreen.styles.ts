@@ -31,15 +31,4 @@ export const styles = StyleSheet.create({
     color: '#E24C4C',
     fontFamily: FONTS.regular,
   },
-  registerText: {
-    textAlign: 'center',
-    fontSize: 12,
-    color: '#333333',
-    fontFamily: FONTS.regular,
-  },
-  registerLink: {
-    marginLeft: 6,
-    color: '#7BC043',
-    fontFamily: FONTS.semiBold,
-  },
 });
