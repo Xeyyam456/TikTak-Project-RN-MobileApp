@@ -10,6 +10,9 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 8,
   },
+  loader: {
+    marginTop: 32,
+  },
   form: {
     gap: 20,
   },
