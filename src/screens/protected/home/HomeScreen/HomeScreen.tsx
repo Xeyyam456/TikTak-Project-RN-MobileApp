@@ -18,8 +18,16 @@ function HomeScreen() {
   const navigation =
     useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
 
-  const { profile, setProfile, categories, campaigns, loading, campaignListRef } =
-    useHomeData();
+  const {
+    profile,
+    setProfile,
+    categories,
+    campaigns,
+    loading,
+    error,
+    retry,
+    campaignListRef,
+  } = useHomeData();
 
   const [addressModalVisible, setAddressModalVisible] = useState(false);
   const categoryListRef = useRef<FlatList<Category>>(null);
@@ -30,6 +38,9 @@ function HomeScreen() {
 
   return (
     <View style={styles.flex}>
+      {error ? (
+        <ErrorState message={error} onRetry={retry} />
+      ) : (
       <FlatList
         ref={categoryListRef}
         style={styles.flex}
