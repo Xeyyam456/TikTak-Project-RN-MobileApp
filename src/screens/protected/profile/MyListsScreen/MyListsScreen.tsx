@@ -68,7 +68,9 @@ function MyListsScreen() {
     <View style={[styles.flex, { paddingTop: insets.top }]}>
       <ScreenHeader title="Siyahılarım" onBack={() => navigation.goBack()} />
 
-      {loading ? (
+      {error ? (
+        <ErrorState message={error} onRetry={loadFavorites} />
+      ) : loading ? (
         <ActivityIndicator color="#7BC043" style={styles.loader} />
       ) : (
         <FlashList<Product>

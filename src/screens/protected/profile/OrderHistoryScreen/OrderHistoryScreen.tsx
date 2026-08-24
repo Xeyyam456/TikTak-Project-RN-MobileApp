@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import ErrorState from '@shared/components/ErrorState';
 import ScreenHeader from '@shared/components/ScreenHeader';
 import { EyeIcon } from '@shared/components/icons';
 import { listOrders } from '@shared/services/order.service';
+import { getApiErrorMessage } from '@shared/utils/apiError';
 import { formatOrderDate, getOrderStatusMeta } from '@shared/utils/order';
 import type { Order } from '@typings/api';
 import OrderDetailSheet from '../OrderDetailSheet';
@@ -56,13 +58,21 @@ function OrderHistoryScreen() {
 
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string>();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
-  useEffect(() => {
+  const loadOrders = useCallback(() => {
+    setLoading(true);
+    setError(undefined);
     listOrders()
       .then(setOrders)
+      .catch(err => setError(getApiErrorMessage(err)))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    loadOrders();
+  }, [loadOrders]);
 
   return (
     <View style={[styles.flex, { paddingTop: insets.top }]}>
