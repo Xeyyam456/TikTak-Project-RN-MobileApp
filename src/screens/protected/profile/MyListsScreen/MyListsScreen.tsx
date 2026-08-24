@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -10,7 +10,7 @@ import BasketSummaryBar, {
   SUMMARY_BAR_TOP_GAP,
 } from '@shared/components/BasketSummaryBar';
 import ProductCard, { COLUMNS } from '@shared/components/ProductCard';
-import { ArrowLeftIcon } from '@shared/components/icons';
+import ScreenHeader from '@shared/components/ScreenHeader';
 import { listFavorites } from '@shared/services/product.service';
 import { quantityForProduct, useBasketStore } from '@shared/store/basket.store';
 import type { Product } from '@typings/api';
@@ -56,17 +56,7 @@ function MyListsScreen() {
 
   return (
     <View style={[styles.flex, { paddingTop: insets.top }]}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-          onPress={() => navigation.goBack()}
-        >
-          <ArrowLeftIcon size={22} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Siyahılarım</Text>
-        <View style={styles.headerSpacer} />
-      </View>
+      <ScreenHeader title="Siyahılarım" onBack={() => navigation.goBack()} />
 
       {loading ? (
         <ActivityIndicator color="#7BC043" style={styles.loader} />
