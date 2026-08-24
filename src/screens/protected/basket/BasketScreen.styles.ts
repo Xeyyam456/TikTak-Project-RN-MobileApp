@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { FONTS } from '../../../../theme/fonts';
+import { FONTS } from '../../../theme/fonts';
 
 export const styles = StyleSheet.create({
   flex: {

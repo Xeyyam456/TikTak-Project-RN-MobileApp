@@ -3,7 +3,7 @@ import WelcomeScreen from '../screens/auth/WelcomeScreen';
 import RegisterScreen from '../screens/auth/RegisterScreen';
 import LoginScreen from '../screens/auth/LoginScreen';
 import BottomTabNavigator from './BottomTabNavigator';
-import BasketScreen from '../screens/protected/basket/BasketScreen';
+import BasketScreen from '../screens/protected/basket';
 import CheckoutScreen from '../screens/protected/checkout/CheckoutScreen';
 import OrderSuccessScreen from '../screens/protected/checkout/OrderSuccessScreen';
 import { RootStackParamList } from '@typings/navigation';
