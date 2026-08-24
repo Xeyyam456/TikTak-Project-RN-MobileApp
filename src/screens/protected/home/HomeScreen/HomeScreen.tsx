@@ -3,6 +3,7 @@ import { ActivityIndicator, FlatList, Text, TouchableOpacity, View } from 'react
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useScrollToTop } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import ErrorState from '@shared/components/ErrorState';
 import { ChevronRightIcon } from '@shared/components/icons';
 import type { Category } from '@typings/api';
 import type { HomeStackParamList } from '@typings/navigation';
