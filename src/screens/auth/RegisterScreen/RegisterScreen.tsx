@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Alert, RefreshControl, Text, View } from 'react-native';
+import { RefreshControl, Text, View } from 'react-native';
 import {
   KeyboardAwareScrollView,
   useReanimatedKeyboardAnimation,
@@ -8,10 +8,12 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import AuthSwitchLink from '@shared/components/AuthSwitchLink';
 import Button from '@shared/components/Button';
 import TextField from '@shared/components/TextField';
 import { signup } from '@shared/services/auth.service';
 import { getApiErrorMessage } from '@shared/utils/apiError';
+import { showSuccessToast } from '@shared/utils/toast';
 import type { RootStackParamList } from '@typings/navigation';
 import useReload from '../../../hooks/useReload';
 import {
@@ -55,9 +57,8 @@ function RegisterScreen() {
     setLoading(true);
     try {
       await signup({ full_name: name, phone, password });
-      Alert.alert('Qeydiyyat tamamlandı', 'İndi hesabınıza daxil ola bilərsiniz', [
-        { text: 'Ok', onPress: () => navigation.navigate('Login') },
-      ]);
+      showSuccessToast('Qeydiyyat tamamlandı, indi daxil ola bilərsiniz');
+      navigation.navigate('Login');
     } catch (error) {
       setFormError(getApiErrorMessage(error));
     } finally {
@@ -123,15 +124,11 @@ function RegisterScreen() {
         {formError ? <Text style={styles.formError}>{formError}</Text> : null}
         <Button title="Qeydiyyat" onPress={handleSubmit} loading={loading} />
 
-        <Text style={styles.loginText}>
-          Hesabınız varsa {' '}
-          <Text
-            style={styles.loginLink}
-            onPress={() => navigation.navigate('Login')}
-          >
-            Daxil olun
-          </Text>
-        </Text>
+        <AuthSwitchLink
+          promptText="Hesabınız varsa"
+          linkText="Daxil olun"
+          onPress={() => navigation.navigate('Login')}
+        />
       </View>
     </KeyboardAwareScrollView>
   );
