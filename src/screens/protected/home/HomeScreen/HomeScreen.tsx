@@ -41,64 +41,65 @@ function HomeScreen() {
       {error ? (
         <ErrorState message={error} onRetry={retry} />
       ) : (
-      <FlatList
-        ref={categoryListRef}
-        style={styles.flex}
-        contentContainerStyle={[
-          styles.listContent,
-          { paddingBottom: insets.bottom + 24 },
-        ]}
-        data={categories}
-        keyExtractor={item => String(item.id)}
-        numColumns={COLUMNS}
-        columnWrapperStyle={styles.row}
-        renderItem={({ item }) => (
-          <CategoryCard
-            category={item}
-            onPress={() =>
-              navigation.navigate('CategoryProducts', {
-                categoryId: item.id,
-                categoryName: item.name,
-              })
-            }
-          />
-        )}
-        ListHeaderComponent={
-          <>
-            <TouchableOpacity
-              style={styles.addressCard}
-              onPress={() => setAddressModalVisible(true)}
-              activeOpacity={0.7}
-            >
-              <View style={styles.addressTextGroup}>
-                <Text style={styles.addressLabel}>Çatdırılma ünvanı:</Text>
-                <Text style={styles.addressValue} numberOfLines={1}>
-                  {profile?.address ?? 'Ünvan seçilməyib'}
-                </Text>
-              </View>
-              <ChevronRightIcon size={20} color="#9B9B9B" />
-            </TouchableOpacity>
+        <FlatList
+          ref={categoryListRef}
+          style={styles.flex}
+          contentContainerStyle={[
+            styles.listContent,
+            { paddingBottom: insets.bottom + 24 },
+          ]}
+          data={categories}
+          keyExtractor={item => String(item.id)}
+          numColumns={COLUMNS}
+          columnWrapperStyle={styles.row}
+          renderItem={({ item }) => (
+            <CategoryCard
+              category={item}
+              onPress={() =>
+                navigation.navigate('CategoryProducts', {
+                  categoryId: item.id,
+                  categoryName: item.name,
+                })
+              }
+            />
+          )}
+          ListHeaderComponent={
+            <>
+              <TouchableOpacity
+                style={styles.addressCard}
+                onPress={() => setAddressModalVisible(true)}
+                activeOpacity={0.7}
+              >
+                <View style={styles.addressTextGroup}>
+                  <Text style={styles.addressLabel}>Çatdırılma ünvanı:</Text>
+                  <Text style={styles.addressValue} numberOfLines={1}>
+                    {profile?.address ?? 'Ünvan seçilməyib'}
+                  </Text>
+                </View>
+                <ChevronRightIcon size={20} color="#9B9B9B" />
+              </TouchableOpacity>
 
-            {campaigns.length > 0 && (
-              <FlatList
-                ref={campaignListRef}
-                data={campaigns}
-                horizontal
-                pagingEnabled
-                showsHorizontalScrollIndicator={false}
-                keyExtractor={item => String(item.id)}
-                style={styles.campaignCarousel}
-                renderItem={({ item }) => <CampaignCard campaign={item} />}
-                onScrollToIndexFailed={() => {}}
-              />
-            )}
+              {campaigns.length > 0 && (
+                <FlatList
+                  ref={campaignListRef}
+                  data={campaigns}
+                  horizontal
+                  pagingEnabled
+                  showsHorizontalScrollIndicator={false}
+                  keyExtractor={item => String(item.id)}
+                  style={styles.campaignCarousel}
+                  renderItem={({ item }) => <CampaignCard campaign={item} />}
+                  onScrollToIndexFailed={() => {}}
+                />
+              )}
 
-            {loading ? (
-              <ActivityIndicator color="#7BC043" style={styles.loader} />
-            ) : null}
-          </>
-        }
-      />
+              {loading ? (
+                <ActivityIndicator color="#7BC043" style={styles.loader} />
+              ) : null}
+            </>
+          }
+        />
+      )}
 
       <AddressEditModal
         visible={addressModalVisible}
