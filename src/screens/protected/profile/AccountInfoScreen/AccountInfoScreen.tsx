@@ -8,8 +8,8 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import Button from '@shared/components/Button';
+import ScreenHeader from '@shared/components/ScreenHeader';
 import TextField from '@shared/components/TextField';
-import { ArrowLeftIcon } from '@shared/components/icons';
 import { getProfile, updateProfile } from '@shared/services/profile.service';
 import { getApiErrorMessage } from '@shared/utils/apiError';
 import { validateName, validatePassword } from '@shared/utils/validation';
@@ -104,17 +104,7 @@ function AccountInfoScreen() {
 
   return (
     <View style={[styles.flex, { paddingTop: insets.top }]}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-          onPress={() => navigation.goBack()}
-        >
-          <ArrowLeftIcon size={22} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Hesab</Text>
-        <View style={styles.headerSpacer} />
-      </View>
+      <ScreenHeader title="Hesab" onBack={() => navigation.goBack()} />
 
       {!loading && (
         <KeyboardAwareScrollView
