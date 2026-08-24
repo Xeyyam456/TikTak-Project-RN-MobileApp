@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import {
   addToBasket,
+  clearBasket as clearBasketRequest,
   getBasket,
   removeFromBasket,
 } from '@shared/services/basket.service';
@@ -13,6 +14,7 @@ type BasketState = {
   fetchBasket: () => Promise<void>;
   addItem: (productId: number) => Promise<void>;
   removeItem: (productId: number) => Promise<void>;
+  clearBasket: () => Promise<void>;
 };
 
 export const useBasketStore = create<BasketState>((set, get) => ({
@@ -48,6 +50,11 @@ export const useBasketStore = create<BasketState>((set, get) => ({
     showSuccessToast(
       `${title} ${(previousItem?.quantity ?? 0) <= 1 ? 'səbətdən silindi' : 'sayı azaldıldı'}`,
     );
+  },
+  clearBasket: async () => {
+    const basket = await clearBasketRequest();
+    set({ basket });
+    showSuccessToast('Səbət təmizləndi');
   },
 }));
 
