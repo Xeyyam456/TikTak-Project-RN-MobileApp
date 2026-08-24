@@ -11,11 +11,11 @@ import Button from '@shared/components/Button';
 import ErrorState from '@shared/components/ErrorState';
 import ScreenHeader from '@shared/components/ScreenHeader';
 import TextField from '@shared/components/TextField';
+import useReload from '@shared/hooks/useReload';
 import { getProfile, updateProfile } from '@shared/services/profile.service';
 import { getApiErrorMessage } from '@shared/utils/apiError';
 import { validateName, validatePassword } from '@shared/utils/validation';
 import type { UserProfile } from '@typings/api';
-import useReload from '../../../../hooks/useReload';
 import { styles } from './AccountInfoScreen.styles';
 
 // Not editable and not sent on save — the backend's `PUT /profile` has no

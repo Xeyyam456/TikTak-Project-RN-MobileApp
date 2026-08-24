@@ -12,12 +12,12 @@ import BasketSummaryBar, {
 import ErrorState from '@shared/components/ErrorState';
 import ProductCard, { COLUMNS } from '@shared/components/ProductCard';
 import ScreenHeader from '@shared/components/ScreenHeader';
+import useReload from '@shared/hooks/useReload';
 import { listFavorites } from '@shared/services/product.service';
 import { quantityForProduct, useBasketStore } from '@shared/store/basket.store';
 import { getApiErrorMessage } from '@shared/utils/apiError';
 import type { Product } from '@typings/api';
 import type { RootStackParamList } from '@typings/navigation';
-import useReload from '../../../../hooks/useReload';
 import ProductDetailSheet from '../../home/ProductDetailSheet';
 import { styles } from './MyListsScreen.styles';
 

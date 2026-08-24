@@ -23,10 +23,10 @@ import BasketSummaryBar, {
 import ErrorState from '@shared/components/ErrorState';
 import ProductCard, { COLUMNS } from '@shared/components/ProductCard';
 import { GridIcon } from '@shared/components/icons';
+import useReload from '@shared/hooks/useReload';
 import { quantityForProduct, useBasketStore } from '@shared/store/basket.store';
 import type { Product } from '@typings/api';
 import type { HomeStackParamList, RootStackParamList } from '@typings/navigation';
-import useReload from '../../../../hooks/useReload';
 import EmptyCategoryState from '../EmptyCategoryState';
 import ProductDetailSheet from '../ProductDetailSheet';
 import { styles } from './CategoryProductsScreen.styles';
