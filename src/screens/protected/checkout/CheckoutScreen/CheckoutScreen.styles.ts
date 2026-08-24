@@ -68,6 +68,12 @@ export const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     gap: 16,
   },
+  formError: {
+    fontSize: 12,
+    textAlign: 'center',
+    color: '#E24C4C',
+    fontFamily: FONTS.regular,
+  },
   footerDivider: {
     height: 1,
     backgroundColor: '#F0F0F0',
