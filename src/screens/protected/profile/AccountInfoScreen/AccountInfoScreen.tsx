@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Text, View } from 'react-native';
+import { ActivityIndicator, RefreshControl, Text, View } from 'react-native';
 import {
   KeyboardAwareScrollView,
   useReanimatedKeyboardAnimation,
@@ -15,6 +15,7 @@ import { getProfile, updateProfile } from '@shared/services/profile.service';
 import { getApiErrorMessage } from '@shared/utils/apiError';
 import { validateName, validatePassword } from '@shared/utils/validation';
 import type { UserProfile } from '@typings/api';
+import useReload from '../../../../hooks/useReload';
 import { styles } from './AccountInfoScreen.styles';
 
 // Not editable and not sent on save — the backend's `PUT /profile` has no
@@ -63,6 +64,8 @@ function AccountInfoScreen() {
   useEffect(() => {
     loadProfile();
   }, [loadProfile]);
+
+  const { refreshing, onRefresh } = useReload(loadProfile);
 
   // Only the password fields (near the bottom, right above the button) get
   // the scroll-to-end nudge — applying it to every field also pushed
@@ -129,6 +132,9 @@ function AccountInfoScreen() {
           ]}
           bottomOffset={140}
           keyboardShouldPersistTaps="handled"
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
         >
           <View style={styles.form}>
             <TextField

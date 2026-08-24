@@ -1,5 +1,12 @@
 import { useRef, useState } from 'react';
-import { ActivityIndicator, FlatList, Text, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useScrollToTop } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -7,6 +14,7 @@ import ErrorState from '@shared/components/ErrorState';
 import { ChevronRightIcon } from '@shared/components/icons';
 import type { Category } from '@typings/api';
 import type { HomeStackParamList } from '@typings/navigation';
+import useReload from '../../../../hooks/useReload';
 import AddressEditModal from '../AddressEditModal';
 import CampaignCard from '../CampaignCard';
 import CategoryCard from '../CategoryCard';
@@ -31,6 +39,7 @@ function HomeScreen() {
 
   const [addressModalVisible, setAddressModalVisible] = useState(false);
   const categoryListRef = useRef<FlatList<Category>>(null);
+  const { refreshing, onRefresh } = useReload(retry);
 
   // Lets tapping the already-focused "Əsas" tab scroll back to the top
   // (the category cards), matching native tab-bar "tap again to go top".
@@ -52,6 +61,9 @@ function HomeScreen() {
           keyExtractor={item => String(item.id)}
           numColumns={COLUMNS}
           columnWrapperStyle={styles.row}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
           renderItem={({ item }) => (
             <CategoryCard
               category={item}

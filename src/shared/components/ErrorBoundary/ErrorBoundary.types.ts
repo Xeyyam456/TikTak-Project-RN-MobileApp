@@ -6,4 +6,5 @@ export type ErrorBoundaryProps = {
 
 export type ErrorBoundaryState = {
   error: Error | null;
+  resetKey: number;
 };

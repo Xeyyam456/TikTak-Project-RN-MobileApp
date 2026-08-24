@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
+  RefreshControl,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -129,6 +130,9 @@ function BasketScreen() {
               { paddingBottom: footerHeight + 16 },
             ]}
             showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl refreshing={loading} onRefresh={fetchBasket} />
+            }
           >
             {items.map(item => (
               <BasketRow

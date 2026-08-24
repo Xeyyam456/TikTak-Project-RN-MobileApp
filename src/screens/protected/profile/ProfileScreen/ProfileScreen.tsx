@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Text, View } from 'react-native';
+import { ActivityIndicator, RefreshControl, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -12,6 +12,7 @@ import { getApiErrorMessage } from '@shared/utils/apiError';
 import { showSuccessToast } from '@shared/utils/toast';
 import type { ProfileStackParamList, RootStackParamList } from '@typings/navigation';
 import type { UserProfile } from '@typings/api';
+import useReload from '../../../../hooks/useReload';
 import AvatarPicker from '../AvatarPicker';
 import MenuRow from '../MenuRow';
 import { styles } from './ProfileScreen.styles';
@@ -40,6 +41,8 @@ function ProfileScreen() {
     loadProfile();
   }, [loadProfile]);
 
+  const { refreshing, onRefresh } = useReload(loadProfile);
+
   async function handleConfirmLogout() {
     setLoggingOut(true);
     await logout();
@@ -50,43 +53,53 @@ function ProfileScreen() {
   }
 
   return (
-    <View style={[styles.flex, { paddingTop: insets.top + 16 }]}>
-      <Text style={styles.title}>Hesabım</Text>
+    <View style={styles.flex}>
+      <ScrollView
+        contentContainerStyle={[
+          styles.container,
+          { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 24 },
+        ]}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        <Text style={styles.title}>Hesabım</Text>
 
-      {error ? (
-        <ErrorState message={error} onRetry={loadProfile} />
-      ) : loading ? (
-        <ActivityIndicator color="#7BC043" style={styles.loader} />
-      ) : (
-        <>
-          <AvatarPicker profile={profile} onProfileUpdate={setProfile} />
-          <Text style={styles.name}>{profile?.full_name}</Text>
-          <Text style={styles.phone}>{profile?.phone}</Text>
-        </>
-      )}
+        {error ? (
+          <ErrorState message={error} onRetry={loadProfile} />
+        ) : loading ? (
+          <ActivityIndicator color="#7BC043" style={styles.loader} />
+        ) : (
+          <>
+            <AvatarPicker profile={profile} onProfileUpdate={setProfile} />
+            <Text style={styles.name}>{profile?.full_name}</Text>
+            <Text style={styles.phone}>{profile?.phone}</Text>
+          </>
+        )}
 
-      <View style={styles.menu}>
-        <MenuRow
-          icon={<DocumentIcon size={22} />}
-          label="Hesab məlumatlarım"
-          onPress={() => navigation.navigate('AccountInfo')}
-        />
-        <MenuRow
-          icon={<HeartIcon size={22} />}
-          label="Siyahılarım"
-          onPress={() => navigation.navigate('MyLists')}
-        />
-        <MenuRow
-          icon={<ClockIcon size={22} />}
-          label="Sifariş tarixçəsi"
-          onPress={() => navigation.navigate('OrderHistory')}
-        />
-        <MenuRow
-          icon={<LogoutIcon size={22} />}
-          label="Çıxış"
-          onPress={() => setLogoutModalVisible(true)}
-        />
-      </View>
+        <View style={styles.menu}>
+          <MenuRow
+            icon={<DocumentIcon size={22} />}
+            label="Hesab məlumatlarım"
+            onPress={() => navigation.navigate('AccountInfo')}
+          />
+          <MenuRow
+            icon={<HeartIcon size={22} />}
+            label="Siyahılarım"
+            onPress={() => navigation.navigate('MyLists')}
+          />
+          <MenuRow
+            icon={<ClockIcon size={22} />}
+            label="Sifariş tarixçəsi"
+            onPress={() => navigation.navigate('OrderHistory')}
+          />
+          <MenuRow
+            icon={<LogoutIcon size={22} />}
+            label="Çıxış"
+            onPress={() => setLogoutModalVisible(true)}
+          />
+        </View>
+      </ScrollView>
 
       <ConfirmModal
         visible={logoutModalVisible}

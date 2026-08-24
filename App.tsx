@@ -10,6 +10,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import Toast from 'react-native-toast-message';
 import BootSplash from 'react-native-bootsplash';
+import { navigationRef } from './src/navigation/navigationRef';
 import RootNavigator from './src/navigation/RootNavigator';
 import ErrorBoundary from './src/shared/components/ErrorBoundary';
 
@@ -24,7 +25,7 @@ function App() {
         <KeyboardProvider>
           <SafeAreaProvider>
             <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
-            <NavigationContainer>
+            <NavigationContainer ref={navigationRef}>
               <RootNavigator />
             </NavigationContainer>
             <Toast />

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Text, View } from 'react-native';
+import { ActivityIndicator, RefreshControl, Text, View } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -17,6 +17,7 @@ import { quantityForProduct, useBasketStore } from '@shared/store/basket.store';
 import { getApiErrorMessage } from '@shared/utils/apiError';
 import type { Product } from '@typings/api';
 import type { RootStackParamList } from '@typings/navigation';
+import useReload from '../../../../hooks/useReload';
 import ProductDetailSheet from '../../home/ProductDetailSheet';
 import { styles } from './MyListsScreen.styles';
 
@@ -48,6 +49,8 @@ function MyListsScreen() {
     loadFavorites();
   }, [loadFavorites]);
 
+  const { refreshing, onRefresh } = useReload(loadFavorites);
+
   function quantityFor(productId: number) {
     return quantityForProduct(basket, productId);
   }
@@ -70,7 +73,7 @@ function MyListsScreen() {
 
       {error ? (
         <ErrorState message={error} onRetry={loadFavorites} />
-      ) : loading ? (
+      ) : loading && favorites.length === 0 ? (
         <ActivityIndicator color="#7BC043" style={styles.loader} />
       ) : (
         <FlashList<Product>
@@ -79,6 +82,9 @@ function MyListsScreen() {
           keyExtractor={item => String(item.id)}
           numColumns={COLUMNS}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
           ListEmptyComponent={
             <Text style={styles.emptyText}>Siyahınız boşdur</Text>
           }

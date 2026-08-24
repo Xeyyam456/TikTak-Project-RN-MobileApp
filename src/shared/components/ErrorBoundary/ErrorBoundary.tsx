@@ -1,18 +1,23 @@
-import { Component } from 'react';
+import { Component, Fragment } from 'react';
 import { Text, View } from 'react-native';
 import Button from '../Button';
 import { styles } from './ErrorBoundary.styles';
 import type { ErrorBoundaryProps, ErrorBoundaryState } from './ErrorBoundary.types';
 
 class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  state: ErrorBoundaryState = { error: null };
+  state: ErrorBoundaryState = { error: null, resetKey: 0 };
 
-  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+  static getDerivedStateFromError(error: Error): Pick<ErrorBoundaryState, 'error'> {
     return { error };
   }
 
+  // Clearing just `error` re-renders the exact same children with whatever
+  // state caused the crash still intact, so a crash rooted in bad state
+  // (not a one-off render glitch) would reproduce immediately. Bumping
+  // `resetKey` forces React to fully unmount and remount the subtree below,
+  // discarding that bad state (navigation resets to its initial route too).
   handleRetry = () => {
-    this.setState({ error: null });
+    this.setState(({ resetKey }) => ({ error: null, resetKey: resetKey + 1 }));
   };
 
   render() {
@@ -35,7 +40,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
       );
     }
 
-    return this.props.children;
+    return <Fragment key={this.state.resetKey}>{this.props.children}</Fragment>;
   }
 }
 

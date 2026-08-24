@@ -1,5 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Text, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import ErrorState from '@shared/components/ErrorState';
@@ -9,6 +16,7 @@ import { listOrders } from '@shared/services/order.service';
 import { getApiErrorMessage } from '@shared/utils/apiError';
 import { formatOrderDate, getOrderStatusMeta } from '@shared/utils/order';
 import type { Order } from '@typings/api';
+import useReload from '../../../../hooks/useReload';
 import OrderDetailSheet from '../OrderDetailSheet';
 import { styles } from './OrderHistoryScreen.styles';
 
@@ -74,19 +82,24 @@ function OrderHistoryScreen() {
     loadOrders();
   }, [loadOrders]);
 
+  const { refreshing, onRefresh } = useReload(loadOrders);
+
   return (
     <View style={[styles.flex, { paddingTop: insets.top }]}>
       <ScreenHeader title="Sifariş tarixçəsi" onBack={() => navigation.goBack()} />
 
       {error ? (
         <ErrorState message={error} onRetry={loadOrders} />
-      ) : loading ? (
+      ) : loading && orders.length === 0 ? (
         <ActivityIndicator color="#7BC043" style={styles.loader} />
       ) : (
         <FlatList
           data={orders}
           keyExtractor={item => String(item.id)}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
           ItemSeparatorComponent={CardGap}
           ListEmptyComponent={
             <Text style={styles.emptyText}>Hələ sifarişiniz yoxdur</Text>

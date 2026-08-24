@@ -6,6 +6,9 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
+  container: {
+    flexGrow: 1,
+  },
   title: {
     fontSize: 20,
     color: '#1A1A1A',

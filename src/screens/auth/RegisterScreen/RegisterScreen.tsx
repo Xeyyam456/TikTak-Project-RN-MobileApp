@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { RefreshControl, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import {
   KeyboardAwareScrollView,
   useReanimatedKeyboardAnimation,
@@ -15,7 +15,6 @@ import { signup } from '@shared/services/auth.service';
 import { getApiErrorMessage } from '@shared/utils/apiError';
 import { showSuccessToast } from '@shared/utils/toast';
 import type { RootStackParamList } from '@typings/navigation';
-import useReload from '../../../hooks/useReload';
 import {
   applyAzPhonePrefix,
   validateName,
@@ -28,7 +27,6 @@ function RegisterScreen() {
   const insets = useSafeAreaInsets();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { refreshing, onRefresh } = useReload();
 
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('+994');
@@ -85,9 +83,6 @@ function RegisterScreen() {
       ]}
       bottomOffset={140}
       keyboardShouldPersistTaps="handled"
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
     >
       <Text style={styles.title}>Qeydiyyatdan keç</Text>
 

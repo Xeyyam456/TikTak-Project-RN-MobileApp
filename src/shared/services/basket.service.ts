@@ -20,13 +20,6 @@ export async function removeFromBasket(productId: number): Promise<Basket> {
   return data.data;
 }
 
-export async function removeAllFromBasket(productId: number): Promise<Basket> {
-  const { data } = await httpClient.delete<ApiEnvelope<Basket>>(
-    `/basket/${productId}/remove-all`,
-  );
-  return data.data;
-}
-
 export async function clearBasket(): Promise<Basket> {
   const { data } = await httpClient.delete<ApiEnvelope<Basket>>(
     '/basket/clear',

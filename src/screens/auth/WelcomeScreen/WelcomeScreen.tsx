@@ -1,4 +1,4 @@
-import { RefreshControl, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -6,14 +6,12 @@ import AuthSwitchLink from '@shared/components/AuthSwitchLink';
 import Button from '@shared/components/Button';
 import FruitImage from '@assets/images/images1.svg';
 import type { RootStackParamList } from '@typings/navigation';
-import useReload from '../../../hooks/useReload';
 import { styles } from './WelcomeScreen.styles';
 
 function WelcomeScreen() {
   const insets = useSafeAreaInsets();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { refreshing, onRefresh } = useReload();
 
   return (
     <ScrollView
@@ -21,9 +19,6 @@ function WelcomeScreen() {
         styles.container,
         { paddingTop: insets.top + 24 },
       ]}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
     >
       <FruitImage width={260} height={260} style={styles.image} />
 

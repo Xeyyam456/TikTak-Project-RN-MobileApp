@@ -1,12 +1,16 @@
 import { useCallback, useState } from 'react';
 
-function useReload(duration = 1000) {
+function useReload(reload: () => Promise<unknown> | unknown) {
   const [refreshing, setRefreshing] = useState(false);
 
-  const onRefresh = useCallback(() => {
+  const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    setTimeout(() => setRefreshing(false), duration);
-  }, [duration]);
+    try {
+      await reload();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [reload]);
 
   return { refreshing, onRefresh };
 }

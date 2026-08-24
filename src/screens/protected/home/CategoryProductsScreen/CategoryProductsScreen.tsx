@@ -1,5 +1,12 @@
 import { useRef, useState } from 'react';
-import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  RefreshControl,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { FlashList, type FlashListRef } from '@shopify/flash-list';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
@@ -19,6 +26,7 @@ import { GridIcon } from '@shared/components/icons';
 import { quantityForProduct, useBasketStore } from '@shared/store/basket.store';
 import type { Product } from '@typings/api';
 import type { HomeStackParamList, RootStackParamList } from '@typings/navigation';
+import useReload from '../../../../hooks/useReload';
 import EmptyCategoryState from '../EmptyCategoryState';
 import ProductDetailSheet from '../ProductDetailSheet';
 import { styles } from './CategoryProductsScreen.styles';
@@ -41,6 +49,7 @@ function CategoryProductsScreen() {
     useCategoryChipsScroll(selectedCategoryId);
   const { categories, products, loading, error, retry } =
     useCategoryProductsData();
+  const { refreshing, onRefresh } = useReload(retry);
 
   const basket = useBasketStore(state => state.basket);
   const addItem = useBasketStore(state => state.addItem);
@@ -120,7 +129,7 @@ function CategoryProductsScreen() {
 
       {error ? (
         <ErrorState message={error} onRetry={retry} />
-      ) : loading ? (
+      ) : loading && categories.length === 0 && products.length === 0 ? (
         <ActivityIndicator color="#7BC043" style={styles.loader} />
       ) : (
         <FlashList<Product>
@@ -131,6 +140,9 @@ function CategoryProductsScreen() {
           numColumns={COLUMNS}
           showsVerticalScrollIndicator={false}
           onLoad={() => listRef.current?.scrollToTop({ animated: false })}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
           ListEmptyComponent={EmptyCategoryState}
           style={[
             styles.list,

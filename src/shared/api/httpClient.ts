@@ -1,6 +1,8 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from 'axios';
 import { BASE_URL, LANG } from '@shared/config/env';
+import { showErrorToast } from '@shared/utils/toast';
 import type { ApiEnvelope, AuthTokens } from '@typings/api';
+import { resetToWelcome } from '../../navigation/navigationRef';
 import {
   clearTokens,
   getAccessToken,
@@ -56,11 +58,18 @@ httpClient.interceptors.response.use(
   response => response,
   async (error: AxiosError) => {
     const originalRequest = error.config as RetryableConfig | undefined;
+    // /auth/* calls (login, signup, the refresh call itself) must never enter
+    // the refresh-and-retry dance — a 401 there means "wrong credentials" or
+    // "refresh token is dead", not "session expired mid-use", and treating
+    // it as the latter would boot a user back to Welcome while they're still
+    // typing their password.
+    const isAuthEndpoint = originalRequest?.url?.startsWith('/auth/');
 
     if (
       error.response?.status === 401 &&
       originalRequest &&
-      !originalRequest._retry
+      !originalRequest._retry &&
+      !isAuthEndpoint
     ) {
       originalRequest._retry = true;
       const newAccessToken = await refreshAccessToken();
@@ -74,6 +83,8 @@ httpClient.interceptors.response.use(
       }
 
       await clearTokens();
+      showErrorToast('Sessiyanızın müddəti bitdi, yenidən daxil olun');
+      resetToWelcome();
     }
 
     return Promise.reject(error);
