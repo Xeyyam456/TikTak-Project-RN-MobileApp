@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { ActivityIndicator, Alert, Image, Modal, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, Modal, Text, TouchableOpacity, View } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
 import BottomSheet from '@shared/components/BottomSheet';
 import { EyeIcon, ImageIcon, UserIcon } from '@shared/components/icons';
 import { updateProfile } from '@shared/services/profile.service';
 import { uploadFile } from '@shared/services/upload.service';
 import { getApiErrorMessage } from '@shared/utils/apiError';
+import { showErrorToast } from '@shared/utils/toast';
 import MenuRow from '../MenuRow';
 import { styles } from './AvatarPicker.styles';
 import type { AvatarPickerProps } from './AvatarPicker.types';
@@ -29,7 +30,7 @@ function AvatarPicker({ profile, onProfileUpdate }: AvatarPickerProps) {
 
     if (result.didCancel) return;
     if (result.errorCode) {
-      Alert.alert('Xəta', result.errorMessage ?? 'Şəkil seçilə bilmədi');
+      showErrorToast(result.errorMessage ?? 'Şəkil seçilə bilmədi');
       return;
     }
 
@@ -50,7 +51,7 @@ function AvatarPicker({ profile, onProfileUpdate }: AvatarPickerProps) {
       });
       onProfileUpdate(updated);
     } catch (error) {
-      Alert.alert('Xəta', getApiErrorMessage(error));
+      showErrorToast(getApiErrorMessage(error));
     } finally {
       setUploading(false);
     }

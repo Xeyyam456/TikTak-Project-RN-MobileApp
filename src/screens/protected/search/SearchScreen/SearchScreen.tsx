@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Image, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import AppHeader from '@shared/components/AppHeader';
 import Input from '@shared/components/Input';
@@ -106,30 +106,31 @@ function SearchScreen() {
     <View style={styles.flex}>
       <AppHeader />
 
-      <View style={styles.content}>
+      <View style={styles.searchBox}>
         <Input
           value={query}
           onChangeText={setQuery}
           placeholder="Axtar..."
           autoCorrect={false}
         />
-
-        {loading ? (
-          <ActivityIndicator color="#7BC043" style={styles.loader} />
-        ) : query.trim() && results.length === 0 ? (
-          <Text style={styles.emptyText}>Heç bir nəticə tapılmadı</Text>
-        ) : (
-          <View style={styles.results}>
-            {results.map(product => (
-              <ResultRow
-                key={product.id}
-                product={product}
-                onPress={() => setSelectedProduct(product)}
-              />
-            ))}
-          </View>
-        )}
       </View>
+
+      {loading ? (
+        <ActivityIndicator color="#7BC043" style={styles.loader} />
+      ) : query.trim() && results.length === 0 ? (
+        <Text style={styles.emptyText}>Heç bir nəticə tapılmadı</Text>
+      ) : (
+        <FlatList
+          data={results}
+          keyExtractor={item => String(item.id)}
+          style={styles.resultsList}
+          contentContainerStyle={styles.results}
+          showsVerticalScrollIndicator={false}
+          renderItem={({ item }) => (
+            <ResultRow product={item} onPress={() => setSelectedProduct(item)} />
+          )}
+        />
+      )}
 
       <ProductDetailSheet
         product={selectedProduct}

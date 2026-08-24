@@ -8,8 +8,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
-  content: {
-    flex: 1,
+  searchBox: {
     paddingHorizontal: HORIZONTAL_PADDING,
     paddingTop: 14,
   },
@@ -18,13 +17,18 @@ export const styles = StyleSheet.create({
   },
   emptyText: {
     marginTop: 32,
+    paddingHorizontal: HORIZONTAL_PADDING,
     fontSize: 14,
     color: '#9B9B9B',
     fontFamily: FONTS.regular,
     textAlign: 'center',
   },
+  resultsList: {
+    flex: 1,
+  },
   results: {
-    marginTop: 18,
+    paddingHorizontal: HORIZONTAL_PADDING,
+    paddingTop: 18,
     gap: 18,
   },
   row: {
