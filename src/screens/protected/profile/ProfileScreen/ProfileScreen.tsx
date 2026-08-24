@@ -7,6 +7,7 @@ import ConfirmModal from '@shared/components/ConfirmModal';
 import { ClockIcon, DocumentIcon, HeartIcon, LogoutIcon } from '@shared/components/icons';
 import { logout } from '@shared/services/auth.service';
 import { getProfile } from '@shared/services/profile.service';
+import { showSuccessToast } from '@shared/utils/toast';
 import type { ProfileStackParamList, RootStackParamList } from '@typings/navigation';
 import type { UserProfile } from '@typings/api';
 import AvatarPicker from '../AvatarPicker';
@@ -32,6 +33,7 @@ function ProfileScreen() {
   async function handleConfirmLogout() {
     setLoggingOut(true);
     await logout();
+    showSuccessToast('Uğurla çıxış edildi');
     navigation
       .getParent<NativeStackNavigationProp<RootStackParamList>>()
       ?.reset({ index: 0, routes: [{ name: 'Welcome' }] });

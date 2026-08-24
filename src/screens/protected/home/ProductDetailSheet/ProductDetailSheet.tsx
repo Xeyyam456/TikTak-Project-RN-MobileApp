@@ -4,6 +4,7 @@ import BottomSheet from '@shared/components/BottomSheet';
 import Button from '@shared/components/Button';
 import { HeartIcon } from '@shared/components/icons';
 import { getProduct, toggleFavorite } from '@shared/services/product.service';
+import { showSuccessToast } from '@shared/utils/toast';
 import { styles } from './ProductDetailSheet.styles';
 import type { ProductDetailSheetProps } from './ProductDetailSheet.types';
 
@@ -36,6 +37,9 @@ function ProductDetailSheet({
       const detail = await getProduct(product.id);
       setIsFavorite(detail.is_favorite);
       onFavoriteChange?.(product.id, detail.is_favorite);
+      showSuccessToast(
+        `${product.title} ${detail.is_favorite ? 'favoritlərə əlavə edildi' : 'favoritlərdən silindi'}`,
+      );
     } catch {
       setIsFavorite(!nextValue);
     } finally {

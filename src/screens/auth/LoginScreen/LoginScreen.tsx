@@ -13,6 +13,7 @@ import Checkbox from '@shared/components/Checkbox';
 import TextField from '@shared/components/TextField';
 import { login } from '@shared/services/auth.service';
 import { getApiErrorMessage } from '@shared/utils/apiError';
+import { showSuccessToast } from '@shared/utils/toast';
 import type { RootStackParamList } from '@typings/navigation';
 import useReload from '../../../hooks/useReload';
 import {
@@ -52,6 +53,7 @@ function LoginScreen() {
     setLoading(true);
     try {
       await login({ phone, password }, rememberMe);
+      showSuccessToast('Uğurla daxil oldunuz');
       navigation.reset({ index: 0, routes: [{ name: 'Main' }] });
     } catch (error) {
       setFormError(getApiErrorMessage(error));
