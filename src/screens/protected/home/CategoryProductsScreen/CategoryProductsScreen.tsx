@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { FlashList, type FlashListRef } from '@shopify/flash-list';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -7,8 +7,6 @@ import {
   useRoute,
   type RouteProp,
 } from '@react-navigation/native';
-
-
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import BasketSummaryBar, {
   SUMMARY_BAR_GAP,
@@ -18,16 +16,14 @@ import BasketSummaryBar, {
 import ErrorState from '@shared/components/ErrorState';
 import ProductCard, { COLUMNS } from '@shared/components/ProductCard';
 import { GridIcon } from '@shared/components/icons';
-import { listCategories } from '@shared/services/category.service';
-import { listProducts } from '@shared/services/product.service';
 import { quantityForProduct, useBasketStore } from '@shared/store/basket.store';
-import { getApiErrorMessage } from '@shared/utils/apiError';
-import type { Category, Product } from '@typings/api';
+import type { Product } from '@typings/api';
 import type { HomeStackParamList, RootStackParamList } from '@typings/navigation';
 import EmptyCategoryState from '../EmptyCategoryState';
 import ProductDetailSheet from '../ProductDetailSheet';
 import { styles } from './CategoryProductsScreen.styles';
 import { useCategoryChipsScroll } from './useCategoryChipsScroll';
+import { useCategoryProductsData } from './useCategoryProductsData';
 
 function CategoryProductsScreen() {
   const insets = useSafeAreaInsets();
@@ -36,38 +32,19 @@ function CategoryProductsScreen() {
   const route =
     useRoute<RouteProp<HomeStackParamList, 'CategoryProducts'>>();
 
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [products, setProducts] = useState<Product[]>([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState(
     route.params.categoryId,
   );
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string>();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const listRef = useRef<FlashListRef<Product>>(null);
   const { chipsScrollRef, onChipsContentSizeChange, onChipLayout, scrollToChip } =
     useCategoryChipsScroll(selectedCategoryId);
+  const { categories, products, loading, error, retry } =
+    useCategoryProductsData();
 
   const basket = useBasketStore(state => state.basket);
-  const fetchBasket = useBasketStore(state => state.fetchBasket);
   const addItem = useBasketStore(state => state.addItem);
   const removeItem = useBasketStore(state => state.removeItem);
-
-  const loadCategoryProducts = useCallback(() => {
-    setLoading(true);
-    setError(undefined);
-    Promise.all([listCategories(), listProducts({ limit: 200 }), fetchBasket()])
-      .then(([categoryList, productList]) => {
-        setCategories(categoryList);
-        setProducts(productList.data);
-      })
-      .catch(err => setError(getApiErrorMessage(err)))
-      .finally(() => setLoading(false));
-  }, [fetchBasket]);
-
-  useEffect(() => {
-    loadCategoryProducts();
-  }, [loadCategoryProducts]);
 
   function quantityFor(productId: number) {
     return quantityForProduct(basket, productId);
@@ -142,7 +119,7 @@ function CategoryProductsScreen() {
       </ScrollView>
 
       {error ? (
-        <ErrorState message={error} onRetry={loadCategoryProducts} />
+        <ErrorState message={error} onRetry={retry} />
       ) : loading ? (
         <ActivityIndicator color="#7BC043" style={styles.loader} />
       ) : (

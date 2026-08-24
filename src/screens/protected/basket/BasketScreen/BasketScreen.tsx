@@ -95,7 +95,9 @@ function BasketScreen() {
     <View style={[styles.flex, { paddingTop: insets.top }]}>
       <ScreenHeader title="Səbətim" onBack={() => navigation.goBack()} />
 
-      {loading && !basket ? (
+      {error ? (
+        <ErrorState message={error} onRetry={fetchBasket} />
+      ) : loading && !basket ? (
         <ActivityIndicator color="#7BC043" style={styles.loader} />
       ) : items.length === 0 ? (
         <View style={styles.emptyState}>
@@ -112,24 +114,45 @@ function BasketScreen() {
           <Text style={styles.emptyStateText}>Səbətinizdə məhsul yoxdur</Text>
         </View>
       ) : (
-        <ScrollView
-          style={styles.list}
-          contentContainerStyle={[
-            styles.listContent,
-            { paddingBottom: footerHeight + 16 },
-          ]}
-          showsVerticalScrollIndicator={false}
-        >
-          {items.map(item => (
-            <BasketRow
-              key={item.id}
-              item={item}
-              onIncrement={() => addItem(item.product.id)}
-              onDecrement={() => removeItem(item.product.id)}
-            />
-          ))}
-        </ScrollView>
+        <>
+          <TouchableOpacity
+            style={styles.clearRow}
+            onPress={() => setClearModalVisible(true)}
+          >
+            <Text style={styles.clearText}>Səbəti təmizlə</Text>
+          </TouchableOpacity>
+
+          <ScrollView
+            style={styles.list}
+            contentContainerStyle={[
+              styles.listContent,
+              { paddingBottom: footerHeight + 16 },
+            ]}
+            showsVerticalScrollIndicator={false}
+          >
+            {items.map(item => (
+              <BasketRow
+                key={item.id}
+                item={item}
+                onIncrement={() => addItem(item.product.id)}
+                onDecrement={() => removeItem(item.product.id)}
+              />
+            ))}
+          </ScrollView>
+        </>
       )}
+
+      <ConfirmModal
+        visible={clearModalVisible}
+        icon={<TrashIcon size={28} color="#E24C4C" />}
+        title="Səbəti təmizlə"
+        message="Səbətdəki bütün məhsulları silmək istədiyinizə əminsiniz?"
+        confirmLabel="Təmizlə"
+        destructive
+        loading={clearing}
+        onConfirm={handleConfirmClear}
+        onCancel={() => setClearModalVisible(false)}
+      />
 
       {items.length > 0 && (
         <View

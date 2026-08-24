@@ -30,6 +30,16 @@ export const styles = StyleSheet.create({
     fontFamily: FONTS.medium,
     textAlign: 'center',
   },
+  clearRow: {
+    paddingHorizontal: 15,
+    paddingTop: 8,
+    alignItems: 'flex-end',
+  },
+  clearText: {
+    fontSize: 13,
+    color: '#E24C4C',
+    fontFamily: FONTS.medium,
+  },
   list: {
     flex: 1,
   },
