@@ -27,6 +27,7 @@ function MyListsScreen() {
 
   const [favorites, setFavorites] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string>();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const basket = useBasketStore(state => state.basket);
@@ -34,11 +35,18 @@ function MyListsScreen() {
   const addItem = useBasketStore(state => state.addItem);
   const removeItem = useBasketStore(state => state.removeItem);
 
-  useEffect(() => {
+  const loadFavorites = useCallback(() => {
+    setLoading(true);
+    setError(undefined);
     Promise.all([listFavorites(), fetchBasket()])
       .then(([favoriteList]) => setFavorites(favoriteList))
+      .catch(err => setError(getApiErrorMessage(err)))
       .finally(() => setLoading(false));
   }, [fetchBasket]);
+
+  useEffect(() => {
+    loadFavorites();
+  }, [loadFavorites]);
 
   function quantityFor(productId: number) {
     return quantityForProduct(basket, productId);
