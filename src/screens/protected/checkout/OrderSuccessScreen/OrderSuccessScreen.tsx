@@ -11,12 +11,22 @@ import { styles } from './OrderSuccessScreen.styles';
 
 const REDIRECT_SECONDS = 3;
 
+// A plain `navigate('Main', ...)` merges params onto the existing 'Main'
+// route and *should* pop everything above it, but in practice still left
+// Basket/Checkout/OrderSuccess reachable via the hardware back button after
+// navigating elsewhere and coming back. `reset` throws away the whole root
+// stack instead, so there is nothing left to go "back" into.
 function goToOrderHistory(
   navigation: NativeStackNavigationProp<RootStackParamList>,
 ) {
-  navigation.navigate('Main', {
-    screen: 'Profile',
-    params: { screen: 'OrderHistory' },
+  navigation.reset({
+    index: 0,
+    routes: [
+      {
+        name: 'Main',
+        params: { screen: 'Profile', params: { screen: 'OrderHistory' } },
+      },
+    ],
   });
 }
 
@@ -57,9 +67,14 @@ function OrderSuccessScreen() {
         <Button
           title="Əsas səhifəyə qayıt"
           onPress={() =>
-            navigation.navigate('Main', {
-              screen: 'Home',
-              params: { screen: 'HomeMain' },
+            navigation.reset({
+              index: 0,
+              routes: [
+                {
+                  name: 'Main',
+                  params: { screen: 'Home', params: { screen: 'HomeMain' } },
+                },
+              ],
             })
           }
         />
