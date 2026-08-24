@@ -2,6 +2,7 @@ import { RefreshControl, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import AuthSwitchLink from '@shared/components/AuthSwitchLink';
 import Button from '@shared/components/Button';
 import FruitImage from '@assets/images/images1.svg';
 import type { RootStackParamList } from '@typings/navigation';
@@ -37,15 +38,11 @@ function WelcomeScreen() {
           onPress={() => navigation.navigate('Register')}
         />
 
-        <Text style={styles.loginText}>
-          Hesabınız varsa {' '}
-          <Text
-            style={styles.loginLink}
-            onPress={() => navigation.navigate('Login')}
-          >
-            Daxil olun
-          </Text>
-        </Text>
+        <AuthSwitchLink
+          promptText="Hesabınız varsa"
+          linkText="Daxil olun"
+          onPress={() => navigation.navigate('Login')}
+        />
       </View>
     </ScrollView>
   );

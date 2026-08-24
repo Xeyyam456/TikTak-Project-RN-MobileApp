@@ -23,15 +23,4 @@ export const styles = StyleSheet.create({
     lineHeight: 19,
     fontFamily: FONTS.regular,
   },
-  loginText: {
-    textAlign: 'center',
-    fontSize: 12,
-    color: '#333333',
-    fontFamily: FONTS.regular,
-  },
-  loginLink: {
-    marginLeft: 6,
-    color: '#7BC043',
-    fontFamily: FONTS.semiBold,
-  },
 });
