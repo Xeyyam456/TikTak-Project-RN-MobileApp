@@ -69,9 +69,11 @@ function BasketScreen() {
 
   const basket = useBasketStore(state => state.basket);
   const loading = useBasketStore(state => state.loading);
+  const error = useBasketStore(state => state.error);
   const fetchBasket = useBasketStore(state => state.fetchBasket);
   const addItem = useBasketStore(state => state.addItem);
   const removeItem = useBasketStore(state => state.removeItem);
+  const clearBasket = useBasketStore(state => state.clearBasket);
 
   useEffect(() => {
     fetchBasket();
@@ -79,6 +81,15 @@ function BasketScreen() {
 
   const items = basket?.items ?? [];
   const [footerHeight, setFooterHeight] = useState(0);
+  const [clearModalVisible, setClearModalVisible] = useState(false);
+  const [clearing, setClearing] = useState(false);
+
+  async function handleConfirmClear() {
+    setClearing(true);
+    await clearBasket();
+    setClearing(false);
+    setClearModalVisible(false);
+  }
 
   return (
     <View style={[styles.flex, { paddingTop: insets.top }]}>
