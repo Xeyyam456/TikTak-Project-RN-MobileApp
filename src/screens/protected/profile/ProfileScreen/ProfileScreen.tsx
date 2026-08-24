@@ -1,12 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import ConfirmModal from '@shared/components/ConfirmModal';
+import ErrorState from '@shared/components/ErrorState';
 import { ClockIcon, DocumentIcon, HeartIcon, LogoutIcon } from '@shared/components/icons';
 import { logout } from '@shared/services/auth.service';
 import { getProfile } from '@shared/services/profile.service';
+import { getApiErrorMessage } from '@shared/utils/apiError';
 import { showSuccessToast } from '@shared/utils/toast';
 import type { ProfileStackParamList, RootStackParamList } from '@typings/navigation';
 import type { UserProfile } from '@typings/api';
@@ -21,14 +23,22 @@ function ProfileScreen() {
 
   const [profile, setProfile] = useState<UserProfile>();
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string>();
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 
-  useEffect(() => {
+  const loadProfile = useCallback(() => {
+    setLoading(true);
+    setError(undefined);
     getProfile()
       .then(setProfile)
+      .catch(err => setError(getApiErrorMessage(err)))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    loadProfile();
+  }, [loadProfile]);
 
   async function handleConfirmLogout() {
     setLoggingOut(true);
@@ -43,7 +53,9 @@ function ProfileScreen() {
     <View style={[styles.flex, { paddingTop: insets.top + 16 }]}>
       <Text style={styles.title}>Hesabım</Text>
 
-      {loading ? (
+      {error ? (
+        <ErrorState message={error} onRetry={loadProfile} />
+      ) : loading ? (
         <ActivityIndicator color="#7BC043" style={styles.loader} />
       ) : (
         <>
