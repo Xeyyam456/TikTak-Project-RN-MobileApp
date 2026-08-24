@@ -141,7 +141,9 @@ function CategoryProductsScreen() {
         })}
       </ScrollView>
 
-      {loading ? (
+      {error ? (
+        <ErrorState message={error} onRetry={loadCategoryProducts} />
+      ) : loading ? (
         <ActivityIndicator color="#7BC043" style={styles.loader} />
       ) : (
         <FlashList<Product>

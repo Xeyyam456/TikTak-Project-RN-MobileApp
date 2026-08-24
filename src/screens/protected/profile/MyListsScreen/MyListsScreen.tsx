@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -9,10 +9,12 @@ import BasketSummaryBar, {
   SUMMARY_BAR_HEIGHT,
   SUMMARY_BAR_TOP_GAP,
 } from '@shared/components/BasketSummaryBar';
+import ErrorState from '@shared/components/ErrorState';
 import ProductCard, { COLUMNS } from '@shared/components/ProductCard';
 import ScreenHeader from '@shared/components/ScreenHeader';
 import { listFavorites } from '@shared/services/product.service';
 import { quantityForProduct, useBasketStore } from '@shared/store/basket.store';
+import { getApiErrorMessage } from '@shared/utils/apiError';
 import type { Product } from '@typings/api';
 import type { RootStackParamList } from '@typings/navigation';
 import ProductDetailSheet from '../../home/ProductDetailSheet';
