@@ -2,6 +2,7 @@ import { Image, Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import BottomSheet from '@shared/components/BottomSheet';
 import { formatOrderDate, getOrderStatusMeta } from '@shared/utils/order';
+import { formatProductMeasure } from '@shared/utils/productMeasure';
 import type { Order } from '@typings/api';
 import { styles } from './OrderDetailSheet.styles';
 import type { OrderDetailSheetProps } from './OrderDetailSheet.types';
@@ -66,7 +67,7 @@ function OrderDetailContent({ order }: { order: Order }) {
               resizeMode="cover"
             />
             <Text style={styles.itemTitle} numberOfLines={2}>
-              {item.product.title} {item.quantity} {item.product.type}
+              {item.product.title} {item.quantity} {formatProductMeasure(item.product.type)}
             </Text>
             <Text style={styles.itemPrice}>{item.total_price} AZN</Text>
           </View>

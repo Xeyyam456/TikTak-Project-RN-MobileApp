@@ -1,5 +1,6 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Button from '../Button';
+import { formatProductMeasure } from '@shared/utils/productMeasure';
 import { styles } from './ProductCard.styles';
 import type { ProductCardProps } from './ProductCard.types';
 
@@ -33,7 +34,7 @@ function ProductCard({
         <>
           <Text style={styles.bulkPriceLine}>
             <Text style={styles.bulkPriceQty}>
-              {quantity} {product.type}
+              {quantity} {formatProductMeasure(product.type)}
             </Text>
             <Text style={styles.bulkPriceEquals}> = </Text>
             <Text style={styles.bulkPriceTotal}>{total} AZN</Text>
@@ -44,7 +45,7 @@ function ProductCard({
             </TouchableOpacity>
             <TouchableOpacity style={styles.stepperPlus} onPress={onIncrement}>
               <Text style={styles.stepperPlusText}>
-                + {quantity} {product.type}
+                + {quantity} {formatProductMeasure(product.type)}
               </Text>
             </TouchableOpacity>
           </View>
