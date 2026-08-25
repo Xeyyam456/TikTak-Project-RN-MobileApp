@@ -1223,7 +1223,31 @@ export async function listOrders(): Promise<Order[]> {
 
 Bu, real bir debug hekayəsinin izidir: sənədləşmə (`docs/api.md`) "bu endpoint-in zərfi yoxdur" deyirdi, amma **əslində** backend nə vaxtsa dəyişib zərf əlavə edib, sənəd yenilənməyib. Bu cür uyğunsuzluqlar özünü necə göstərir? — kod `response.data`-nı birbaşa `Order[]` kimi işlədəndə (halbuki əslində `{message, data: Order[], result}` idi), TypeScript-in özü bunu **tuta bilmirdi** (çünki tip bəyanatı da səhv yazılmışdı, kodun özü ilə "razılaşırdı" — bu, tip sisteminin real API cavabını **doğrulamadığını**, yalnız *sizin bildirdiyiniz* tipə uyğunluğu yoxladığını göstərən vacib bir dərsdir). Nəticə: sifarişlər siyahısı **sakitcə boş** görünürdü, heç bir xəta atmadan. Düzəliş — raw `console.log` ilə əsl cavabı yoxlamaq, tipi və unwrap məntiqini ona uyğunlaşdırmaq oldu.
 
-**Dərs:** backend cavabı "qəribə" davransa (boş siyahı, undefined sahə), **əvvəlcə sənədə/koda yox, canlı cavaba** (raw log) inanın.
+**Üçüncü, ən son nümunə — `POST /orders/checkout` (2026-08-25):** eyni sual `checkout()`-a da veriləndə ("bu, doğrudanmı zərfsizdir?") — cavab yenə **xeyr** oldu. Yoxlama üsulu maraqlıdır, çünki `listOrders`-dan fərqli olaraq, bu dəfə görünən bir simptom (boş siyahı və s.) **yox idi** — sadəcə şübhə var idi. Ona görə **müvəqqəti** bir sətir əlavə edildi:
+```ts
+export async function checkout(payload: CheckoutPayload): Promise<Order> {
+  const { data } = await httpClient.post<Order>('/orders/checkout', payload);
+  console.log('[DEBUG checkout raw response]', JSON.stringify(data));
+  return data;
+}
+```
+Sonra tətbiqdə **əl ilə həqiqi bir sifariş verildi**, `adb logcat` ilə cavab tutuldu:
+```json
+{"message":"Order created successfully","data":{"id":383,"orderNumber":"ORD-20260825-292","total":"8.59", "...": "..."}}
+```
+Şübhə təsdiqləndi — burada da `{message, data}` zərfi var idi. `console.log` sətri silindi, funksiya `ApiEnvelope<Order>` ilə düzgün "açacaq" şəkildə düzəldildi:
+```ts
+export async function checkout(payload: CheckoutPayload): Promise<Order> {
+  const { data } = await httpClient.post<ApiEnvelope<Order>>(
+    '/orders/checkout',
+    payload,
+  );
+  return data.data;
+}
+```
+Maraqlı detal: bu bug-un heç bir **görünən** simptomu yox idi, çünki `CheckoutScreen.tsx` `checkout()`-un qaytardığı dəyəri **heç istifadə etmirdi** — sadəcə `await` edib, sonra `fetchBasket()` çağırıb `OrderSuccess`-ə keçirdi. Yəni kod, səhv formalı bir obyekti sakitcə **"yerə atırdı"**, heç kim fərq etmirdi. Bu, "işləyir" görünən kodun həmişə **düzgün** olduğu demək olmadığını göstərir — sadəcə hələ heç kim o səhv dəyərdən istifadə etməyib.
+
+**Dərs:** backend cavabı "qəribə" davransa (boş siyahı, undefined sahə), **əvvəlcə sənədə/koda yox, canlı cavaba** (raw log) inanın. Və bir addım da irəli: **görünən simptom olmasa belə**, "bu, sənəddə deyilən kimi zərfsizdirmi?" sualını hər yeni/şübhəli endpoint üçün **bir dəfə** raw log ilə yoxlamaq dəyər — üç fərqli endpoint-in (`/basket`, `/orders/user`, `/orders/checkout`) eyni cür "səssizcə" zərflənməsi göstərir ki, bu, təsadüfi deyil, backend-in **ümumi** bir davranışıdır.
 
 ---
 

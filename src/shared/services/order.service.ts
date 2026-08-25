@@ -9,9 +9,11 @@ export interface CheckoutPayload {
 }
 
 export async function checkout(payload: CheckoutPayload): Promise<Order> {
-  const { data } = await httpClient.post<Order>('/orders/checkout', payload);
-  console.log('[DEBUG checkout raw response]', JSON.stringify(data));
-  return data;
+  const { data } = await httpClient.post<ApiEnvelope<Order>>(
+    '/orders/checkout',
+    payload,
+  );
+  return data.data;
 }
 
 export async function listOrders(): Promise<Order[]> {
