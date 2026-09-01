@@ -20,7 +20,7 @@ import { initTokenStorage } from './src/shared/api/tokenStorage';
 
 Sentry.init({
   dsn: SENTRY_DSN,
-  enabled: true, // TODO: revert to !__DEV__ after confirming events reach the dashboard
+  enabled: !__DEV__,
   tracesSampleRate: 0.2,
 });
 
