@@ -2,7 +2,7 @@
  * @format
  */
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { StatusBar } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -10,15 +10,36 @@ import { NavigationContainer } from '@react-navigation/native';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import Toast from 'react-native-toast-message';
 import BootSplash from 'react-native-bootsplash';
+import * as Sentry from '@sentry/react-native';
 import { navigationRef } from './src/navigation/navigationRef';
 import RootNavigator from './src/navigation/RootNavigator';
 import ErrorBoundary from './src/shared/components/ErrorBoundary';
 import { toastConfig } from './src/shared/utils/toast';
+import { SENTRY_DSN } from './src/shared/config/env';
+import { initTokenStorage } from './src/shared/api/tokenStorage';
+
+Sentry.init({
+  dsn: SENTRY_DSN,
+  enabled: true, // TODO: revert to !__DEV__ after confirming events reach the dashboard
+  tracesSampleRate: 0.2,
+});
 
 function App() {
+  const [ready, setReady] = useState(false);
+
   useEffect(() => {
-    BootSplash.hide({ fade: true });
+    initTokenStorage().then(() => {
+      setReady(true);
+      BootSplash.hide({ fade: true });
+    });
   }, []);
+
+  // The native splash view stays up (BootSplash.hide hasn't been called yet)
+  // for the brief moment it takes to read the MMKV encryption key out of the
+  // Keystore, so nothing needs to render here.
+  if (!ready) {
+    return null;
+  }
 
   return (
     <ErrorBoundary>
