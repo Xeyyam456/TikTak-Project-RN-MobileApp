@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ActivityIndicator, RefreshControl, Text, View } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import BasketSummaryBar, {
   SUMMARY_BAR_GAP,
   SUMMARY_BAR_HEIGHT,
@@ -14,6 +15,7 @@ import ProductCard, { COLUMNS } from '@shared/components/ProductCard';
 import ScreenHeader from '@shared/components/ScreenHeader';
 import useReload from '@shared/hooks/useReload';
 import { listFavorites } from '@shared/services/product.service';
+import { queryKeys } from '@shared/queries/queryKeys';
 import { quantityForProduct, useBasketStore } from '@shared/store/basket.store';
 import { getApiErrorMessage } from '@shared/utils/apiError';
 import type { Product } from '@typings/api';
@@ -25,10 +27,15 @@ function MyListsScreen() {
   const insets = useSafeAreaInsets();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const queryClient = useQueryClient();
 
-  const [favorites, setFavorites] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string>();
+  const {
+    data: favorites = [],
+    isPending: loading,
+    error: queryError,
+    refetch,
+  } = useQuery({ queryKey: queryKeys.favorites, queryFn: listFavorites });
+  const error = queryError ? getApiErrorMessage(queryError) : undefined;
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const basket = useBasketStore(state => state.basket);
@@ -36,20 +43,17 @@ function MyListsScreen() {
   const addItem = useBasketStore(state => state.addItem);
   const removeItem = useBasketStore(state => state.removeItem);
 
-  const loadFavorites = useCallback(() => {
-    setLoading(true);
-    setError(undefined);
-    Promise.all([listFavorites(), fetchBasket()])
-      .then(([favoriteList]) => setFavorites(favoriteList))
-      .catch(err => setError(getApiErrorMessage(err)))
-      .finally(() => setLoading(false));
+  useEffect(() => {
+    fetchBasket();
   }, [fetchBasket]);
 
-  useEffect(() => {
-    loadFavorites();
-  }, [loadFavorites]);
+  const { refreshing, onRefresh } = useReload(() =>
+    Promise.all([refetch(), fetchBasket()]),
+  );
 
-  const { refreshing, onRefresh } = useReload(loadFavorites);
+  function setFavorites(update: (current: Product[]) => Product[]) {
+    queryClient.setQueryData(queryKeys.favorites, update);
+  }
 
   function quantityFor(productId: number) {
     return quantityForProduct(basket, productId);
@@ -72,7 +76,7 @@ function MyListsScreen() {
       <ScreenHeader title="Siyahılarım" onBack={() => navigation.goBack()} />
 
       {error ? (
-        <ErrorState message={error} onRetry={loadFavorites} />
+        <ErrorState message={error} onRetry={refetch} />
       ) : loading && favorites.length === 0 ? (
         <ActivityIndicator color="#7BC043" style={styles.loader} />
       ) : (

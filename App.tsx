@@ -11,6 +11,7 @@ import { KeyboardProvider } from 'react-native-keyboard-controller';
 import Toast from 'react-native-toast-message';
 import BootSplash from 'react-native-bootsplash';
 import * as Sentry from '@sentry/react-native';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { navigationRef } from './src/navigation/navigationRef';
 import RootNavigator from './src/navigation/RootNavigator';
 import ErrorBoundary from './src/shared/components/ErrorBoundary';
@@ -22,6 +23,15 @@ Sentry.init({
   dsn: SENTRY_DSN,
   enabled: !__DEV__,
   tracesSampleRate: 0.2,
+});
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 30_000,
+      retry: 1,
+    },
+  },
 });
 
 function App() {
@@ -43,17 +53,19 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <KeyboardProvider>
-          <SafeAreaProvider>
-            <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
-            <NavigationContainer ref={navigationRef}>
-              <RootNavigator />
-            </NavigationContainer>
-            <Toast config={toastConfig} />
-          </SafeAreaProvider>
-        </KeyboardProvider>
-      </GestureHandlerRootView>
+      <QueryClientProvider client={queryClient}>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <KeyboardProvider>
+            <SafeAreaProvider>
+              <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
+              <NavigationContainer ref={navigationRef}>
+                <RootNavigator />
+              </NavigationContainer>
+              <Toast config={toastConfig} />
+            </SafeAreaProvider>
+          </KeyboardProvider>
+        </GestureHandlerRootView>
+      </QueryClientProvider>
     </ErrorBoundary>
   );
 }

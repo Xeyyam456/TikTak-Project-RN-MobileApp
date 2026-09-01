@@ -1,17 +1,19 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useQuery } from '@tanstack/react-query';
 import Button from '@shared/components/Button';
 import ErrorState from '@shared/components/ErrorState';
 import Input from '@shared/components/Input';
 import ScreenHeader from '@shared/components/ScreenHeader';
 import { checkout } from '@shared/services/order.service';
 import { getProfile } from '@shared/services/profile.service';
+import { queryKeys } from '@shared/queries/queryKeys';
 import { useBasketStore } from '@shared/store/basket.store';
 import { getApiErrorMessage } from '@shared/utils/apiError';
-import type { PaymentMethod, UserProfile } from '@typings/api';
+import type { PaymentMethod } from '@typings/api';
 import type { RootStackParamList } from '@typings/navigation';
 import OrderItemsBox from '../OrderItemsBox';
 import { styles } from './CheckoutScreen.styles';
@@ -28,26 +30,19 @@ function CheckoutScreen() {
   const basket = useBasketStore(state => state.basket);
   const fetchBasket = useBasketStore(state => state.fetchBasket);
 
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [loadingProfile, setLoadingProfile] = useState(true);
-  const [profileError, setProfileError] = useState<string>();
+  const {
+    data: profile,
+    isPending: loadingProfile,
+    error: profileQueryError,
+    refetch: loadProfile,
+  } = useQuery({ queryKey: queryKeys.profile, queryFn: getProfile });
+  const profileError = profileQueryError
+    ? getApiErrorMessage(profileQueryError)
+    : undefined;
   const [note, setNote] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('CASH');
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string>();
-
-  const loadProfile = useCallback(() => {
-    setLoadingProfile(true);
-    setProfileError(undefined);
-    getProfile()
-      .then(setProfile)
-      .catch(err => setProfileError(getApiErrorMessage(err)))
-      .finally(() => setLoadingProfile(false));
-  }, []);
-
-  useEffect(() => {
-    loadProfile();
-  }, [loadProfile]);
 
   const items = basket?.items ?? [];
 

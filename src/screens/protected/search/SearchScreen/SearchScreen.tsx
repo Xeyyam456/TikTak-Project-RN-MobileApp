@@ -1,10 +1,20 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { useQuery } from '@tanstack/react-query';
 import AppHeader from '@shared/components/AppHeader';
 import Input from '@shared/components/Input';
+import { ClockIcon, CloseIcon } from '@shared/components/icons';
 import { listProducts } from '@shared/services/product.service';
+import { queryKeys } from '@shared/queries/queryKeys';
 import { quantityForProduct, useBasketStore } from '@shared/store/basket.store';
+import {
+  addSearchHistory,
+  clearSearchHistory,
+  getSearchHistory,
+  removeSearchHistoryEntry,
+} from '@shared/utils/searchHistory';
+import { COLORS } from '../../../../theme/colors';
 import type { Product } from '@typings/api';
 import ProductDetailSheet from '../../home/ProductDetailSheet';
 import { styles } from './SearchScreen.styles';
@@ -37,57 +47,99 @@ function ResultRow({
   );
 }
 
+function HistoryRow({
+  term,
+  onPress,
+  onRemove,
+}: {
+  term: string;
+  onPress: () => void;
+  onRemove: () => void;
+}) {
+  return (
+    <TouchableOpacity style={styles.historyRow} activeOpacity={0.7} onPress={onPress}>
+      <ClockIcon size={18} color={COLORS.textMuted} />
+      <Text style={styles.historyText} numberOfLines={1}>
+        {term}
+      </Text>
+      <TouchableOpacity hitSlop={10} onPress={onRemove}>
+        <CloseIcon size={14} color={COLORS.textMuted} />
+      </TouchableOpacity>
+    </TouchableOpacity>
+  );
+}
+
 function SearchScreen() {
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [debouncedQuery, setDebouncedQuery] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [history, setHistory] = useState<string[]>(() => getSearchHistory());
 
   const basket = useBasketStore(state => state.basket);
   const addItem = useBasketStore(state => state.addItem);
 
-  // Debouncing only stops queued timeouts from piling up — if the user
-  // pauses mid-typing (e.g. "al", pause, "ma"), two requests can still be
-  // in flight at once, and a slower response for the earlier, broader query
-  // can land after the later one and overwrite it with stale results. Track
-  // the most recently *fired* query and drop any response that isn't for it.
-  const latestQueryRef = useRef('');
+  // Lets the useFocusEffect cleanup below read the latest typed value —
+  // that callback is only set up once (empty dep array), so closing over
+  // `query` directly there would always see the value from mount.
+  const queryRef = useRef('');
+  queryRef.current = query;
 
   useEffect(() => {
-    const trimmed = query.trim();
-    if (!trimmed) {
-      latestQueryRef.current = '';
-      setResults([]);
-      setLoading(false);
-      return;
-    }
-
-    setLoading(true);
-    const timeout = setTimeout(() => {
-      latestQueryRef.current = trimmed;
-      const lowerTrimmed = trimmed.toLowerCase();
-      listProducts({ search: trimmed })
-        .then(response => {
-          if (latestQueryRef.current !== trimmed) return;
-          // The backend's `search` param apparently matches on more than
-          // just title (e.g. searching "alma" returned "Ciyelek"), so
-          // narrow to title-only matches client-side.
-          setResults(
-            response.data.filter(product =>
-              product.title.toLowerCase().includes(lowerTrimmed),
-            ),
-          );
-        })
-        .finally(() => {
-          if (latestQueryRef.current === trimmed) setLoading(false);
-        });
-    }, SEARCH_DEBOUNCE_MS);
-
+    const timeout = setTimeout(() => setDebouncedQuery(query.trim()), SEARCH_DEBOUNCE_MS);
     return () => clearTimeout(timeout);
   }, [query]);
 
+  const trimmed = debouncedQuery;
+  const { data: results = [], isFetching } = useQuery({
+    queryKey: queryKeys.products({ search: trimmed }),
+    queryFn: () => {
+      const lowerTrimmed = trimmed.toLowerCase();
+      return listProducts({ search: trimmed }).then(response =>
+        // The backend's `search` param apparently matches on more than just
+        // title (e.g. searching "alma" returned "Ciyelek"), so narrow to
+        // title-only matches client-side.
+        response.data.filter(product =>
+          product.title.toLowerCase().includes(lowerTrimmed),
+        ),
+      );
+    },
+    enabled: !!trimmed,
+  });
+
+  // Query-key-based caching means a slow response for an earlier query can
+  // never overwrite the current one (each debounced term gets its own cache
+  // entry), so unlike the old manual-fetch version this no longer needs a
+  // "drop stale response" ref guard. Still show the loading state while the
+  // debounce timer itself is pending, not just while the request is in flight.
+  const isDebouncing = query.trim() !== debouncedQuery;
+  const loading = !!query.trim() && (isDebouncing || isFetching);
+
   async function handleAdd(productId: number) {
     await addItem(productId);
+  }
+
+  function handleSelectHistory(term: string) {
+    setQuery(term);
+    setDebouncedQuery(term);
+    setHistory(addSearchHistory(term));
+  }
+
+  // Recording on every debounce tick (or requiring an explicit submit
+  // button) both save typing-in-progress fragments — pausing mid-word while
+  // typing "alma" would save "al" as a separate entry from "alma". Instead
+  // save once, only when the user is actually done with the field: leaving
+  // it (blur) or leaving the screen (useFocusEffect cleanup below).
+  function saveCurrentSearch(term: string) {
+    const trimmedQuery = term.trim();
+    if (trimmedQuery) setHistory(addSearchHistory(trimmedQuery));
+  }
+
+  function handleRemoveHistory(term: string) {
+    setHistory(removeSearchHistoryEntry(term));
+  }
+
+  function handleClearHistory() {
+    setHistory(clearSearchHistory());
   }
 
   // Tab screens stay mounted when you switch tabs, so without this the old
@@ -96,8 +148,9 @@ function SearchScreen() {
   useFocusEffect(
     useCallback(() => {
       return () => {
+        saveCurrentSearch(queryRef.current);
         setQuery('');
-        setResults([]);
+        setDebouncedQuery('');
       };
     }, []),
   );
@@ -110,14 +163,35 @@ function SearchScreen() {
         <Input
           value={query}
           onChangeText={setQuery}
+          onBlur={() => saveCurrentSearch(query)}
+          returnKeyType="search"
           placeholder="Axtar..."
           autoCorrect={false}
         />
       </View>
 
-      {loading ? (
-        <ActivityIndicator color="#7BC043" style={styles.loader} />
-      ) : query.trim() && results.length === 0 ? (
+      {!query.trim() ? (
+        history.length > 0 && (
+          <View style={styles.historySection}>
+            <View style={styles.historyHeader}>
+              <Text style={styles.historyTitle}>Son axtarışlar</Text>
+              <TouchableOpacity onPress={handleClearHistory}>
+                <Text style={styles.historyClear}>Təmizlə</Text>
+              </TouchableOpacity>
+            </View>
+            {history.map(term => (
+              <HistoryRow
+                key={term}
+                term={term}
+                onPress={() => handleSelectHistory(term)}
+                onRemove={() => handleRemoveHistory(term)}
+              />
+            ))}
+          </View>
+        )
+      ) : loading ? (
+        <ActivityIndicator color={COLORS.primary} style={styles.loader} />
+      ) : results.length === 0 ? (
         <Text style={styles.emptyText}>Heç bir nəticə tapılmadı</Text>
       ) : (
         <FlatList
