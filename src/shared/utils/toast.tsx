@@ -1,6 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 import Toast, { BaseToast, ErrorToast, ToastConfig } from 'react-native-toast-message';
 import { FONTS } from '../../theme/fonts';
+import { COLORS } from '../../theme/colors';
 import { CheckIcon, AlertIcon } from '../components/icons';
 
 export const toastConfig: ToastConfig = {
@@ -13,7 +14,7 @@ export const toastConfig: ToastConfig = {
       text1NumberOfLines={2}
       renderLeadingIcon={() => (
         <View style={[styles.iconCircle, styles.successCircle]}>
-          <CheckIcon size={16} color="#7BC043" />
+          <CheckIcon size={16} color={COLORS.primary} />
         </View>
       )}
     />
@@ -27,7 +28,7 @@ export const toastConfig: ToastConfig = {
       text1NumberOfLines={2}
       renderLeadingIcon={() => (
         <View style={[styles.iconCircle, styles.errorCircle]}>
-          <AlertIcon size={16} color="#E24C4C" />
+          <AlertIcon size={16} color={COLORS.danger} />
         </View>
       )}
     />
@@ -43,22 +44,22 @@ const styles = StyleSheet.create({
     height: undefined,
     paddingVertical: 12,
     elevation: 4,
-    shadowColor: '#000000',
+    shadowColor: COLORS.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 6,
   },
   successAccent: {
-    borderTopColor: '#7BC043',
+    borderTopColor: COLORS.primary,
   },
   errorAccent: {
-    borderTopColor: '#E24C4C',
+    borderTopColor: COLORS.danger,
   },
   content: {
     paddingHorizontal: 14,
   },
   text1: {
-    color: '#1A1A1A',
+    color: COLORS.textPrimary,
     fontSize: 15,
     fontFamily: FONTS.semiBold,
   },
@@ -71,10 +72,10 @@ const styles = StyleSheet.create({
     marginLeft: 14,
   },
   successCircle: {
-    backgroundColor: '#7BC04326',
+    backgroundColor: COLORS.primaryTint,
   },
   errorCircle: {
-    backgroundColor: '#E24C4C26',
+    backgroundColor: COLORS.dangerTint,
   },
 });
 
