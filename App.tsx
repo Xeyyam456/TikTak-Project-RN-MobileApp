@@ -13,6 +13,7 @@ import BootSplash from 'react-native-bootsplash';
 import { navigationRef } from './src/navigation/navigationRef';
 import RootNavigator from './src/navigation/RootNavigator';
 import ErrorBoundary from './src/shared/components/ErrorBoundary';
+import { toastConfig } from './src/shared/utils/toast';
 
 function App() {
   useEffect(() => {
@@ -28,7 +29,7 @@ function App() {
             <NavigationContainer ref={navigationRef}>
               <RootNavigator />
             </NavigationContainer>
-            <Toast />
+            <Toast config={toastConfig} />
           </SafeAreaProvider>
         </KeyboardProvider>
       </GestureHandlerRootView>

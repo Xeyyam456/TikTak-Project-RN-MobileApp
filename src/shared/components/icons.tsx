@@ -180,6 +180,29 @@ export function CheckIcon({ size = 24, color = '#FFFFFF' }: IconProps) {
   );
 }
 
+export function CloseIcon({ size = 24, color = '#FFFFFF' }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M6 6l12 12M18 6L6 18"
+        stroke={color}
+        strokeWidth={3}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
+export function AlertIcon({ size = 24, color = '#FFFFFF' }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path d="M12 7v6" stroke={color} strokeWidth={3} strokeLinecap="round" />
+      <Circle cx={12} cy={17} r={1.5} fill={color} />
+    </Svg>
+  );
+}
+
 export function DocumentIcon({ size = 24, color = '#1A1A1A' }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">

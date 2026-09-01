@@ -27,7 +27,7 @@ export const useBasketStore = create<BasketState>((set, get) => ({
     set({ loading: true, error: undefined });
     try {
       const basket = await getBasket();
-      set({ basket });
+      set({ basket: sortBasketItems(basket) });
     } catch (err) {
       set({ error: getApiErrorMessage(err) });
     } finally {
@@ -37,7 +37,7 @@ export const useBasketStore = create<BasketState>((set, get) => ({
   addItem: async productId => {
     const previousQuantity = quantityForProduct(get().basket, productId);
     const basket = await addToBasket(productId);
-    set({ basket });
+    set({ basket: sortBasketItems(basket) });
     const title =
       basket.items?.find(item => item.product.id === productId)?.product
         .title ?? 'Məhsul';
@@ -50,7 +50,7 @@ export const useBasketStore = create<BasketState>((set, get) => ({
       item => item.product.id === productId,
     );
     const basket = await removeFromBasket(productId);
-    set({ basket });
+    set({ basket: sortBasketItems(basket) });
     const title = previousItem?.product.title ?? 'Məhsul';
     showSuccessToast(
       `${title} ${(previousItem?.quantity ?? 0) <= 1 ? 'səbətdən silindi' : 'sayı azaldıldı'}`,
@@ -58,10 +58,20 @@ export const useBasketStore = create<BasketState>((set, get) => ({
   },
   clearBasket: async () => {
     const basket = await clearBasketRequest();
-    set({ basket });
+    set({ basket: sortBasketItems(basket) });
     showSuccessToast('Səbət təmizləndi');
   },
 }));
+
+// Backend doesn't guarantee stable item order across mutations (e.g. bumps the
+// just-changed item to the front) — sort by item id so basket rows don't swap
+// places when a quantity changes.
+function sortBasketItems(basket: Basket): Basket {
+  if (!basket.items) {
+    return basket;
+  }
+  return { ...basket, items: [...basket.items].sort((a, b) => a.id - b.id) };
+}
 
 export function quantityForProduct(basket: Basket | undefined, productId: number) {
   return (
