@@ -1,14 +1,16 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ActivityIndicator, RefreshControl, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import ConfirmModal from '@shared/components/ConfirmModal';
 import ErrorState from '@shared/components/ErrorState';
 import { ClockIcon, DocumentIcon, HeartIcon, LogoutIcon } from '@shared/components/icons';
 import useReload from '@shared/hooks/useReload';
 import { logout } from '@shared/services/auth.service';
 import { getProfile } from '@shared/services/profile.service';
+import { queryKeys } from '@shared/queries/queryKeys';
 import { getApiErrorMessage } from '@shared/utils/apiError';
 import { showSuccessToast } from '@shared/utils/toast';
 import type { ProfileStackParamList, RootStackParamList } from '@typings/navigation';
@@ -21,27 +23,24 @@ function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const navigation =
     useNavigation<NativeStackNavigationProp<ProfileStackParamList>>();
+  const queryClient = useQueryClient();
 
-  const [profile, setProfile] = useState<UserProfile>();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string>();
+  const {
+    data: profile,
+    isPending: loading,
+    error: queryError,
+    refetch,
+  } = useQuery({ queryKey: queryKeys.profile, queryFn: getProfile });
+  const error = queryError ? getApiErrorMessage(queryError) : undefined;
+
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 
-  const loadProfile = useCallback(() => {
-    setLoading(true);
-    setError(undefined);
-    getProfile()
-      .then(setProfile)
-      .catch(err => setError(getApiErrorMessage(err)))
-      .finally(() => setLoading(false));
-  }, []);
+  const { refreshing, onRefresh } = useReload(refetch);
 
-  useEffect(() => {
-    loadProfile();
-  }, [loadProfile]);
-
-  const { refreshing, onRefresh } = useReload(loadProfile);
+  function setProfile(updated: UserProfile) {
+    queryClient.setQueryData(queryKeys.profile, updated);
+  }
 
   async function handleConfirmLogout() {
     setLoggingOut(true);
@@ -66,7 +65,7 @@ function ProfileScreen() {
         <Text style={styles.title}>Hesabım</Text>
 
         {error ? (
-          <ErrorState message={error} onRetry={loadProfile} />
+          <ErrorState message={error} onRetry={refetch} />
         ) : loading ? (
           <ActivityIndicator color="#7BC043" style={styles.loader} />
         ) : (

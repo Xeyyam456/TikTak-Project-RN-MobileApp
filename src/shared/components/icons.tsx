@@ -1,11 +1,12 @@
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
+import { COLORS } from '../../theme/colors';
 
 type IconProps = {
   size?: number;
   color?: string;
 };
 
-export function HomeIcon({ size = 24, color = '#9B9B9B' }: IconProps) {
+export function HomeIcon({ size = 24, color = COLORS.textMuted }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
@@ -19,7 +20,7 @@ export function HomeIcon({ size = 24, color = '#9B9B9B' }: IconProps) {
   );
 }
 
-export function SearchIcon({ size = 24, color = '#9B9B9B' }: IconProps) {
+export function SearchIcon({ size = 24, color = COLORS.textMuted }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Circle cx={11} cy={11} r={7} stroke={color} strokeWidth={2} />
@@ -33,7 +34,7 @@ export function SearchIcon({ size = 24, color = '#9B9B9B' }: IconProps) {
   );
 }
 
-export function UserIcon({ size = 24, color = '#9B9B9B' }: IconProps) {
+export function UserIcon({ size = 24, color = COLORS.textMuted }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Circle cx={12} cy={8} r={4} stroke={color} strokeWidth={2} />
@@ -47,7 +48,7 @@ export function UserIcon({ size = 24, color = '#9B9B9B' }: IconProps) {
   );
 }
 
-export function ChevronRightIcon({ size = 24, color = '#9B9B9B' }: IconProps) {
+export function ChevronRightIcon({ size = 24, color = COLORS.textMuted }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
@@ -61,7 +62,7 @@ export function ChevronRightIcon({ size = 24, color = '#9B9B9B' }: IconProps) {
   );
 }
 
-export function EyeIcon({ size = 24, color = '#9B9B9B' }: IconProps) {
+export function EyeIcon({ size = 24, color = COLORS.textMuted }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
@@ -76,7 +77,7 @@ export function EyeIcon({ size = 24, color = '#9B9B9B' }: IconProps) {
   );
 }
 
-export function EyeOffIcon({ size = 24, color = '#9B9B9B' }: IconProps) {
+export function EyeOffIcon({ size = 24, color = COLORS.textMuted }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
@@ -91,7 +92,7 @@ export function EyeOffIcon({ size = 24, color = '#9B9B9B' }: IconProps) {
   );
 }
 
-export function ImageIcon({ size = 24, color = '#1A1A1A' }: IconProps) {
+export function ImageIcon({ size = 24, color = COLORS.textPrimary }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Rect x={3} y={3} width={18} height={18} rx={3} stroke={color} strokeWidth={2} />
@@ -107,7 +108,7 @@ export function ImageIcon({ size = 24, color = '#1A1A1A' }: IconProps) {
   );
 }
 
-export function GridIcon({ size = 24, color = '#FFFFFF' }: IconProps) {
+export function GridIcon({ size = 24, color = COLORS.white }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Rect x={3} y={3} width={8} height={8} rx={2} fill={color} />
@@ -120,7 +121,7 @@ export function GridIcon({ size = 24, color = '#FFFFFF' }: IconProps) {
 
 export function HeartIcon({
   size = 24,
-  color = '#1A1A1A',
+  color = COLORS.textPrimary,
   filled = false,
 }: IconProps & { filled?: boolean }) {
   return (
@@ -137,7 +138,7 @@ export function HeartIcon({
   );
 }
 
-export function ArrowLeftIcon({ size = 24, color = '#1A1A1A' }: IconProps) {
+export function ArrowLeftIcon({ size = 24, color = COLORS.textPrimary }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
@@ -151,7 +152,7 @@ export function ArrowLeftIcon({ size = 24, color = '#1A1A1A' }: IconProps) {
   );
 }
 
-export function TrashIcon({ size = 24, color = '#FFFFFF' }: IconProps) {
+export function TrashIcon({ size = 24, color = COLORS.white }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
@@ -166,7 +167,7 @@ export function TrashIcon({ size = 24, color = '#FFFFFF' }: IconProps) {
   );
 }
 
-export function CheckIcon({ size = 24, color = '#FFFFFF' }: IconProps) {
+export function CheckIcon({ size = 24, color = COLORS.white }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
@@ -180,7 +181,30 @@ export function CheckIcon({ size = 24, color = '#FFFFFF' }: IconProps) {
   );
 }
 
-export function DocumentIcon({ size = 24, color = '#1A1A1A' }: IconProps) {
+export function CloseIcon({ size = 24, color = COLORS.white }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M6 6l12 12M18 6L6 18"
+        stroke={color}
+        strokeWidth={3}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
+export function AlertIcon({ size = 24, color = COLORS.white }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path d="M12 7v6" stroke={color} strokeWidth={3} strokeLinecap="round" />
+      <Circle cx={12} cy={17} r={1.5} fill={color} />
+    </Svg>
+  );
+}
+
+export function DocumentIcon({ size = 24, color = COLORS.textPrimary }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
@@ -202,7 +226,7 @@ export function DocumentIcon({ size = 24, color = '#1A1A1A' }: IconProps) {
   );
 }
 
-export function ClockIcon({ size = 24, color = '#1A1A1A' }: IconProps) {
+export function ClockIcon({ size = 24, color = COLORS.textPrimary }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Circle cx={12} cy={12} r={9} stroke={color} strokeWidth={2} />
@@ -217,7 +241,7 @@ export function ClockIcon({ size = 24, color = '#1A1A1A' }: IconProps) {
   );
 }
 
-export function LogoutIcon({ size = 24, color = '#1A1A1A' }: IconProps) {
+export function LogoutIcon({ size = 24, color = COLORS.textPrimary }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
@@ -238,7 +262,7 @@ export function LogoutIcon({ size = 24, color = '#1A1A1A' }: IconProps) {
   );
 }
 
-export function CartIcon({ size = 24, color = '#1A1A1A' }: IconProps) {
+export function CartIcon({ size = 24, color = COLORS.textPrimary }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Circle cx={8} cy={21} r={1} stroke={color} strokeWidth={2} />

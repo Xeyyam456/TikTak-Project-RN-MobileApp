@@ -55,4 +55,38 @@ export const styles = StyleSheet.create({
     color: '#9B9B9B',
     fontFamily: FONTS.regular,
   },
+  historySection: {
+    paddingHorizontal: HORIZONTAL_PADDING,
+    paddingTop: 20,
+  },
+  historyHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  historyTitle: {
+    fontSize: 13,
+    color: '#9B9B9B',
+    fontFamily: FONTS.semiBold,
+  },
+  historyClear: {
+    fontSize: 13,
+    color: '#7BC043',
+    fontFamily: FONTS.semiBold,
+  },
+  historyRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F1F0F7',
+  },
+  historyText: {
+    flex: 1,
+    fontSize: 14,
+    color: '#1A1A1A',
+    fontFamily: FONTS.regular,
+  },
 });

@@ -1,5 +1,6 @@
-import { Component, Fragment } from 'react';
+import { Component, Fragment, type ErrorInfo } from 'react';
 import { Text, View } from 'react-native';
+import * as Sentry from '@sentry/react-native';
 import Button from '../Button';
 import { styles } from './ErrorBoundary.styles';
 import type { ErrorBoundaryProps, ErrorBoundaryState } from './ErrorBoundary.types';
@@ -9,6 +10,10 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 
   static getDerivedStateFromError(error: Error): Pick<ErrorBoundaryState, 'error'> {
     return { error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    Sentry.captureException(error, { extra: { componentStack: errorInfo.componentStack } });
   }
 
   // Clearing just `error` re-renders the exact same children with whatever

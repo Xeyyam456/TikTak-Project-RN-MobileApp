@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { FONTS } from '../../../theme/fonts';
+import { COLORS } from '../../../theme/colors';
 
 export const styles = StyleSheet.create({
   overlay: {
@@ -12,7 +13,7 @@ export const styles = StyleSheet.create({
   card: {
     width: '100%',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: COLORS.white,
     borderRadius: 20,
     padding: 24,
   },
@@ -22,15 +23,15 @@ export const styles = StyleSheet.create({
     borderRadius: 36,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#F1F0F7',
+    backgroundColor: COLORS.border,
     marginBottom: 16,
   },
   iconCircleDanger: {
-    backgroundColor: '#FBE6E6',
+    backgroundColor: COLORS.dangerLight,
   },
   title: {
     fontSize: 18,
-    color: '#1A1A1A',
+    color: COLORS.textPrimary,
     fontFamily: FONTS.bold,
     textAlign: 'center',
   },
@@ -38,7 +39,7 @@ export const styles = StyleSheet.create({
     marginTop: 8,
     fontSize: 14,
     lineHeight: 20,
-    color: '#9B9B9B',
+    color: COLORS.textMuted,
     fontFamily: FONTS.regular,
     textAlign: 'center',
   },
@@ -49,7 +50,7 @@ export const styles = StyleSheet.create({
   cancel: {
     marginTop: 16,
     fontSize: 14,
-    color: '#9B9B9B',
+    color: COLORS.textMuted,
     fontFamily: FONTS.semiBold,
     textAlign: 'center',
   },
