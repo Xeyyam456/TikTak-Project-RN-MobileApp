@@ -11,13 +11,15 @@ import { KeyboardProvider } from 'react-native-keyboard-controller';
 import Toast from 'react-native-toast-message';
 import BootSplash from 'react-native-bootsplash';
 import * as Sentry from '@sentry/react-native';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { navigationRef } from './src/navigation/navigationRef';
 import RootNavigator from './src/navigation/RootNavigator';
 import ErrorBoundary from './src/shared/components/ErrorBoundary';
 import { toastConfig } from './src/shared/utils/toast';
 import { SENTRY_DSN } from './src/shared/config/env';
 import { initTokenStorage } from './src/shared/api/tokenStorage';
+import { queryClient } from './src/shared/api/queryClient';
+import { queryPersister } from './src/shared/api/queryStorage';
 
 Sentry.init({
   dsn: SENTRY_DSN,
@@ -25,14 +27,10 @@ Sentry.init({
   tracesSampleRate: 0.2,
 });
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 30_000,
-      retry: 1,
-    },
-  },
-});
+// Bump this if a cached query's shape ever changes in a way old persisted
+// data wouldn't satisfy (e.g. a field rename) — mismatched persister.buster
+// makes restoreClient() discard the old cache instead of rehydrating it.
+const CACHE_BUSTER = 'v1';
 
 function App() {
   const [ready, setReady] = useState(false);
@@ -53,7 +51,10 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
+      <PersistQueryClientProvider
+        client={queryClient}
+        persistOptions={{ persister: queryPersister, maxAge: 24 * 60 * 60 * 1000, buster: CACHE_BUSTER }}
+      >
         <GestureHandlerRootView style={{ flex: 1 }}>
           <KeyboardProvider>
             <SafeAreaProvider>
@@ -65,7 +66,7 @@ function App() {
             </SafeAreaProvider>
           </KeyboardProvider>
         </GestureHandlerRootView>
-      </QueryClientProvider>
+      </PersistQueryClientProvider>
     </ErrorBoundary>
   );
 }

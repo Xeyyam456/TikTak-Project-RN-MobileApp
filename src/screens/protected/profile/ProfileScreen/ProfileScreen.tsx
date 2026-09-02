@@ -45,6 +45,11 @@ function ProfileScreen() {
   async function handleConfirmLogout() {
     setLoggingOut(true);
     await logout();
+    // Drops cached profile/orders/favorites/basket data from both memory
+    // and the MMKV-persisted query cache — otherwise a different user
+    // logging in on the same device could see the previous user's data
+    // offline, before their own queries have refetched.
+    queryClient.clear();
     showSuccessToast('Uğurla çıxış edildi');
     navigation
       .getParent<NativeStackNavigationProp<RootStackParamList>>()
