@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ActivityIndicator, RefreshControl, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -6,7 +6,13 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import ConfirmModal from '@shared/components/ConfirmModal';
 import ErrorState from '@shared/components/ErrorState';
-import { ClockIcon, DocumentIcon, HeartIcon, LogoutIcon } from '@shared/components/icons';
+import {
+  ClockIcon,
+  DocumentIcon,
+  HeartIcon,
+  LogoutIcon,
+  SettingsIcon,
+} from '@shared/components/icons';
 import useReload from '@shared/hooks/useReload';
 import { logout } from '@shared/services/auth.service';
 import { getProfile } from '@shared/services/profile.service';
@@ -17,12 +23,15 @@ import type { ProfileStackParamList, RootStackParamList } from '@typings/navigat
 import type { UserProfile } from '@typings/api';
 import AvatarPicker from '../AvatarPicker';
 import MenuRow from '../MenuRow';
-import { styles } from './ProfileScreen.styles';
+import { useTheme } from '../../../../theme/ThemeContext';
+import { createStyles } from './ProfileScreen.styles';
 
 function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const navigation =
     useNavigation<NativeStackNavigationProp<ProfileStackParamList>>();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const queryClient = useQueryClient();
 
   const {
@@ -72,7 +81,7 @@ function ProfileScreen() {
         {error ? (
           <ErrorState message={error} onRetry={refetch} />
         ) : loading ? (
-          <ActivityIndicator color="#7BC043" style={styles.loader} />
+          <ActivityIndicator color={colors.primary} style={styles.loader} />
         ) : (
           <>
             <AvatarPicker profile={profile} onProfileUpdate={setProfile} />
@@ -98,6 +107,11 @@ function ProfileScreen() {
             onPress={() => navigation.navigate('OrderHistory')}
           />
           <MenuRow
+            icon={<SettingsIcon size={22} />}
+            label="Tənzimləmələr"
+            onPress={() => navigation.navigate('Settings')}
+          />
+          <MenuRow
             icon={<LogoutIcon size={22} />}
             label="Çıxış"
             onPress={() => setLogoutModalVisible(true)}
@@ -107,7 +121,7 @@ function ProfileScreen() {
 
       <ConfirmModal
         visible={logoutModalVisible}
-        icon={<LogoutIcon size={28} color="#E24C4C" />}
+        icon={<LogoutIcon size={28} color={colors.danger} />}
         title="Çıxış"
         message="Hesabdan çıxmaq istədiyinizə əminsiniz?"
         confirmLabel="Çıxış"

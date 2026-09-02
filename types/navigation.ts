@@ -26,4 +26,5 @@ export type ProfileStackParamList = {
   AccountInfo: undefined;
   MyLists: undefined;
   OrderHistory: undefined;
+  Settings: undefined;
 };

@@ -55,8 +55,13 @@ function App() {
   }
 
   return (
-    <ErrorBoundary>
-      <ThemeProvider>
+    // ThemeProvider wraps ErrorBoundary (not the other way around) on
+    // purpose — ErrorBoundary's own fallback UI renders a <Button>, which
+    // calls useTheme() internally, so the boundary's fallback needs a
+    // theme context available even when everything below it has crashed.
+    // ThemeProvider itself is simple/stable enough not to need catching.
+    <ThemeProvider>
+      <ErrorBoundary>
         <PersistQueryClientProvider
           client={queryClient}
           persistOptions={{ persister: queryPersister, maxAge: 24 * 60 * 60 * 1000, buster: CACHE_BUSTER }}
@@ -69,8 +74,8 @@ function App() {
             </KeyboardProvider>
           </GestureHandlerRootView>
         </PersistQueryClientProvider>
-      </ThemeProvider>
-    </ErrorBoundary>
+      </ErrorBoundary>
+    </ThemeProvider>
   );
 }
 
