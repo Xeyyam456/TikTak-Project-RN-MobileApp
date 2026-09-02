@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { FlatList, RefreshControl, Text, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useQuery } from '@tanstack/react-query';
@@ -26,6 +27,7 @@ function CardGap() {
 function OrderCard({ order, onPress }: { order: Order; onPress: () => void }) {
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const { t } = useTranslation();
   const status = getOrderStatusMeta(order.status);
 
   return (
@@ -48,7 +50,7 @@ function OrderCard({ order, onPress }: { order: Order; onPress: () => void }) {
 
       <View style={styles.cardBottom}>
         <View style={styles.addressBlock}>
-          <Text style={styles.addressLabel}>Çatdırılma ünvanı</Text>
+          <Text style={styles.addressLabel}>{t('orderDetail.addressLabel')}</Text>
           <Text style={styles.addressText} numberOfLines={1}>
             {order.address}
           </Text>
@@ -109,6 +111,7 @@ function OrderHistoryScreen() {
   const navigation = useNavigation();
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const { t } = useTranslation();
 
   const {
     data: orders = [],
@@ -123,7 +126,7 @@ function OrderHistoryScreen() {
 
   return (
     <View style={[styles.flex, { paddingTop: insets.top }]}>
-      <ScreenHeader title="Sifariş tarixçəsi" onBack={() => navigation.goBack()} />
+      <ScreenHeader title={t('orderHistory.title')} onBack={() => navigation.goBack()} />
 
       {error ? (
         <ErrorState message={error} onRetry={refetch} />
@@ -139,7 +142,7 @@ function OrderHistoryScreen() {
           }
           ItemSeparatorComponent={CardGap}
           ListEmptyComponent={
-            <Text style={styles.emptyText}>Hələ sifarişiniz yoxdur</Text>
+            <Text style={styles.emptyText}>{t('orderHistory.emptyText')}</Text>
           }
           contentContainerStyle={[
             styles.listContent,

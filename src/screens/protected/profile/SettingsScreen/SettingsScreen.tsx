@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import Animated, {
   FadeIn,
   useAnimatedStyle,
@@ -26,6 +27,7 @@ function SettingsScreen() {
   const navigation = useNavigation();
   const { colors, isDark, setDarkModeEnabled } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const { t, i18n } = useTranslation();
 
   const [language, setLanguageState] = useState<Language>(getLanguage);
   const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
@@ -44,27 +46,27 @@ function SettingsScreen() {
   function handleSelectLanguage(code: Language) {
     setLanguage(code);
     setLanguageState(code);
+    i18n.changeLanguage(code);
     setLanguageMenuOpen(false);
   }
 
   return (
     <View style={[styles.flex, { paddingTop: insets.top }]}>
-      <ScreenHeader title="Tənzimləmələr" onBack={() => navigation.goBack()} />
+      <ScreenHeader title={t('settings.title')} onBack={() => navigation.goBack()} />
 
       <View style={styles.container}>
         <View>
-          <Text style={styles.sectionTitle}>Görünüş</Text>
+          <Text style={styles.sectionTitle}>{t('settings.appearance')}</Text>
           <View style={[styles.card, styles.toggleRow]}>
-            <Text style={styles.languageLabel}>Qaranlıq rejim</Text>
+            <Text style={styles.languageLabel}>{t('settings.darkMode')}</Text>
             <ThemeSwitch value={isDark} onValueChange={setDarkModeEnabled} />
           </View>
         </View>
 
         <View>
-          <Text style={styles.sectionTitle}>Dil</Text>
-          {/* Only changes what the backend sends back (Accept-Language) —
-              in-app screen text stays Azerbaijani until full translation
-              is built out as a separate piece of work. */}
+          <Text style={styles.sectionTitle}>{t('settings.language')}</Text>
+          {/* Changes both the UI language (i18n.changeLanguage) and what
+              the backend sends back (Accept-Language, via httpClient). */}
           <View style={styles.card}>
             <TouchableOpacity
               style={styles.languageRow}

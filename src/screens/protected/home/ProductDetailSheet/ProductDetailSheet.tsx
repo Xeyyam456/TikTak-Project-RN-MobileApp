@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import BottomSheet from '@shared/components/BottomSheet';
 import Button from '@shared/components/Button';
 import { HeartIcon } from '@shared/components/icons';
@@ -21,6 +22,7 @@ function ProductDetailSheet({
 }: ProductDetailSheetProps) {
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const { t } = useTranslation();
   const [isFavorite, setIsFavorite] = useState(false);
   const [togglingFavorite, setTogglingFavorite] = useState(false);
 
@@ -41,7 +43,12 @@ function ProductDetailSheet({
       setIsFavorite(detail.is_favorite);
       onFavoriteChange?.(product.id, detail.is_favorite);
       showSuccessToast(
-        `${product.title} ${detail.is_favorite ? 'favoritlərə əlavə edildi' : 'favoritlərdən silindi'}`,
+        t(
+          detail.is_favorite
+            ? 'productDetail.addedToFavorites'
+            : 'productDetail.removedFromFavorites',
+          { title: product.title },
+        ),
       );
     } catch {
       setIsFavorite(!nextValue);
@@ -79,10 +86,10 @@ function ProductDetailSheet({
 
           {quantity > 0 ? (
             <View style={styles.inBasket}>
-              <Text style={styles.inBasketText}>Artıq səbətdədir</Text>
+              <Text style={styles.inBasketText}>{t('productDetail.inBasket')}</Text>
             </View>
           ) : (
-            <Button title="Səbətə əlavə et" onPress={onAdd} />
+            <Button title={t('productDetail.addToBasket')} onPress={onAdd} />
           )}
         </>
       )}

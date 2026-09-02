@@ -1,0 +1,152 @@
+{
+  "welcome": {
+    "description": "Sizə daha əlçatan olması üçün qeydiyyatdan keçərək davam edə bilərsiniz 🥰",
+    "register": "Qeydiyyat",
+    "haveAccount": "Hesabınız varsa",
+    "login": "Daxil olun"
+  },
+  "settings": {
+    "title": "Tənzimləmələr",
+    "appearance": "Görünüş",
+    "darkMode": "Qaranlıq rejim",
+    "language": "Dil"
+  },
+  "tabBar": {
+    "home": "Əsas",
+    "search": "Axtar",
+    "profile": "Hesabım"
+  },
+  "login": {
+    "title": "Daxil ol",
+    "phoneLabel": "Telefon",
+    "phonePlaceholder": "telefon",
+    "passwordLabel": "Parol",
+    "passwordPlaceholder": "parol",
+    "rememberMe": "Sessiyanı aktiv saxla",
+    "submit": "Daxil ol",
+    "successToast": "Uğurla daxil oldunuz",
+    "noAccount": "Hesabınız yoxdursa",
+    "signUp": "Qeydiyyatdan keç"
+  },
+  "register": {
+    "title": "Qeydiyyatdan keç",
+    "nameLabel": "Ad, soyad",
+    "namePlaceholder": "ad soyad",
+    "phoneLabel": "Telefon",
+    "phonePlaceholder": "telefon",
+    "passwordLabel": "Parol",
+    "passwordPlaceholder": "parol",
+    "submit": "Qeydiyyat",
+    "successToast": "Qeydiyyat tamamlandı, indi daxil ola bilərsiniz",
+    "haveAccount": "Hesabınız varsa",
+    "login": "Daxil olun"
+  },
+  "basket": {
+    "title": "Səbətim",
+    "emptyText": "Səbətinizdə məhsul yoxdur",
+    "clearAll": "Səbəti təmizlə",
+    "clearConfirmMessage": "Səbətdəki bütün məhsulları silmək istədiyinizə əminsiniz?",
+    "clearConfirmButton": "Təmizlə",
+    "subtotal": "Ümumi: {{total}} AZN",
+    "deliveryFree": "Çatdırılma: Pulsuz",
+    "finalTotalLabel": "Yekun məbləğ:",
+    "checkout": "Sifarişi tamamla"
+  },
+  "checkout": {
+    "title": "Sifarişi tamamla",
+    "nameLabel": "Adınız",
+    "addressLabel": "Ünvaniniz",
+    "phoneLabel": "Telefon",
+    "noteLabel": "Əlavə qeydiniz",
+    "cashOnDelivery": "Qapıda nağd",
+    "cardOnDelivery": "Qapıda kart",
+    "subtotal": "Ümumi: {{total}} AZN",
+    "deliveryFree": "Çatdırılma: Pulsuz",
+    "finalTotalLabel": "Yekun məbləğ:",
+    "submit": "Sifarişi tamamla"
+  },
+  "orderSuccess": {
+    "title": "Sifariş uğurla tamamlandı",
+    "subtitle": "Əməkdaşlarımız sizinlə əlaqə saxlayıb sifarişinizi göndərəcəklər.",
+    "countdown": "{{seconds}} saniyə sonra Sifarişlərim bölməsinə yönləndiriləcəksiniz",
+    "backHome": "Əsas səhifəyə qayıt"
+  },
+  "addressEditModal": {
+    "title": "Çatdırılma ünvanı",
+    "addressLabel": "Ünvan",
+    "addressPlaceholder": "Ünvanı daxil edin",
+    "save": "Yadda saxla",
+    "cancel": "Ləğv et",
+    "addressRequired": "Ünvan daxil edin",
+    "successToast": "Çatdırılma ünvanı yeniləndi"
+  },
+  "categoryProducts": {
+    "backToCategories": "Əsas kateqoriyalara qayıt"
+  },
+  "emptyCategoryState": {
+    "text": "Bu kateqoriyada məhsul yoxdur"
+  },
+  "home": {
+    "addressLabel": "Çatdırılma ünvanı:",
+    "noAddress": "Ünvan seçilməyib"
+  },
+  "productDetail": {
+    "addedToFavorites": "{{title}} favoritlərə əlavə edildi",
+    "removedFromFavorites": "{{title}} favoritlərdən silindi",
+    "inBasket": "Artıq səbətdədir",
+    "addToBasket": "Səbətə əlavə et"
+  },
+  "accountInfo": {
+    "title": "Hesab",
+    "nameLabel": "Ad Soyad",
+    "namePlaceholder": "Ad, Soyad",
+    "addressLabel": "Ünvan",
+    "addressPlaceholder": "ünvan",
+    "emailLabel": "E-mail",
+    "phoneLabel": "Telefon nömrəsi",
+    "passwordLabel": "Şifrə",
+    "passwordPlaceholder": "Yeni şifrə (dəyişmək istəməsəniz boş buraxın)",
+    "passwordRepeatLabel": "Şifrənin təkrarı",
+    "save": "Yadda saxla",
+    "addressRequired": "Ünvan daxil edin",
+    "passwordMismatch": "Şifrələr uyğun gəlmir"
+  },
+  "avatarPicker": {
+    "title": "Profil şəkli",
+    "changePhoto": "Şəkli dəyiş",
+    "viewPhoto": "Şəklə bax",
+    "pickError": "Şəkil seçilə bilmədi"
+  },
+  "myLists": {
+    "title": "Siyahılarım",
+    "emptyText": "Siyahınız boşdur"
+  },
+  "orderDetail": {
+    "dateLabel": "Tarix",
+    "numberLabel": "No",
+    "itemsCountLabel": "Məhsul sayı",
+    "addressLabel": "Çatdırılma ünvanı",
+    "statusLabel": "Status",
+    "subtotalDeliveryLabel": "Subtotal/Çatdırılma",
+    "free": "pulsuz"
+  },
+  "orderHistory": {
+    "title": "Sifariş tarixçəsi",
+    "emptyText": "Hələ sifarişiniz yoxdur"
+  },
+  "profile": {
+    "title": "Hesabım",
+    "accountInfo": "Hesab məlumatlarım",
+    "myLists": "Siyahılarım",
+    "orderHistory": "Sifariş tarixçəsi",
+    "logout": "Çıxış",
+    "logoutConfirmMessage": "Hesabdan çıxmaq istədiyinizə əminsiniz?",
+    "logoutSuccessToast": "Uğurla çıxış edildi"
+  },
+  "search": {
+    "placeholder": "Axtar...",
+    "recentSearches": "Son axtarışlar",
+    "clear": "Təmizlə",
+    "noResults": "Heç bir nəticə tapılmadı"
+  }
+}

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { ActivityIndicator, RefreshControl, ScrollView, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -32,6 +33,7 @@ function ProfileScreen() {
     useNavigation<NativeStackNavigationProp<ProfileStackParamList>>();
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const {
@@ -59,7 +61,7 @@ function ProfileScreen() {
     // logging in on the same device could see the previous user's data
     // offline, before their own queries have refetched.
     queryClient.clear();
-    showSuccessToast('Uğurla çıxış edildi');
+    showSuccessToast(t('profile.logoutSuccessToast'));
     navigation
       .getParent<NativeStackNavigationProp<RootStackParamList>>()
       ?.reset({ index: 0, routes: [{ name: 'Welcome' }] });
@@ -76,7 +78,7 @@ function ProfileScreen() {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        <Text style={styles.title}>Hesabım</Text>
+        <Text style={styles.title}>{t('profile.title')}</Text>
 
         {error ? (
           <ErrorState message={error} onRetry={refetch} />
@@ -93,27 +95,27 @@ function ProfileScreen() {
         <View style={styles.menu}>
           <MenuRow
             icon={<DocumentIcon size={22} />}
-            label="Hesab məlumatlarım"
+            label={t('profile.accountInfo')}
             onPress={() => navigation.navigate('AccountInfo')}
           />
           <MenuRow
             icon={<HeartIcon size={22} />}
-            label="Siyahılarım"
+            label={t('profile.myLists')}
             onPress={() => navigation.navigate('MyLists')}
           />
           <MenuRow
             icon={<ClockIcon size={22} />}
-            label="Sifariş tarixçəsi"
+            label={t('profile.orderHistory')}
             onPress={() => navigation.navigate('OrderHistory')}
           />
           <MenuRow
             icon={<SettingsIcon size={22} />}
-            label="Tənzimləmələr"
+            label={t('settings.title')}
             onPress={() => navigation.navigate('Settings')}
           />
           <MenuRow
             icon={<LogoutIcon size={22} />}
-            label="Çıxış"
+            label={t('profile.logout')}
             onPress={() => setLogoutModalVisible(true)}
           />
         </View>
@@ -122,9 +124,9 @@ function ProfileScreen() {
       <ConfirmModal
         visible={logoutModalVisible}
         icon={<LogoutIcon size={28} color={colors.danger} />}
-        title="Çıxış"
-        message="Hesabdan çıxmaq istədiyinizə əminsiniz?"
-        confirmLabel="Çıxış"
+        title={t('profile.logout')}
+        message={t('profile.logoutConfirmMessage')}
+        confirmLabel={t('profile.logout')}
         destructive
         loading={loggingOut}
         onConfirm={handleConfirmLogout}

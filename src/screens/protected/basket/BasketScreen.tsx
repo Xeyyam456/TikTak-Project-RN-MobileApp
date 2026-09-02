@@ -9,6 +9,7 @@ import {
   View,
 } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
+import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -73,6 +74,7 @@ function BasketScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const { t } = useTranslation();
 
   const basket = useBasketStore(state => state.basket);
   const loading = useBasketStore(state => state.loading);
@@ -100,7 +102,7 @@ function BasketScreen() {
 
   return (
     <View style={[styles.flex, { paddingTop: insets.top }]}>
-      <ScreenHeader title="Səbətim" onBack={() => navigation.goBack()} />
+      <ScreenHeader title={t('basket.title')} onBack={() => navigation.goBack()} />
 
       {error ? (
         <ErrorState message={error} onRetry={fetchBasket} />
@@ -118,7 +120,7 @@ function BasketScreen() {
               />
             </Svg>
           </View>
-          <Text style={styles.emptyStateText}>Səbətinizdə məhsul yoxdur</Text>
+          <Text style={styles.emptyStateText}>{t('basket.emptyText')}</Text>
         </View>
       ) : (
         <>
@@ -126,7 +128,7 @@ function BasketScreen() {
             style={styles.clearRow}
             onPress={() => setClearModalVisible(true)}
           >
-            <Text style={styles.clearText}>Səbəti təmizlə</Text>
+            <Text style={styles.clearText}>{t('basket.clearAll')}</Text>
           </TouchableOpacity>
 
           <ScrollView
@@ -155,9 +157,9 @@ function BasketScreen() {
       <ConfirmModal
         visible={clearModalVisible}
         icon={<TrashIcon size={28} color={colors.danger} />}
-        title="Səbəti təmizlə"
-        message="Səbətdəki bütün məhsulları silmək istədiyinizə əminsiniz?"
-        confirmLabel="Təmizlə"
+        title={t('basket.clearAll')}
+        message={t('basket.clearConfirmMessage')}
+        confirmLabel={t('basket.clearConfirmButton')}
         destructive
         loading={clearing}
         onConfirm={handleConfirmClear}
@@ -172,16 +174,18 @@ function BasketScreen() {
           <View style={styles.footerDivider} />
           <View style={styles.summaryRow}>
             <View>
-              <Text style={styles.summaryLabel}>Ümumi: {basket?.total} AZN</Text>
-              <Text style={styles.summaryLabel}>Çatırılma: Pulsuz</Text>
+              <Text style={styles.summaryLabel}>
+                {t('basket.subtotal', { total: basket?.total })}
+              </Text>
+              <Text style={styles.summaryLabel}>{t('basket.deliveryFree')}</Text>
             </View>
             <View style={styles.summaryTotalWrapper}>
-              <Text style={styles.summaryTotalLabel}>Yekun məbləğ:</Text>
+              <Text style={styles.summaryTotalLabel}>{t('basket.finalTotalLabel')}</Text>
               <Text style={styles.summaryTotalValue}>{basket?.total} AZN</Text>
             </View>
           </View>
           <Button
-            title="Sifarişi tamamla"
+            title={t('basket.checkout')}
             style={styles.checkoutButton}
             onPress={() => navigation.navigate('Checkout')}
           />

@@ -1,10 +1,9 @@
 import { isAxiosError } from 'axios';
-
-const FALLBACK_MESSAGE = 'Xəta baş verdi, yenidən cəhd edin';
+import i18n from '@shared/i18n/i18n';
 
 export function getApiErrorMessage(error: unknown): string {
   if (isAxiosError<{ message?: string }>(error)) {
-    return error.response?.data?.message ?? FALLBACK_MESSAGE;
+    return error.response?.data?.message ?? i18n.t('apiError.fallback');
   }
-  return FALLBACK_MESSAGE;
+  return i18n.t('apiError.fallback');
 }

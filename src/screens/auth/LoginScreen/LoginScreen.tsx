@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from 'react';
 import { Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import {
   KeyboardAwareScrollView,
   useReanimatedKeyboardAnimation,
@@ -30,6 +31,7 @@ function LoginScreen() {
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const { t } = useTranslation();
 
   const [phone, setPhone] = useState('+994');
   const [password, setPassword] = useState('');
@@ -55,7 +57,7 @@ function LoginScreen() {
     setLoading(true);
     try {
       await login({ phone, password }, rememberMe);
-      showSuccessToast('Uğurla daxil oldunuz');
+      showSuccessToast(t('login.successToast'));
       navigation.reset({ index: 0, routes: [{ name: 'Main' }] });
     } catch (error) {
       setFormError(getApiErrorMessage(error));
@@ -84,12 +86,12 @@ function LoginScreen() {
       bottomOffset={140}
       keyboardShouldPersistTaps="handled"
     >
-      <Text style={styles.title}>Daxil ol</Text>
+      <Text style={styles.title}>{t('login.title')}</Text>
 
       <View style={styles.form}>
         <TextField
-          label="Telefon"
-          placeholder="telefon"
+          label={t('login.phoneLabel')}
+          placeholder={t('login.phonePlaceholder')}
           keyboardType="phone-pad"
           value={phone}
           onChangeText={text => setPhone(applyAzPhonePrefix(text))}
@@ -97,8 +99,8 @@ function LoginScreen() {
           error={errors.phone}
         />
         <TextField
-          label="Parol"
-          placeholder="parol"
+          label={t('login.passwordLabel')}
+          placeholder={t('login.passwordPlaceholder')}
           secureTextEntry
           value={password}
           onChangeText={setPassword}
@@ -106,7 +108,7 @@ function LoginScreen() {
           error={errors.password}
         />
         <Checkbox
-          label="Sessiyanı aktiv saxla"
+          label={t('login.rememberMe')}
           checked={rememberMe}
           onChange={setRememberMe}
         />
@@ -114,11 +116,11 @@ function LoginScreen() {
 
       <View style={styles.footer}>
         {formError ? <Text style={styles.formError}>{formError}</Text> : null}
-        <Button title="Daxil ol" onPress={handleSubmit} loading={loading} />
+        <Button title={t('login.submit')} onPress={handleSubmit} loading={loading} />
 
         <AuthSwitchLink
-          promptText="Hesabınız yoxdursa"
-          linkText="Qeydiyyatdan keç"
+          promptText={t('login.noAccount')}
+          linkText={t('login.signUp')}
           onPress={() => navigation.navigate('Register')}
         />
       </View>

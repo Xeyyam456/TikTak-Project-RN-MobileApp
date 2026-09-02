@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import Button from '../Button';
 import { formatProductMeasure } from '@shared/utils/productMeasure';
 import { useTheme } from '../../../theme/ThemeContext';
@@ -19,6 +20,7 @@ function ProductCard({
 }: ProductCardProps) {
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const { t } = useTranslation();
   const total = (Number(product.price) * quantity).toFixed(2);
 
   return (
@@ -57,7 +59,12 @@ function ProductCard({
       ) : (
         <>
           <Text style={styles.cardPrice}>{product.price} AZN</Text>
-          <Button title="Səbətə əlavə et" onPress={onAdd} style={styles.addButton} />
+          <Button
+            title={t('productCard.addToBasket')}
+            onPress={onAdd}
+            style={styles.addButton}
+            textStyle={styles.addButtonTitle}
+          />
         </>
       )}
     </TouchableOpacity>

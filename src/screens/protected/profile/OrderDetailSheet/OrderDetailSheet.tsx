@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { Image, Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
+import { useTranslation } from 'react-i18next';
 import BottomSheet from '@shared/components/BottomSheet';
 import { formatOrderDate, getOrderStatusMeta } from '@shared/utils/order';
 import { formatProductMeasure } from '@shared/utils/productMeasure';
@@ -15,42 +16,43 @@ const FALLBACK_IMAGE_URL =
 function OrderDetailContent({ order }: { order: Order }) {
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const { t } = useTranslation();
   const itemCount = order.items.reduce((sum, item) => sum + item.quantity, 0);
   const subtotal = (Number(order.total) - Number(order.deliveryFee)).toFixed(2);
   const deliveryLabel =
-    Number(order.deliveryFee) === 0 ? 'pulsuz' : `${order.deliveryFee} AZN`;
+    Number(order.deliveryFee) === 0 ? t('orderDetail.free') : `${order.deliveryFee} AZN`;
 
   return (
     <>
       <View style={styles.infoGrid}>
         <View style={styles.infoColumn}>
-          <Text style={styles.infoLabel}>Tarix</Text>
+          <Text style={styles.infoLabel}>{t('orderDetail.dateLabel')}</Text>
           <Text style={styles.infoValue}>{formatOrderDate(order.createdAt)}</Text>
         </View>
         <View style={styles.infoColumn}>
-          <Text style={styles.infoLabel}>No</Text>
+          <Text style={styles.infoLabel}>{t('orderDetail.numberLabel')}</Text>
           <Text style={styles.infoValue}>#{order.orderNumber}</Text>
         </View>
 
         <View style={styles.infoColumn}>
-          <Text style={styles.infoLabel}>Məhsul sayı</Text>
+          <Text style={styles.infoLabel}>{t('orderDetail.itemsCountLabel')}</Text>
           <Text style={styles.infoValue}>{itemCount}</Text>
         </View>
         <View style={styles.infoColumn}>
-          <Text style={styles.infoLabel}>Çatdırılma ünvanı</Text>
+          <Text style={styles.infoLabel}>{t('orderDetail.addressLabel')}</Text>
           <Text style={styles.infoValue} numberOfLines={1}>
             {order.address}
           </Text>
         </View>
 
         <View style={styles.infoColumn}>
-          <Text style={styles.infoLabel}>Status</Text>
+          <Text style={styles.infoLabel}>{t('orderDetail.statusLabel')}</Text>
           <Text style={styles.infoValue}>
             {getOrderStatusMeta(order.status).label}
           </Text>
         </View>
         <View style={styles.infoColumn}>
-          <Text style={styles.infoLabel}>Subtotal/Çatdırılma</Text>
+          <Text style={styles.infoLabel}>{t('orderDetail.subtotalDeliveryLabel')}</Text>
           <Text style={styles.infoValue}>
             {subtotal} AZN/{deliveryLabel}
           </Text>

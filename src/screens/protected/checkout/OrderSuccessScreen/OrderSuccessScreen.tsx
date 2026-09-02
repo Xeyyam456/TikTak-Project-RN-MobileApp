@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -36,6 +37,7 @@ function OrderSuccessScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const { t } = useTranslation();
   const [secondsLeft, setSecondsLeft] = useState(REDIRECT_SECONDS);
 
   useEffect(() => {
@@ -49,7 +51,7 @@ function OrderSuccessScreen() {
 
   return (
     <View style={[styles.flex, { paddingTop: insets.top }]}>
-      <ScreenHeader title="Sifarişi tamamla" onBack={() => navigation.popToTop()} />
+      <ScreenHeader title={t('checkout.title')} onBack={() => navigation.popToTop()} />
 
       <View style={styles.content}>
         <View style={styles.iconHalo}>
@@ -57,18 +59,16 @@ function OrderSuccessScreen() {
             <CheckIcon size={40} />
           </View>
         </View>
-        <Text style={styles.title}>Sifariş uğurla tamamlandı</Text>
-        <Text style={styles.subtitle}>
-          Əməkdaşlarımız sizinlə əlaqə saxlayıb sifarişinizi göndərəcəklər.
-        </Text>
+        <Text style={styles.title}>{t('orderSuccess.title')}</Text>
+        <Text style={styles.subtitle}>{t('orderSuccess.subtitle')}</Text>
         <Text style={styles.countdown}>
-          {secondsLeft} saniyə sonra Sifarişlərim bölməsinə yönləndiriləcəksiniz
+          {t('orderSuccess.countdown', { seconds: secondsLeft })}
         </Text>
       </View>
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + 16 }]}>
         <Button
-          title="Əsas səhifəyə qayıt"
+          title={t('orderSuccess.backHome')}
           onPress={() =>
             navigation.reset({
               index: 0,

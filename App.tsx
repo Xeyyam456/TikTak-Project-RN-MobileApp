@@ -25,6 +25,11 @@ import { initTokenStorage } from './src/shared/api/tokenStorage';
 import { queryClient } from './src/shared/api/queryClient';
 import { queryPersister } from './src/shared/api/queryStorage';
 import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
+// Side-effect import — runs i18next's synchronous init (see i18n.ts) before
+// anything below renders. Must load before RootNavigator/AppShell, so it's
+// imported here rather than lazily from whichever screen happens to use
+// useTranslation() first.
+import './src/shared/i18n/i18n';
 
 Sentry.init({
   dsn: SENTRY_DSN,

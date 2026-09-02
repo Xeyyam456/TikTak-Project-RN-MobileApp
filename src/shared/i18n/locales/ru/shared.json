@@ -1,0 +1,51 @@
+{
+  "common": {
+    "retry": "Повторить",
+    "cancel": "Отмена",
+    "product": "Товар"
+  },
+  "errorBoundary": {
+    "title": "Что-то пошло не так",
+    "message": "В приложении произошла непредвиденная ошибка. Попробуйте ещё раз."
+  },
+  "productCard": {
+    "addToBasket": "Добавить в корзину"
+  },
+  "apiError": {
+    "fallback": "Произошла ошибка, попробуйте ещё раз"
+  },
+  "orderStatus": {
+    "pending": "Принят",
+    "confirmed": "Подтверждён",
+    "preparing": "Готовится",
+    "ready": "Готов",
+    "delivered": "Доставлен",
+    "cancelled": "Отменён"
+  },
+  "validation": {
+    "nameRequired": "Введите имя и фамилию",
+    "phoneRequired": "Введите номер телефона",
+    "phoneInvalid": "Введите корректный номер телефона",
+    "passwordRequired": "Введите пароль",
+    "passwordTooShort": "Пароль должен содержать не менее 6 символов"
+  },
+  "productMeasure": {
+    "kg": "кг",
+    "gr": "г",
+    "litre": "л",
+    "ml": "мл",
+    "meter": "м",
+    "cm": "см",
+    "mm": "мм",
+    "piece": "шт",
+    "packet": "уп",
+    "box": "кор"
+  },
+  "basket": {
+    "quantityIncreased": "Количество «{{title}}» увеличено",
+    "addedToBasket": "{{title}} добавлен в корзину",
+    "quantityDecreased": "Количество «{{title}}» уменьшено",
+    "removedFromBasket": "{{title}} удалён из корзины",
+    "cleared": "Корзина очищена"
+  }
+}

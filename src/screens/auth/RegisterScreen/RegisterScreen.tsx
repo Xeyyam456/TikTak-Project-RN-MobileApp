@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from 'react';
 import { Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import {
   KeyboardAwareScrollView,
   useReanimatedKeyboardAnimation,
@@ -30,6 +31,7 @@ function RegisterScreen() {
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const { t } = useTranslation();
 
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('+994');
@@ -58,7 +60,7 @@ function RegisterScreen() {
     setLoading(true);
     try {
       await signup({ full_name: name, phone, password });
-      showSuccessToast('Qeydiyyat tamamlandı, indi daxil ola bilərsiniz');
+      showSuccessToast(t('register.successToast'));
       navigation.navigate('Login');
     } catch (error) {
       setFormError(getApiErrorMessage(error));
@@ -87,20 +89,20 @@ function RegisterScreen() {
       bottomOffset={140}
       keyboardShouldPersistTaps="handled"
     >
-      <Text style={styles.title}>Qeydiyyatdan keç</Text>
+      <Text style={styles.title}>{t('register.title')}</Text>
 
       <View style={styles.form}>
         <TextField
-          label="Ad, soyad"
-          placeholder="ad soyad"
+          label={t('register.nameLabel')}
+          placeholder={t('register.namePlaceholder')}
           value={name}
           onChangeText={setName}
           onFocus={handleFieldFocus}
           error={errors.name}
         />
         <TextField
-          label="Telefon"
-          placeholder="telefon"
+          label={t('register.phoneLabel')}
+          placeholder={t('register.phonePlaceholder')}
           keyboardType="phone-pad"
           value={phone}
           onChangeText={text => setPhone(applyAzPhonePrefix(text))}
@@ -108,8 +110,8 @@ function RegisterScreen() {
           error={errors.phone}
         />
         <TextField
-          label="Parol"
-          placeholder="parol"
+          label={t('register.passwordLabel')}
+          placeholder={t('register.passwordPlaceholder')}
           secureTextEntry
           value={password}
           onChangeText={setPassword}
@@ -120,11 +122,11 @@ function RegisterScreen() {
 
       <View style={styles.footer}>
         {formError ? <Text style={styles.formError}>{formError}</Text> : null}
-        <Button title="Qeydiyyat" onPress={handleSubmit} loading={loading} />
+        <Button title={t('register.submit')} onPress={handleSubmit} loading={loading} />
 
         <AuthSwitchLink
-          promptText="Hesabınız varsa"
-          linkText="Daxil olun"
+          promptText={t('register.haveAccount')}
+          linkText={t('register.login')}
           onPress={() => navigation.navigate('Login')}
         />
       </View>

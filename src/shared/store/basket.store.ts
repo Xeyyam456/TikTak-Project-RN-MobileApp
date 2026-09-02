@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import i18n from '@shared/i18n/i18n';
 import {
   addToBasket,
   clearBasket as clearBasketRequest,
@@ -59,9 +60,11 @@ export const useBasketStore = create<BasketState>((set, get) => ({
       set({ basket: sortBasketItems(basket) });
       const title =
         basket.items?.find(item => item.product.id === productId)?.product
-          .title ?? 'Məhsul';
+          .title ?? i18n.t('common.product');
       showSuccessToast(
-        `${title} ${existingItem ? 'sayı artırıldı' : 'səbətə əlavə edildi'}`,
+        existingItem
+          ? i18n.t('basket.quantityIncreased', { title })
+          : i18n.t('basket.addedToBasket', { title }),
       );
     } catch (err) {
       set({ basket: previousBasket });
@@ -81,9 +84,11 @@ export const useBasketStore = create<BasketState>((set, get) => ({
     try {
       const basket = await removeFromBasket(productId);
       set({ basket: sortBasketItems(basket) });
-      const title = previousItem?.product.title ?? 'Məhsul';
+      const title = previousItem?.product.title ?? i18n.t('common.product');
       showSuccessToast(
-        `${title} ${(previousItem?.quantity ?? 0) <= 1 ? 'səbətdən silindi' : 'sayı azaldıldı'}`,
+        (previousItem?.quantity ?? 0) <= 1
+          ? i18n.t('basket.removedFromBasket', { title })
+          : i18n.t('basket.quantityDecreased', { title }),
       );
     } catch (err) {
       if (previousBasket) set({ basket: previousBasket });
@@ -96,7 +101,7 @@ export const useBasketStore = create<BasketState>((set, get) => ({
     try {
       const basket = await clearBasketRequest();
       set({ basket: sortBasketItems(basket) });
-      showSuccessToast('Səbət təmizləndi');
+      showSuccessToast(i18n.t('basket.cleared'));
     } catch (err) {
       if (previousBasket) set({ basket: previousBasket });
       showErrorToast(getApiErrorMessage(err));

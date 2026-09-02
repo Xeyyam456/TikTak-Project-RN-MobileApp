@@ -1,6 +1,7 @@
 import { Component, Fragment, type ErrorInfo } from 'react';
 import { Text, View } from 'react-native';
 import * as Sentry from '@sentry/react-native';
+import i18n from '@shared/i18n/i18n';
 import Button from '../Button';
 import { styles } from './ErrorBoundary.styles';
 import type { ErrorBoundaryProps, ErrorBoundaryState } from './ErrorBoundary.types';
@@ -29,10 +30,8 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     if (this.state.error) {
       return (
         <View style={styles.container}>
-          <Text style={styles.title}>Nəsə səhv getdi</Text>
-          <Text style={styles.message}>
-            Tətbiqdə gözlənilməz xəta baş verdi. Yenidən cəhd edin.
-          </Text>
+          <Text style={styles.title}>{i18n.t('errorBoundary.title')}</Text>
+          <Text style={styles.message}>{i18n.t('errorBoundary.message')}</Text>
           {__DEV__ ? (
             <Text style={styles.debug}>
               {this.state.error.message}
@@ -40,7 +39,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
               {this.state.error.stack}
             </Text>
           ) : null}
-          <Button title="Yenidən cəhd et" onPress={this.handleRetry} />
+          <Button title={i18n.t('common.retry')} onPress={this.handleRetry} />
         </View>
       );
     }

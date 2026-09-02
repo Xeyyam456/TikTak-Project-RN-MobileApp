@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -19,16 +20,19 @@ import OrderItemsBox from '../OrderItemsBox';
 import { useTheme } from '../../../../theme/ThemeContext';
 import { createStyles } from './CheckoutScreen.styles';
 
-const PAYMENT_OPTIONS: { value: PaymentMethod; label: string }[] = [
-  { value: 'CASH', label: 'Qapıda nağd' },
-  { value: 'CARD', label: 'Qapıda kart' },
-];
-
 function CheckoutScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const { t } = useTranslation();
+
+  // Built inside the component (not a module-level const) because t()
+  // needs to be called from within a component/hook.
+  const PAYMENT_OPTIONS: { value: PaymentMethod; label: string }[] = [
+    { value: 'CASH', label: t('checkout.cashOnDelivery') },
+    { value: 'CARD', label: t('checkout.cardOnDelivery') },
+  ];
 
   const basket = useBasketStore(state => state.basket);
   const fetchBasket = useBasketStore(state => state.fetchBasket);
@@ -71,7 +75,7 @@ function CheckoutScreen() {
 
   return (
     <View style={[styles.flex, { paddingTop: insets.top }]}>
-      <ScreenHeader title="Sifarişi tamamla" onBack={() => navigation.goBack()} />
+      <ScreenHeader title={t('checkout.title')} onBack={() => navigation.goBack()} />
 
       {profileError ? (
         <ErrorState message={profileError} onRetry={loadProfile} />
@@ -81,22 +85,22 @@ function CheckoutScreen() {
         <>
           <View style={styles.formSection}>
             <View style={styles.field}>
-              <Text style={styles.fieldLabel}>Adınız</Text>
+              <Text style={styles.fieldLabel}>{t('checkout.nameLabel')}</Text>
               <Text style={styles.fieldValue}>{profile?.full_name ?? '—'}</Text>
             </View>
 
             <View style={styles.field}>
-              <Text style={styles.fieldLabel}>Ünvaniniz</Text>
+              <Text style={styles.fieldLabel}>{t('checkout.addressLabel')}</Text>
               <Text style={styles.fieldValue}>{profile?.address || '—'}</Text>
             </View>
 
             <View style={styles.field}>
-              <Text style={styles.fieldLabel}>Telefon</Text>
+              <Text style={styles.fieldLabel}>{t('checkout.phoneLabel')}</Text>
               <Text style={styles.fieldValue}>{profile?.phone ?? '—'}</Text>
             </View>
 
             <View style={styles.field}>
-              <Text style={styles.fieldLabel}>Əlavə qeydiniz</Text>
+              <Text style={styles.fieldLabel}>{t('checkout.noteLabel')}</Text>
               <Input
                 value={note}
                 onChangeText={setNote}
@@ -130,17 +134,19 @@ function CheckoutScreen() {
             <View style={styles.footerDivider} />
             <View style={styles.summaryRow}>
               <View>
-                <Text style={styles.summaryLabel}>Ümumi: {basket?.total} AZN</Text>
-                <Text style={styles.summaryLabel}>Çatırılma: Pulsuz</Text>
+                <Text style={styles.summaryLabel}>
+                  {t('checkout.subtotal', { total: basket?.total })}
+                </Text>
+                <Text style={styles.summaryLabel}>{t('checkout.deliveryFree')}</Text>
               </View>
               <View style={styles.summaryTotalWrapper}>
-                <Text style={styles.summaryTotalLabel}>Yekun məbləğ:</Text>
+                <Text style={styles.summaryTotalLabel}>{t('checkout.finalTotalLabel')}</Text>
                 <Text style={styles.summaryTotalValue}>{basket?.total} AZN</Text>
               </View>
             </View>
             {submitError ? <Text style={styles.formError}>{submitError}</Text> : null}
             <Button
-              title="Sifarişi tamamla"
+              title={t('checkout.submit')}
               loading={submitting}
               disabled={!profile || items.length === 0}
               onPress={handleSubmit}

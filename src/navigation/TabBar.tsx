@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { HomeIcon, SearchIcon, UserIcon } from '@shared/components/icons';
 import { FONTS } from '../theme/fonts';
@@ -13,18 +14,12 @@ const ICONS = {
   Profile: UserIcon,
 } as const;
 
-const LABELS = {
-  Home: 'Əsas',
-  Search: 'Axtar',
-  Profile: 'Hesabım',
-} as const;
-
 // Tabs backed by a nested stack need their initial screen named explicitly —
 // `navigate(route.name)` on an already-focused tab does NOT reset a nested
 // stack back to its first screen by itself; that popToTop behavior only
 // happens for the library's own tab bar reacting to a real `tabPress` event,
 // not a bare `navigate()` call from a custom tab bar like this one.
-const INITIAL_SCREEN: Partial<Record<keyof typeof LABELS, string>> = {
+const INITIAL_SCREEN: Partial<Record<keyof typeof ICONS, string>> = {
   Home: 'HomeMain',
   Profile: 'ProfileMain',
 };
@@ -33,13 +28,21 @@ function TabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const { t } = useTranslation();
+  // Built inside the component (not a module-level const like ICONS above)
+  // because t() needs to be called from within a component/hook.
+  const labels: Record<keyof typeof ICONS, string> = {
+    Home: t('tabBar.home'),
+    Search: t('tabBar.search'),
+    Profile: t('tabBar.profile'),
+  };
 
   return (
     <View style={[styles.container, { paddingBottom: insets.bottom + 10 }]}>
       {state.routes.map((route, index) => {
         const focused = state.index === index;
         const Icon = ICONS[route.name as keyof typeof ICONS];
-        const label = LABELS[route.name as keyof typeof LABELS];
+        const label = labels[route.name as keyof typeof labels];
         const color = focused ? colors.primary : colors.textMuted;
 
         function handlePress() {
