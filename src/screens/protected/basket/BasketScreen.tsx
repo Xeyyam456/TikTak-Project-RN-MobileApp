@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -20,7 +20,8 @@ import { TrashIcon } from '@shared/components/icons';
 import { useBasketStore } from '@shared/store/basket.store';
 import type { BasketItem } from '@typings/api';
 import type { RootStackParamList } from '@typings/navigation';
-import { styles } from './BasketScreen.styles';
+import { useTheme } from '../../../theme/ThemeContext';
+import { createStyles } from './BasketScreen.styles';
 
 const FALLBACK_IMAGE_URL =
   'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLvSMU5gdda6lqS8a-kjktyTUE6rLzlVr6LA&s';
@@ -34,6 +35,9 @@ function BasketRow({
   onIncrement: () => void;
   onDecrement: () => void;
 }) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   return (
     <View style={styles.row}>
       <Image
@@ -67,6 +71,8 @@ function BasketRow({
 function BasketScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   const basket = useBasketStore(state => state.basket);
   const loading = useBasketStore(state => state.loading);
@@ -99,14 +105,14 @@ function BasketScreen() {
       {error ? (
         <ErrorState message={error} onRetry={fetchBasket} />
       ) : loading && !basket ? (
-        <ActivityIndicator color="#7BC043" style={styles.loader} />
+        <ActivityIndicator color={colors.primary} style={styles.loader} />
       ) : items.length === 0 ? (
         <View style={styles.emptyState}>
           <View style={styles.emptyStateIconCircle}>
             <Svg width={32} height={32} viewBox="0 0 24 24" fill="none">
               <Path
                 d="M6 6l12 12M18 6L6 18"
-                stroke="#C4C4CE"
+                stroke={colors.borderMuted}
                 strokeWidth={2}
                 strokeLinecap="round"
               />
@@ -148,7 +154,7 @@ function BasketScreen() {
 
       <ConfirmModal
         visible={clearModalVisible}
-        icon={<TrashIcon size={28} color="#E24C4C" />}
+        icon={<TrashIcon size={28} color={colors.danger} />}
         title="Səbəti təmizlə"
         message="Səbətdəki bütün məhsulları silmək istədiyinizə əminsiniz?"
         confirmLabel="Təmizlə"

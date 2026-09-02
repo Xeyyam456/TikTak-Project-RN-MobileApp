@@ -1,16 +1,20 @@
+import { useMemo } from 'react';
 import { Image, Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import BottomSheet from '@shared/components/BottomSheet';
 import { formatOrderDate, getOrderStatusMeta } from '@shared/utils/order';
 import { formatProductMeasure } from '@shared/utils/productMeasure';
 import type { Order } from '@typings/api';
-import { styles } from './OrderDetailSheet.styles';
+import { useTheme } from '../../../../theme/ThemeContext';
+import { createStyles } from './OrderDetailSheet.styles';
 import type { OrderDetailSheetProps } from './OrderDetailSheet.types';
 
 const FALLBACK_IMAGE_URL =
   'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLvSMU5gdda6lqS8a-kjktyTUE6rLzlVr6LA&s';
 
 function OrderDetailContent({ order }: { order: Order }) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const itemCount = order.items.reduce((sum, item) => sum + item.quantity, 0);
   const subtotal = (Number(order.total) - Number(order.deliveryFee)).toFixed(2);
   const deliveryLabel =

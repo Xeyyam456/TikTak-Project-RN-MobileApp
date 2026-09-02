@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Pressable, TextInput, TextInputProps, View } from 'react-native';
+import { useTheme } from '../../../theme/ThemeContext';
 import { EyeIcon, EyeOffIcon } from '../icons';
-import { styles } from './Input.styles';
+import { createStyles } from './Input.styles';
 
 const MASK_CHAR = '•';
 
@@ -13,11 +14,13 @@ function Input({
   ...inputProps
 }: TextInputProps) {
   const [visible, setVisible] = useState(false);
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   if (!secureTextEntry) {
     return (
       <TextInput
-        placeholderTextColor="#9B9B9B"
+        placeholderTextColor={colors.textMuted}
         style={[styles.input, style]}
         value={value}
         onChangeText={onChangeText}
@@ -65,7 +68,7 @@ function Input({
   return (
     <View style={styles.wrapper}>
       <TextInput
-        placeholderTextColor="#9B9B9B"
+        placeholderTextColor={colors.textMuted}
         style={[styles.input, styles.inputWithIcon, style]}
         autoCorrect={false}
         autoCapitalize="none"

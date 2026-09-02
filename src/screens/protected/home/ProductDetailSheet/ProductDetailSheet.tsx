@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import BottomSheet from '@shared/components/BottomSheet';
 import Button from '@shared/components/Button';
 import { HeartIcon } from '@shared/components/icons';
 import { getProduct, toggleFavorite } from '@shared/services/product.service';
 import { showSuccessToast } from '@shared/utils/toast';
-import { styles } from './ProductDetailSheet.styles';
+import { useTheme } from '../../../../theme/ThemeContext';
+import { createStyles } from './ProductDetailSheet.styles';
 import type { ProductDetailSheetProps } from './ProductDetailSheet.types';
 
 const FALLBACK_IMAGE_URL =
@@ -18,6 +19,8 @@ function ProductDetailSheet({
   onAdd,
   onFavoriteChange,
 }: ProductDetailSheetProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [isFavorite, setIsFavorite] = useState(false);
   const [togglingFavorite, setTogglingFavorite] = useState(false);
 
@@ -57,7 +60,7 @@ function ProductDetailSheet({
         <HeartIcon
           size={22}
           filled={isFavorite}
-          color={isFavorite ? '#E24C4C' : '#B8B8C2'}
+          color={isFavorite ? colors.danger : colors.placeholder}
         />
       </TouchableOpacity>
 

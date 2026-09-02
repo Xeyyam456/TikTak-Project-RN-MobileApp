@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   RefreshControl,
@@ -29,7 +29,8 @@ import type { Product } from '@typings/api';
 import type { HomeStackParamList, RootStackParamList } from '@typings/navigation';
 import EmptyCategoryState from '../EmptyCategoryState';
 import ProductDetailSheet from '../ProductDetailSheet';
-import { styles } from './CategoryProductsScreen.styles';
+import { useTheme } from '../../../../theme/ThemeContext';
+import { createStyles } from './CategoryProductsScreen.styles';
 import { useCategoryChipsScroll } from './useCategoryChipsScroll';
 import { useCategoryProductsData } from './useCategoryProductsData';
 
@@ -39,6 +40,8 @@ function CategoryProductsScreen() {
     useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
   const route =
     useRoute<RouteProp<HomeStackParamList, 'CategoryProducts'>>();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   const [selectedCategoryId, setSelectedCategoryId] = useState(
     route.params.categoryId,
@@ -130,7 +133,7 @@ function CategoryProductsScreen() {
       {error ? (
         <ErrorState message={error} onRetry={retry} />
       ) : loading && categories.length === 0 && products.length === 0 ? (
-        <ActivityIndicator color="#7BC043" style={styles.loader} />
+        <ActivityIndicator color={colors.primary} style={styles.loader} />
       ) : (
         <FlashList<Product>
           ref={listRef}

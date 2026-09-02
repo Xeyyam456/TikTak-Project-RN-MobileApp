@@ -1,10 +1,14 @@
+import { useMemo } from 'react';
 import { Text, View } from 'react-native';
+import { useTheme } from '../../../theme/ThemeContext';
 import InputLabel from '../InputLabel';
 import Input from '../Input';
-import { styles } from './TextField.styles';
+import { createStyles } from './TextField.styles';
 import type { TextFieldProps } from './TextField.types';
 
 function TextField({ label, error, style, ...inputProps }: TextFieldProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   return (
     <View style={styles.container}>
       <InputLabel>{label}</InputLabel>

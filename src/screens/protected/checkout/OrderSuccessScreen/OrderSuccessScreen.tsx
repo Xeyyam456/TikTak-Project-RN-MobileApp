@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -7,7 +7,8 @@ import Button from '@shared/components/Button';
 import ScreenHeader from '@shared/components/ScreenHeader';
 import { CheckIcon } from '@shared/components/icons';
 import type { RootStackParamList } from '@typings/navigation';
-import { styles } from './OrderSuccessScreen.styles';
+import { useTheme } from '../../../../theme/ThemeContext';
+import { createStyles } from './OrderSuccessScreen.styles';
 
 const REDIRECT_SECONDS = 3;
 
@@ -33,6 +34,8 @@ function goToOrderHistory(
 function OrderSuccessScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [secondsLeft, setSecondsLeft] = useState(REDIRECT_SECONDS);
 
   useEffect(() => {

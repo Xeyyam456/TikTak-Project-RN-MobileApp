@@ -1,9 +1,13 @@
+import { useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { ArrowLeftIcon } from '@shared/components/icons';
-import { styles } from './ScreenHeader.styles';
+import { useTheme } from '../../../theme/ThemeContext';
+import { createStyles } from './ScreenHeader.styles';
 import type { ScreenHeaderProps } from './ScreenHeader.types';
 
 function ScreenHeader({ title, onBack }: ScreenHeaderProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   return (
     <View style={styles.header}>
       <TouchableOpacity

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ActivityIndicator, Image, Modal, Text, TouchableOpacity, View } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
 import BottomSheet from '@shared/components/BottomSheet';
@@ -8,10 +8,13 @@ import { uploadFile } from '@shared/services/upload.service';
 import { getApiErrorMessage } from '@shared/utils/apiError';
 import { showErrorToast } from '@shared/utils/toast';
 import MenuRow from '../MenuRow';
-import { styles } from './AvatarPicker.styles';
+import { useTheme } from '../../../../theme/ThemeContext';
+import { createStyles } from './AvatarPicker.styles';
 import type { AvatarPickerProps } from './AvatarPicker.types';
 
 function AvatarPicker({ profile, onProfileUpdate }: AvatarPickerProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [sheetVisible, setSheetVisible] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [viewerVisible, setViewerVisible] = useState(false);
@@ -89,7 +92,7 @@ function AvatarPicker({ profile, onProfileUpdate }: AvatarPickerProps) {
         />
         {profile?.img_url && (
           <MenuRow
-            icon={<EyeIcon size={22} color="#1A1A1A" />}
+            icon={<EyeIcon size={22} color={colors.textPrimary} />}
             label="Şəklə bax"
             onPress={() => {
               setSheetVisible(false);

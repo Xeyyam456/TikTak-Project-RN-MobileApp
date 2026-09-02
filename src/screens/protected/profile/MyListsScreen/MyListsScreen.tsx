@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, RefreshControl, Text, View } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -21,12 +21,15 @@ import { getApiErrorMessage } from '@shared/utils/apiError';
 import type { Product } from '@typings/api';
 import type { RootStackParamList } from '@typings/navigation';
 import ProductDetailSheet from '../../home/ProductDetailSheet';
-import { styles } from './MyListsScreen.styles';
+import { useTheme } from '../../../../theme/ThemeContext';
+import { createStyles } from './MyListsScreen.styles';
 
 function MyListsScreen() {
   const insets = useSafeAreaInsets();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const queryClient = useQueryClient();
 
   const {
@@ -78,7 +81,7 @@ function MyListsScreen() {
       {error ? (
         <ErrorState message={error} onRetry={refetch} />
       ) : loading && favorites.length === 0 ? (
-        <ActivityIndicator color="#7BC043" style={styles.loader} />
+        <ActivityIndicator color={colors.primary} style={styles.loader} />
       ) : (
         <FlashList<Product>
           data={favorites}

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Text, View } from 'react-native';
 import {
   KeyboardAwareScrollView,
@@ -21,12 +21,15 @@ import {
   validatePassword,
   validatePhone,
 } from '@shared/utils/validation';
-import { styles } from './RegisterScreen.styles';
+import { useTheme } from '../../../theme/ThemeContext';
+import { createStyles } from './RegisterScreen.styles';
 
 function RegisterScreen() {
   const insets = useSafeAreaInsets();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('+994');

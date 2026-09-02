@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Text, View } from 'react-native';
 import {
   KeyboardAwareScrollView,
@@ -21,12 +21,15 @@ import {
   validatePassword,
   validatePhone,
 } from '@shared/utils/validation';
-import { styles } from './LoginScreen.styles';
+import { useTheme } from '../../../theme/ThemeContext';
+import { createStyles } from './LoginScreen.styles';
 
 function LoginScreen() {
   const insets = useSafeAreaInsets();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   const [phone, setPhone] = useState('+994');
   const [password, setPassword] = useState('');
