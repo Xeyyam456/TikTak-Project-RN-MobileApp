@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, RefreshControl, Text, View } from 'react-native';
 import {
   KeyboardAwareScrollView,
@@ -7,15 +7,16 @@ import {
 } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Button from '@shared/components/Button';
 import ErrorState from '@shared/components/ErrorState';
 import ScreenHeader from '@shared/components/ScreenHeader';
 import TextField from '@shared/components/TextField';
 import useReload from '@shared/hooks/useReload';
 import { getProfile, updateProfile } from '@shared/services/profile.service';
+import { queryKeys } from '@shared/queries/queryKeys';
 import { getApiErrorMessage } from '@shared/utils/apiError';
 import { validateName, validatePassword } from '@shared/utils/validation';
-import type { UserProfile } from '@typings/api';
 import { styles } from './AccountInfoScreen.styles';
 
 // Not editable and not sent on save — the backend's `PUT /profile` has no
@@ -28,9 +29,14 @@ function AccountInfoScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
 
-  const [profile, setProfile] = useState<UserProfile>();
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState<string>();
+  const queryClient = useQueryClient();
+  const {
+    data: profile,
+    isPending: loading,
+    error: queryError,
+    refetch,
+  } = useQuery({ queryKey: queryKeys.profile, queryFn: getProfile });
+  const loadError = queryError ? getApiErrorMessage(queryError) : undefined;
   const [saving, setSaving] = useState(false);
 
   const [name, setName] = useState('');
@@ -48,24 +54,13 @@ function AccountInfoScreen() {
   const scrollRef = useRef<KeyboardAwareScrollViewRef>(null);
   const { progress } = useReanimatedKeyboardAnimation();
 
-  const loadProfile = useCallback(() => {
-    setLoading(true);
-    setLoadError(undefined);
-    getProfile()
-      .then(data => {
-        setProfile(data);
-        setName(data.full_name);
-        setAddress(data.address ?? '');
-      })
-      .catch(err => setLoadError(getApiErrorMessage(err)))
-      .finally(() => setLoading(false));
-  }, []);
-
   useEffect(() => {
-    loadProfile();
-  }, [loadProfile]);
+    if (!profile) return;
+    setName(profile.full_name);
+    setAddress(profile.address ?? '');
+  }, [profile]);
 
-  const { refreshing, onRefresh } = useReload(loadProfile);
+  const { refreshing, onRefresh } = useReload(refetch);
 
   // Only the password fields (near the bottom, right above the button) get
   // the scroll-to-end nudge — applying it to every field also pushed
@@ -104,7 +99,7 @@ function AccountInfoScreen() {
           ? { password, password_repeat: passwordRepeat }
           : {}),
       });
-      setProfile(updated);
+      queryClient.setQueryData(queryKeys.profile, updated);
       setPassword('');
       setPasswordRepeat('');
     } catch (error) {
@@ -119,7 +114,7 @@ function AccountInfoScreen() {
       <ScreenHeader title="Hesab" onBack={() => navigation.goBack()} />
 
       {loadError ? (
-        <ErrorState message={loadError} onRetry={loadProfile} />
+        <ErrorState message={loadError} onRetry={refetch} />
       ) : loading ? (
         <ActivityIndicator color="#7BC043" style={styles.loader} />
       ) : (

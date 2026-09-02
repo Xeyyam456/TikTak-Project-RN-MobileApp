@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { FONTS } from '../../../theme/fonts';
+import { COLORS } from '../../../theme/colors';
 
 export const styles = StyleSheet.create({
   container: {
@@ -10,7 +11,7 @@ export const styles = StyleSheet.create({
   },
   message: {
     fontSize: 14,
-    color: '#9B9B9B',
+    color: COLORS.textMuted,
     fontFamily: FONTS.regular,
     textAlign: 'center',
   },

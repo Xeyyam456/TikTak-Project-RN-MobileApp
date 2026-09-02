@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -9,11 +9,13 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import { useQuery } from '@tanstack/react-query';
 import ErrorState from '@shared/components/ErrorState';
 import ScreenHeader from '@shared/components/ScreenHeader';
 import { EyeIcon } from '@shared/components/icons';
 import useReload from '@shared/hooks/useReload';
 import { listOrders } from '@shared/services/order.service';
+import { queryKeys } from '@shared/queries/queryKeys';
 import { getApiErrorMessage } from '@shared/utils/apiError';
 import { formatOrderDate, getOrderStatusMeta } from '@shared/utils/order';
 import type { Order } from '@typings/api';
@@ -64,32 +66,23 @@ function OrderHistoryScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
 
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string>();
+  const {
+    data: orders = [],
+    isPending: loading,
+    error: queryError,
+    refetch,
+  } = useQuery({ queryKey: queryKeys.orders, queryFn: listOrders });
+  const error = queryError ? getApiErrorMessage(queryError) : undefined;
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
-  const loadOrders = useCallback(() => {
-    setLoading(true);
-    setError(undefined);
-    listOrders()
-      .then(setOrders)
-      .catch(err => setError(getApiErrorMessage(err)))
-      .finally(() => setLoading(false));
-  }, []);
-
-  useEffect(() => {
-    loadOrders();
-  }, [loadOrders]);
-
-  const { refreshing, onRefresh } = useReload(loadOrders);
+  const { refreshing, onRefresh } = useReload(refetch);
 
   return (
     <View style={[styles.flex, { paddingTop: insets.top }]}>
       <ScreenHeader title="Sifariş tarixçəsi" onBack={() => navigation.goBack()} />
 
       {error ? (
-        <ErrorState message={error} onRetry={loadOrders} />
+        <ErrorState message={error} onRetry={refetch} />
       ) : loading && orders.length === 0 ? (
         <ActivityIndicator color="#7BC043" style={styles.loader} />
       ) : (
