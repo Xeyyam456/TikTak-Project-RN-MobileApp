@@ -1,9 +1,10 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from 'axios';
-import { BASE_URL, LANG } from '@shared/config/env';
+import { BASE_URL } from '@shared/config/env';
 import { showErrorToast } from '@shared/utils/toast';
 import type { ApiEnvelope, AuthTokens } from '@typings/api';
 import { resetToWelcome } from '../../navigation/navigationRef';
 import { queryClient } from './queryClient';
+import { getLanguage } from './settingsStorage';
 import {
   clearTokens,
   getAccessToken,
@@ -17,7 +18,6 @@ interface RetryableConfig extends InternalAxiosRequestConfig {
 
 const httpClient = axios.create({
   baseURL: `${BASE_URL}/api/tiktak`,
-  headers: { 'Accept-Language': LANG },
 });
 
 httpClient.interceptors.request.use(async config => {
@@ -25,6 +25,10 @@ httpClient.interceptors.request.use(async config => {
   if (token) {
     config.headers.set('Authorization', `Bearer ${token}`);
   }
+  // Read fresh on every request (not baked in at axios.create time) so a
+  // language change from SettingsScreen takes effect on the very next
+  // request, without needing to recreate the httpClient instance.
+  config.headers.set('Accept-Language', getLanguage());
   return config;
 });
 

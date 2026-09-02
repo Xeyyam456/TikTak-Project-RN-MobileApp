@@ -4,6 +4,7 @@ import ProfileScreen from '../screens/protected/profile/ProfileScreen';
 import AccountInfoScreen from '../screens/protected/profile/AccountInfoScreen';
 import MyListsScreen from '../screens/protected/profile/MyListsScreen';
 import OrderHistoryScreen from '../screens/protected/profile/OrderHistoryScreen';
+import SettingsScreen from '../screens/protected/profile/SettingsScreen';
 
 const Stack = createNativeStackNavigator<ProfileStackParamList>();
 
@@ -14,6 +15,7 @@ function ProfileStackNavigator() {
       <Stack.Screen name="AccountInfo" component={AccountInfoScreen} />
       <Stack.Screen name="MyLists" component={MyListsScreen} />
       <Stack.Screen name="OrderHistory" component={OrderHistoryScreen} />
+      <Stack.Screen name="Settings" component={SettingsScreen} />
     </Stack.Navigator>
   );
 }
