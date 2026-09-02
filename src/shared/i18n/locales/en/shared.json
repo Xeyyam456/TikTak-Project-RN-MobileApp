@@ -1,0 +1,51 @@
+{
+  "common": {
+    "retry": "Try again",
+    "cancel": "Cancel",
+    "product": "Product"
+  },
+  "errorBoundary": {
+    "title": "Something went wrong",
+    "message": "An unexpected error occurred. Please try again."
+  },
+  "productCard": {
+    "addToBasket": "Add to basket"
+  },
+  "apiError": {
+    "fallback": "Something went wrong, please try again"
+  },
+  "orderStatus": {
+    "pending": "Received",
+    "confirmed": "Confirmed",
+    "preparing": "Preparing",
+    "ready": "Ready",
+    "delivered": "Delivered",
+    "cancelled": "Cancelled"
+  },
+  "validation": {
+    "nameRequired": "Enter your full name",
+    "phoneRequired": "Enter your phone number",
+    "phoneInvalid": "Enter a valid phone number",
+    "passwordRequired": "Enter a password",
+    "passwordTooShort": "Password must be at least 6 characters"
+  },
+  "productMeasure": {
+    "kg": "kg",
+    "gr": "g",
+    "litre": "L",
+    "ml": "ml",
+    "meter": "m",
+    "cm": "cm",
+    "mm": "mm",
+    "piece": "pc",
+    "packet": "pack",
+    "box": "box"
+  },
+  "basket": {
+    "quantityIncreased": "{{title}} quantity increased",
+    "addedToBasket": "{{title}} added to basket",
+    "quantityDecreased": "{{title}} quantity decreased",
+    "removedFromBasket": "{{title}} removed from basket",
+    "cleared": "Basket cleared"
+  }
+}

@@ -7,6 +7,7 @@ import {
   View,
 } from 'react-native';
 import { FlashList, type FlashListRef } from '@shopify/flash-list';
+import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   useNavigation,
@@ -62,6 +63,7 @@ function CategoryProductsScreen() {
     useRoute<RouteProp<HomeStackParamList, 'CategoryProducts'>>();
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const { t } = useTranslation();
 
   const [selectedCategoryId, setSelectedCategoryId] = useState(
     route.params.categoryId,
@@ -111,7 +113,7 @@ function CategoryProductsScreen() {
         onPress={() => navigation.navigate('HomeMain')}
       >
         <GridIcon size={18} />
-        <Text style={styles.backButtonText}>Əsas kateqoriyalara qayıt</Text>
+        <Text style={styles.backButtonText}>{t('categoryProducts.backToCategories')}</Text>
       </TouchableOpacity>
 
       <ScrollView

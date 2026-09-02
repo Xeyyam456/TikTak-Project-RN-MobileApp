@@ -1,0 +1,51 @@
+{
+  "common": {
+    "retry": "Yenidən cəhd et",
+    "cancel": "Ləğv et",
+    "product": "Məhsul"
+  },
+  "errorBoundary": {
+    "title": "Nəsə səhv getdi",
+    "message": "Tətbiqdə gözlənilməz xəta baş verdi. Yenidən cəhd edin."
+  },
+  "productCard": {
+    "addToBasket": "Səbətə əlavə et"
+  },
+  "apiError": {
+    "fallback": "Xəta baş verdi, yenidən cəhd edin"
+  },
+  "orderStatus": {
+    "pending": "Qəbul edilib",
+    "confirmed": "Təsdiqləndi",
+    "preparing": "Hazırlanır",
+    "ready": "Hazırdır",
+    "delivered": "Çatdırıldı",
+    "cancelled": "Ləğv edildi"
+  },
+  "validation": {
+    "nameRequired": "Ad, soyad daxil edin",
+    "phoneRequired": "Telefon nömrəsi daxil edin",
+    "phoneInvalid": "Düzgün telefon nömrəsi daxil edin",
+    "passwordRequired": "Parol daxil edin",
+    "passwordTooShort": "Parol ən azı 6 simvol olmalıdır"
+  },
+  "productMeasure": {
+    "kg": "kq",
+    "gr": "qr",
+    "litre": "litr",
+    "ml": "ml",
+    "meter": "metr",
+    "cm": "sm",
+    "mm": "mm",
+    "piece": "ədəd",
+    "packet": "paket",
+    "box": "qutu"
+  },
+  "basket": {
+    "quantityIncreased": "{{title}} sayı artırıldı",
+    "addedToBasket": "{{title}} səbətə əlavə edildi",
+    "quantityDecreased": "{{title}} sayı azaldıldı",
+    "removedFromBasket": "{{title}} səbətdən silindi",
+    "cleared": "Səbət təmizləndi"
+  }
+}

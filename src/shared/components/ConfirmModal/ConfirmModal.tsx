@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { Modal, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../../theme/ThemeContext';
 import Button from '../Button';
 import { createStyles } from './ConfirmModal.styles';
@@ -11,7 +12,7 @@ function ConfirmModal({
   title,
   message,
   confirmLabel,
-  cancelLabel = 'Ləğv et',
+  cancelLabel,
   destructive,
   loading,
   onConfirm,
@@ -19,6 +20,8 @@ function ConfirmModal({
 }: ConfirmModalProps) {
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const { t } = useTranslation();
+  const resolvedCancelLabel = cancelLabel ?? t('common.cancel');
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}>
       <View style={styles.overlay}>
@@ -41,7 +44,7 @@ function ConfirmModal({
             style={styles.confirmButton}
           />
           <Text style={styles.cancel} onPress={onCancel}>
-            {cancelLabel}
+            {resolvedCancelLabel}
           </Text>
         </View>
       </View>

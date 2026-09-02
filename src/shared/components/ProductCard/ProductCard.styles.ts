@@ -52,6 +52,12 @@ export const createStyles = (colors: ThemeColors) =>
       height: 34,
       paddingVertical: 0,
     },
+    // Card size must never move to fit translated text — Russian/English
+    // "add to basket" copy runs longer than the original Azerbaijani, so
+    // this shrinks the button's own font instead of growing the button.
+    addButtonTitle: {
+      fontSize: 12,
+    },
     bulkPriceLine: {
       fontSize: 12,
       lineHeight: 18,

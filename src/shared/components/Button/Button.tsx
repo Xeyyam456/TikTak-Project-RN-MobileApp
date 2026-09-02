@@ -13,6 +13,7 @@ function Button({
   loading,
   variant = 'primary',
   style,
+  textStyle,
 }: ButtonProps) {
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
@@ -41,7 +42,9 @@ function Button({
       {loading ? (
         <ActivityIndicator color="#FFFFFF" />
       ) : (
-        <Text style={styles.title}>{title}</Text>
+        <Text style={[styles.title, textStyle]} numberOfLines={1}>
+          {title}
+        </Text>
       )}
     </TouchableOpacity>
   );

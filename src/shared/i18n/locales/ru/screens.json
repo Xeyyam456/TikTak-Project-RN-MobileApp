@@ -1,0 +1,152 @@
+{
+  "welcome": {
+    "description": "Зарегистрируйтесь, чтобы вам было удобнее, и продолжите 🥰",
+    "register": "Регистрация",
+    "haveAccount": "Уже есть аккаунт?",
+    "login": "Войти"
+  },
+  "settings": {
+    "title": "Настройки",
+    "appearance": "Внешний вид",
+    "darkMode": "Тёмная тема",
+    "language": "Язык"
+  },
+  "tabBar": {
+    "home": "Главная",
+    "search": "Поиск",
+    "profile": "Профиль"
+  },
+  "login": {
+    "title": "Войти",
+    "phoneLabel": "Телефон",
+    "phonePlaceholder": "телефон",
+    "passwordLabel": "Пароль",
+    "passwordPlaceholder": "пароль",
+    "rememberMe": "Оставаться в системе",
+    "submit": "Войти",
+    "successToast": "Вы успешно вошли",
+    "noAccount": "Нет аккаунта?",
+    "signUp": "Зарегистрироваться"
+  },
+  "register": {
+    "title": "Регистрация",
+    "nameLabel": "Имя, фамилия",
+    "namePlaceholder": "имя фамилия",
+    "phoneLabel": "Телефон",
+    "phonePlaceholder": "телефон",
+    "passwordLabel": "Пароль",
+    "passwordPlaceholder": "пароль",
+    "submit": "Зарегистрироваться",
+    "successToast": "Регистрация завершена, теперь вы можете войти",
+    "haveAccount": "Уже есть аккаунт?",
+    "login": "Войти"
+  },
+  "basket": {
+    "title": "Моя корзина",
+    "emptyText": "Ваша корзина пуста",
+    "clearAll": "Очистить корзину",
+    "clearConfirmMessage": "Вы уверены, что хотите удалить все товары из корзины?",
+    "clearConfirmButton": "Очистить",
+    "subtotal": "Сумма: {{total}} AZN",
+    "deliveryFree": "Доставка: Бесплатно",
+    "finalTotalLabel": "Итого:",
+    "checkout": "Оформить заказ"
+  },
+  "checkout": {
+    "title": "Оформить заказ",
+    "nameLabel": "Имя",
+    "addressLabel": "Адрес",
+    "phoneLabel": "Телефон",
+    "noteLabel": "Комментарий",
+    "cashOnDelivery": "Наличными при получении",
+    "cardOnDelivery": "Картой при получении",
+    "subtotal": "Сумма: {{total}} AZN",
+    "deliveryFree": "Доставка: Бесплатно",
+    "finalTotalLabel": "Итого:",
+    "submit": "Оформить заказ"
+  },
+  "orderSuccess": {
+    "title": "Заказ успешно оформлен",
+    "subtitle": "Наши сотрудники свяжутся с вами и отправят заказ.",
+    "countdown": "Перенаправление в раздел заказов через {{seconds}} сек.",
+    "backHome": "Вернуться на главную"
+  },
+  "addressEditModal": {
+    "title": "Адрес доставки",
+    "addressLabel": "Адрес",
+    "addressPlaceholder": "Введите адрес",
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "addressRequired": "Введите адрес",
+    "successToast": "Адрес доставки обновлён"
+  },
+  "categoryProducts": {
+    "backToCategories": "Назад к категориям"
+  },
+  "emptyCategoryState": {
+    "text": "В этой категории нет товаров"
+  },
+  "home": {
+    "addressLabel": "Адрес доставки:",
+    "noAddress": "Адрес не выбран"
+  },
+  "productDetail": {
+    "addedToFavorites": "{{title}} добавлен в избранное",
+    "removedFromFavorites": "{{title}} удалён из избранного",
+    "inBasket": "Уже в корзине",
+    "addToBasket": "Добавить в корзину"
+  },
+  "accountInfo": {
+    "title": "Аккаунт",
+    "nameLabel": "Имя Фамилия",
+    "namePlaceholder": "Имя, Фамилия",
+    "addressLabel": "Адрес",
+    "addressPlaceholder": "адрес",
+    "emailLabel": "E-mail",
+    "phoneLabel": "Номер телефона",
+    "passwordLabel": "Пароль",
+    "passwordPlaceholder": "Новый пароль (оставьте пустым, если не хотите менять)",
+    "passwordRepeatLabel": "Повтор пароля",
+    "save": "Сохранить",
+    "addressRequired": "Введите адрес",
+    "passwordMismatch": "Пароли не совпадают"
+  },
+  "avatarPicker": {
+    "title": "Фото профиля",
+    "changePhoto": "Изменить фото",
+    "viewPhoto": "Посмотреть фото",
+    "pickError": "Не удалось выбрать фото"
+  },
+  "myLists": {
+    "title": "Мои списки",
+    "emptyText": "Ваш список пуст"
+  },
+  "orderDetail": {
+    "dateLabel": "Дата",
+    "numberLabel": "№",
+    "itemsCountLabel": "Кол-во товаров",
+    "addressLabel": "Адрес доставки",
+    "statusLabel": "Статус",
+    "subtotalDeliveryLabel": "Сумма/Доставка",
+    "free": "бесплатно"
+  },
+  "orderHistory": {
+    "title": "История заказов",
+    "emptyText": "У вас пока нет заказов"
+  },
+  "profile": {
+    "title": "Мой профиль",
+    "accountInfo": "Данные аккаунта",
+    "myLists": "Мои списки",
+    "orderHistory": "История заказов",
+    "logout": "Выйти",
+    "logoutConfirmMessage": "Вы уверены, что хотите выйти из аккаунта?",
+    "logoutSuccessToast": "Вы успешно вышли"
+  },
+  "search": {
+    "placeholder": "Поиск...",
+    "recentSearches": "Недавние поиски",
+    "clear": "Очистить",
+    "noResults": "Ничего не найдено"
+  }
+}

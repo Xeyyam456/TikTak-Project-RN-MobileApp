@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Modal, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import Button from '@shared/components/Button';
 import TextField from '@shared/components/TextField';
 import { updateProfile } from '@shared/services/profile.service';
@@ -12,6 +13,7 @@ import type { AddressEditModalProps } from './AddressEditModal.types';
 function AddressEditModal({ visible, profile, onClose, onSaved }: AddressEditModalProps) {
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const { t } = useTranslation();
   const [addressInput, setAddressInput] = useState('');
   const [addressError, setAddressError] = useState<string>();
   const [saving, setSaving] = useState(false);
@@ -27,7 +29,7 @@ function AddressEditModal({ visible, profile, onClose, onSaved }: AddressEditMod
     if (!profile) return;
     const trimmed = addressInput.trim();
     if (!trimmed) {
-      setAddressError('Ünvan daxil edin');
+      setAddressError(t('addressEditModal.addressRequired'));
       return;
     }
 
@@ -39,7 +41,7 @@ function AddressEditModal({ visible, profile, onClose, onSaved }: AddressEditMod
         address: trimmed,
       });
       onSaved(updated);
-      showSuccessToast('Çatdırılma ünvanı yeniləndi');
+      showSuccessToast(t('addressEditModal.successToast'));
     } catch (error) {
       setAddressError(getApiErrorMessage(error));
     } finally {
@@ -51,18 +53,18 @@ function AddressEditModal({ visible, profile, onClose, onSaved }: AddressEditMod
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <View style={styles.modalOverlay}>
         <View style={styles.modalCard}>
-          <Text style={styles.modalTitle}>Çatdırılma ünvanı</Text>
+          <Text style={styles.modalTitle}>{t('addressEditModal.title')}</Text>
           <TextField
-            label="Ünvan"
-            placeholder="Ünvanı daxil edin"
+            label={t('addressEditModal.addressLabel')}
+            placeholder={t('addressEditModal.addressPlaceholder')}
             value={addressInput}
             onChangeText={setAddressInput}
             error={addressError}
             autoFocus
           />
-          <Button title="Yadda saxla" onPress={handleSave} loading={saving} />
+          <Button title={t('addressEditModal.save')} onPress={handleSave} loading={saving} />
           <Text style={styles.modalCancel} onPress={onClose}>
-            Ləğv et
+            {t('addressEditModal.cancel')}
           </Text>
         </View>
       </View>

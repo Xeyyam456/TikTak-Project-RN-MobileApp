@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { RefreshControl, Text, View } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
+import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -51,6 +52,7 @@ function MyListsScreen() {
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const {
@@ -97,7 +99,7 @@ function MyListsScreen() {
 
   return (
     <View style={[styles.flex, { paddingTop: insets.top }]}>
-      <ScreenHeader title="Siyahılarım" onBack={() => navigation.goBack()} />
+      <ScreenHeader title={t('myLists.title')} onBack={() => navigation.goBack()} />
 
       {error ? (
         <ErrorState message={error} onRetry={refetch} />
@@ -114,7 +116,7 @@ function MyListsScreen() {
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
           ListEmptyComponent={
-            <Text style={styles.emptyText}>Siyahınız boşdur</Text>
+            <Text style={styles.emptyText}>{t('myLists.emptyText')}</Text>
           }
           style={
             showSummaryBar && {

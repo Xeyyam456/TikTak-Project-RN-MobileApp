@@ -1,5 +1,7 @@
+import i18n from '@shared/i18n/i18n';
+
 export function validateName(value: string): string | undefined {
-  if (!value.trim()) return 'Ad, soyad daxil edin';
+  if (!value.trim()) return i18n.t('validation.nameRequired');
   return undefined;
 }
 
@@ -15,16 +17,16 @@ export function applyAzPhonePrefix(text: string): string {
 
 export function validatePhone(value: string): string | undefined {
   if (!value.trim() || value.trim() === AZ_PHONE_PREFIX) {
-    return 'Telefon nömrəsi daxil edin';
+    return i18n.t('validation.phoneRequired');
   }
   if (!/^\+?\d{9,15}$/.test(value.trim())) {
-    return 'Düzgün telefon nömrəsi daxil edin';
+    return i18n.t('validation.phoneInvalid');
   }
   return undefined;
 }
 
 export function validatePassword(value: string): string | undefined {
-  if (!value) return 'Parol daxil edin';
-  if (value.length < 6) return 'Parol ən azı 6 simvol olmalıdır';
+  if (!value) return i18n.t('validation.passwordRequired');
+  if (value.length < 6) return i18n.t('validation.passwordTooShort');
   return undefined;
 }

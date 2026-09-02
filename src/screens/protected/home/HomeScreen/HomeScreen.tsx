@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from 'react';
 import { FlatList, RefreshControl, Text, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useScrollToTop } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -40,6 +41,7 @@ function HomeScreen() {
     useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const { t } = useTranslation();
 
   const {
     profile,
@@ -98,9 +100,9 @@ function HomeScreen() {
                 activeOpacity={0.7}
               >
                 <View style={styles.addressTextGroup}>
-                  <Text style={styles.addressLabel}>Çatdırılma ünvanı:</Text>
+                  <Text style={styles.addressLabel}>{t('home.addressLabel')}</Text>
                   <Text style={styles.addressValue} numberOfLines={1}>
-                    {profile?.address ?? 'Ünvan seçilməyib'}
+                    {profile?.address ?? t('home.noAddress')}
                   </Text>
                 </View>
                 <ChevronRightIcon size={20} color={colors.textMuted} />

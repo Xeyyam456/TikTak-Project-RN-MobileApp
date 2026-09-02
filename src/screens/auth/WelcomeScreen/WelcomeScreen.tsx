@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { ScrollView, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -16,6 +17,7 @@ function WelcomeScreen() {
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const { t } = useTranslation();
 
   return (
     <ScrollView
@@ -27,19 +29,16 @@ function WelcomeScreen() {
       <FruitImage width={260} height={260} style={styles.image} />
 
       <View style={styles.footer}>
-        <Text style={styles.description}>
-          Sizə daha əlçatan olması üçün qeydiyyatdan keçərək davam edə
-          bilərsiniz 🥰
-        </Text>
+        <Text style={styles.description}>{t('welcome.description')}</Text>
 
         <Button
-          title="Qeydiyyat"
+          title={t('welcome.register')}
           onPress={() => navigation.navigate('Register')}
         />
 
         <AuthSwitchLink
-          promptText="Hesabınız varsa"
-          linkText="Daxil olun"
+          promptText={t('welcome.haveAccount')}
+          linkText={t('welcome.login')}
           onPress={() => navigation.navigate('Login')}
         />
       </View>

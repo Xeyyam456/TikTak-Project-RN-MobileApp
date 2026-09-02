@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useFocusEffect } from '@react-navigation/native';
 import { useQuery } from '@tanstack/react-query';
 import AppHeader from '@shared/components/AppHeader';
@@ -109,6 +110,7 @@ function HistoryRow({
 function SearchScreen() {
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -204,7 +206,7 @@ function SearchScreen() {
           onChangeText={setQuery}
           onBlur={() => saveCurrentSearch(query)}
           returnKeyType="search"
-          placeholder="Axtar..."
+          placeholder={t('search.placeholder')}
           autoCorrect={false}
         />
       </View>
@@ -213,9 +215,9 @@ function SearchScreen() {
         history.length > 0 && (
           <View style={styles.historySection}>
             <View style={styles.historyHeader}>
-              <Text style={styles.historyTitle}>Son axtarışlar</Text>
+              <Text style={styles.historyTitle}>{t('search.recentSearches')}</Text>
               <TouchableOpacity onPress={handleClearHistory}>
-                <Text style={styles.historyClear}>Təmizlə</Text>
+                <Text style={styles.historyClear}>{t('search.clear')}</Text>
               </TouchableOpacity>
             </View>
             {history.map(term => (
@@ -231,7 +233,7 @@ function SearchScreen() {
       ) : loading ? (
         <ResultsSkeleton />
       ) : results.length === 0 ? (
-        <Text style={styles.emptyText}>Heç bir nəticə tapılmadı</Text>
+        <Text style={styles.emptyText}>{t('search.noResults')}</Text>
       ) : (
         <FlatList
           data={results}

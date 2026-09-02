@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { ActivityIndicator, Image, Modal, Text, TouchableOpacity, View } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
+import { useTranslation } from 'react-i18next';
 import BottomSheet from '@shared/components/BottomSheet';
 import { EyeIcon, ImageIcon, UserIcon } from '@shared/components/icons';
 import { updateProfile } from '@shared/services/profile.service';
@@ -15,6 +16,7 @@ import type { AvatarPickerProps } from './AvatarPicker.types';
 function AvatarPicker({ profile, onProfileUpdate }: AvatarPickerProps) {
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const { t } = useTranslation();
   const [sheetVisible, setSheetVisible] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [viewerVisible, setViewerVisible] = useState(false);
@@ -33,7 +35,7 @@ function AvatarPicker({ profile, onProfileUpdate }: AvatarPickerProps) {
 
     if (result.didCancel) return;
     if (result.errorCode) {
-      showErrorToast(result.errorMessage ?? 'Şəkil seçilə bilmədi');
+      showErrorToast(result.errorMessage ?? t('avatarPicker.pickError'));
       return;
     }
 
@@ -84,16 +86,16 @@ function AvatarPicker({ profile, onProfileUpdate }: AvatarPickerProps) {
       </TouchableOpacity>
 
       <BottomSheet visible={sheetVisible} onClose={() => setSheetVisible(false)}>
-        <Text style={styles.sheetTitle}>Profil şəkli</Text>
+        <Text style={styles.sheetTitle}>{t('avatarPicker.title')}</Text>
         <MenuRow
           icon={<ImageIcon size={22} />}
-          label="Şəkli dəyiş"
+          label={t('avatarPicker.changePhoto')}
           onPress={handleChangePhoto}
         />
         {profile?.img_url && (
           <MenuRow
             icon={<EyeIcon size={22} color={colors.textPrimary} />}
-            label="Şəklə bax"
+            label={t('avatarPicker.viewPhoto')}
             onPress={() => {
               setSheetVisible(false);
               setViewerVisible(true);

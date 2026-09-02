@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, RefreshControl, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import {
   KeyboardAwareScrollView,
   useReanimatedKeyboardAnimation,
@@ -31,6 +32,7 @@ function AccountInfoScreen() {
   const navigation = useNavigation();
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const { t } = useTranslation();
 
   const queryClient = useQueryClient();
   const {
@@ -82,11 +84,11 @@ function AccountInfoScreen() {
     const changingPassword = !!(password || passwordRepeat);
     const nextErrors = {
       name: validateName(name),
-      address: address.trim() ? undefined : 'Ünvan daxil edin',
+      address: address.trim() ? undefined : t('accountInfo.addressRequired'),
       password: changingPassword ? validatePassword(password) : undefined,
       passwordRepeat:
         changingPassword && password !== passwordRepeat
-          ? 'Şifrələr uyğun gəlmir'
+          ? t('accountInfo.passwordMismatch')
           : undefined,
     };
     setErrors(nextErrors);
@@ -114,7 +116,7 @@ function AccountInfoScreen() {
 
   return (
     <View style={[styles.flex, { paddingTop: insets.top }]}>
-      <ScreenHeader title="Hesab" onBack={() => navigation.goBack()} />
+      <ScreenHeader title={t('accountInfo.title')} onBack={() => navigation.goBack()} />
 
       {loadError ? (
         <ErrorState message={loadError} onRetry={refetch} />
@@ -136,34 +138,34 @@ function AccountInfoScreen() {
         >
           <View style={styles.form}>
             <TextField
-              label="Ad Soyad"
-              placeholder="Ad, Soyad"
+              label={t('accountInfo.nameLabel')}
+              placeholder={t('accountInfo.namePlaceholder')}
               value={name}
               onChangeText={setName}
               error={errors.name}
             />
             <TextField
-              label="Ünvan"
-              placeholder="ünvan"
+              label={t('accountInfo.addressLabel')}
+              placeholder={t('accountInfo.addressPlaceholder')}
               value={address}
               onChangeText={setAddress}
               error={errors.address}
             />
             <TextField
-              label="E-mail"
+              label={t('accountInfo.emailLabel')}
               value={PLACEHOLDER_EMAIL}
               editable={false}
               style={styles.disabledInput}
             />
             <TextField
-              label="Telefon nömrəsi"
+              label={t('accountInfo.phoneLabel')}
               value={profile?.phone}
               editable={false}
               style={styles.disabledInput}
             />
             <TextField
-              label="Şifrə"
-              placeholder="Yeni şifrə (dəyişmək istəməsəniz boş buraxın)"
+              label={t('accountInfo.passwordLabel')}
+              placeholder={t('accountInfo.passwordPlaceholder')}
               secureTextEntry
               value={password}
               onChangeText={setPassword}
@@ -171,7 +173,7 @@ function AccountInfoScreen() {
               error={errors.password}
             />
             <TextField
-              label="Şifrənin təkrarı"
+              label={t('accountInfo.passwordRepeatLabel')}
               secureTextEntry
               value={passwordRepeat}
               onChangeText={setPasswordRepeat}
@@ -182,7 +184,7 @@ function AccountInfoScreen() {
 
           {formError ? <Text style={styles.formError}>{formError}</Text> : null}
           <Button
-            title="Yadda saxla"
+            title={t('accountInfo.save')}
             onPress={handleSubmit}
             loading={saving}
             style={styles.submitButton}

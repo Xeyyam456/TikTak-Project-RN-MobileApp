@@ -1,0 +1,152 @@
+{
+  "welcome": {
+    "description": "Sign up to make things more convenient for you and continue 🥰",
+    "register": "Sign up",
+    "haveAccount": "Already have an account?",
+    "login": "Log in"
+  },
+  "settings": {
+    "title": "Settings",
+    "appearance": "Appearance",
+    "darkMode": "Dark mode",
+    "language": "Language"
+  },
+  "tabBar": {
+    "home": "Home",
+    "search": "Search",
+    "profile": "Account"
+  },
+  "login": {
+    "title": "Log in",
+    "phoneLabel": "Phone",
+    "phonePlaceholder": "phone",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "password",
+    "rememberMe": "Keep me signed in",
+    "submit": "Log in",
+    "successToast": "You're logged in",
+    "noAccount": "Don't have an account?",
+    "signUp": "Sign up"
+  },
+  "register": {
+    "title": "Sign up",
+    "nameLabel": "Full name",
+    "namePlaceholder": "full name",
+    "phoneLabel": "Phone",
+    "phonePlaceholder": "phone",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "password",
+    "submit": "Sign up",
+    "successToast": "Registration complete, you can log in now",
+    "haveAccount": "Already have an account?",
+    "login": "Log in"
+  },
+  "basket": {
+    "title": "My basket",
+    "emptyText": "Your basket is empty",
+    "clearAll": "Clear basket",
+    "clearConfirmMessage": "Are you sure you want to remove everything from your basket?",
+    "clearConfirmButton": "Clear",
+    "subtotal": "Subtotal: {{total}} AZN",
+    "deliveryFree": "Delivery: Free",
+    "finalTotalLabel": "Total:",
+    "checkout": "Checkout"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "nameLabel": "Name",
+    "addressLabel": "Address",
+    "phoneLabel": "Phone",
+    "noteLabel": "Note",
+    "cashOnDelivery": "Cash on delivery",
+    "cardOnDelivery": "Card on delivery",
+    "subtotal": "Subtotal: {{total}} AZN",
+    "deliveryFree": "Delivery: Free",
+    "finalTotalLabel": "Total:",
+    "submit": "Place order"
+  },
+  "orderSuccess": {
+    "title": "Order placed successfully",
+    "subtitle": "Our team will get in touch with you and send your order out.",
+    "countdown": "Redirecting to your orders in {{seconds}} seconds",
+    "backHome": "Back to home"
+  },
+  "addressEditModal": {
+    "title": "Delivery address",
+    "addressLabel": "Address",
+    "addressPlaceholder": "Enter your address",
+    "save": "Save",
+    "cancel": "Cancel",
+    "addressRequired": "Enter an address",
+    "successToast": "Delivery address updated"
+  },
+  "categoryProducts": {
+    "backToCategories": "Back to categories"
+  },
+  "emptyCategoryState": {
+    "text": "No products in this category"
+  },
+  "home": {
+    "addressLabel": "Delivery address:",
+    "noAddress": "No address selected"
+  },
+  "productDetail": {
+    "addedToFavorites": "{{title}} added to favorites",
+    "removedFromFavorites": "{{title}} removed from favorites",
+    "inBasket": "Already in your basket",
+    "addToBasket": "Add to basket"
+  },
+  "accountInfo": {
+    "title": "Account",
+    "nameLabel": "Full name",
+    "namePlaceholder": "Full name",
+    "addressLabel": "Address",
+    "addressPlaceholder": "address",
+    "emailLabel": "E-mail",
+    "phoneLabel": "Phone number",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "New password (leave blank to keep it)",
+    "passwordRepeatLabel": "Confirm password",
+    "save": "Save",
+    "addressRequired": "Enter an address",
+    "passwordMismatch": "Passwords don't match"
+  },
+  "avatarPicker": {
+    "title": "Profile photo",
+    "changePhoto": "Change photo",
+    "viewPhoto": "View photo",
+    "pickError": "Couldn't select the photo"
+  },
+  "myLists": {
+    "title": "My lists",
+    "emptyText": "Your list is empty"
+  },
+  "orderDetail": {
+    "dateLabel": "Date",
+    "numberLabel": "No.",
+    "itemsCountLabel": "Items",
+    "addressLabel": "Delivery address",
+    "statusLabel": "Status",
+    "subtotalDeliveryLabel": "Subtotal/Delivery",
+    "free": "free"
+  },
+  "orderHistory": {
+    "title": "Order history",
+    "emptyText": "You don't have any orders yet"
+  },
+  "profile": {
+    "title": "My account",
+    "accountInfo": "Account details",
+    "myLists": "My lists",
+    "orderHistory": "Order history",
+    "logout": "Log out",
+    "logoutConfirmMessage": "Are you sure you want to log out?",
+    "logoutSuccessToast": "You're logged out"
+  },
+  "search": {
+    "placeholder": "Search...",
+    "recentSearches": "Recent searches",
+    "clear": "Clear",
+    "noResults": "No results found"
+  }
+}
