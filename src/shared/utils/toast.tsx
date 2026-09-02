@@ -51,7 +51,7 @@ export const toastConfig: ToastConfig = {
 const createStyles = (colors: ThemeColors) =>
   StyleSheet.create({
     toast: {
-      backgroundColor: colors.surface,
+      backgroundColor: '#FFF8E1',
       borderLeftWidth: 0,
       borderTopWidth: 3,
       borderRadius: 24,
@@ -72,8 +72,12 @@ const createStyles = (colors: ThemeColors) =>
     content: {
       paddingHorizontal: 14,
     },
+    // Fixed dark text, not colors.textPrimary — the toast card itself is
+    // staying a fixed cream regardless of theme (see `toast.backgroundColor`
+    // above), so its text needs to stay readable against that, not follow
+    // dark mode's light text color.
     text1: {
-      color: colors.textPrimary,
+      color: '#1A1A1A',
       fontSize: 15,
       fontFamily: FONTS.semiBold,
     },

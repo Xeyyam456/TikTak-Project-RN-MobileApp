@@ -47,5 +47,8 @@
     "quantityDecreased": "{{title}} quantity decreased",
     "removedFromBasket": "{{title}} removed from basket",
     "cleared": "Basket cleared"
+  },
+  "basketSummaryBar": {
+    "label": "Orders"
   }
 }
