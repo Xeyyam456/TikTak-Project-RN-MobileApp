@@ -47,5 +47,8 @@
     "quantityDecreased": "{{title}} sayı azaldıldı",
     "removedFromBasket": "{{title}} səbətdən silindi",
     "cleared": "Səbət təmizləndi"
+  },
+  "basketSummaryBar": {
+    "label": "Sifarişlər"
   }
 }

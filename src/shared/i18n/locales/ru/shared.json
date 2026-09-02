@@ -47,5 +47,8 @@
     "quantityDecreased": "Количество «{{title}}» уменьшено",
     "removedFromBasket": "{{title}} удалён из корзины",
     "cleared": "Корзина очищена"
+  },
+  "basketSummaryBar": {
+    "label": "Заказы"
   }
 }
