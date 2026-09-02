@@ -1,17 +1,11 @@
 import { useMemo, useState } from 'react';
-import {
-  ActivityIndicator,
-  FlatList,
-  RefreshControl,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { FlatList, RefreshControl, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useQuery } from '@tanstack/react-query';
 import ErrorState from '@shared/components/ErrorState';
 import ScreenHeader from '@shared/components/ScreenHeader';
+import Skeleton from '@shared/components/Skeleton';
 import { EyeIcon } from '@shared/components/icons';
 import useReload from '@shared/hooks/useReload';
 import { listOrders } from '@shared/services/order.service';
@@ -67,6 +61,49 @@ function OrderCard({ order, onPress }: { order: Order; onPress: () => void }) {
   );
 }
 
+const SKELETON_COUNT = 4;
+
+function OrderCardSkeleton() {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
+  return (
+    <View style={styles.card}>
+      <View style={styles.cardTop}>
+        <Skeleton width={90} height={16} />
+        <Skeleton width={70} height={22} borderRadius={20} />
+      </View>
+      <View style={styles.cardMiddle}>
+        <Skeleton width={110} height={14} />
+        <Skeleton width={60} height={16} />
+      </View>
+      <View style={styles.divider} />
+      <View style={styles.cardBottom}>
+        <View style={styles.addressBlock}>
+          <Skeleton width={100} height={12} style={{ marginBottom: 6 }} />
+          <Skeleton width="80%" height={14} />
+        </View>
+        <Skeleton width={34} height={34} borderRadius={17} />
+      </View>
+    </View>
+  );
+}
+
+function OrderListSkeleton() {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
+  return (
+    <View style={styles.skeletonList}>
+      {Array.from({ length: SKELETON_COUNT }).map((_, index) => (
+        <View key={index} style={index > 0 ? { marginTop: 12 } : undefined}>
+          <OrderCardSkeleton />
+        </View>
+      ))}
+    </View>
+  );
+}
+
 function OrderHistoryScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
@@ -91,7 +128,7 @@ function OrderHistoryScreen() {
       {error ? (
         <ErrorState message={error} onRetry={refetch} />
       ) : loading && orders.length === 0 ? (
-        <ActivityIndicator color={colors.primary} style={styles.loader} />
+        <OrderListSkeleton />
       ) : (
         <FlatList
           data={orders}

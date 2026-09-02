@@ -8,8 +8,9 @@ export const createStyles = (colors: ThemeColors) =>
       flex: 1,
       backgroundColor: colors.background,
     },
-    loader: {
-      marginTop: 32,
+    skeletonList: {
+      paddingHorizontal: 15,
+      paddingTop: 8,
     },
     listContent: {
       paddingHorizontal: 15,

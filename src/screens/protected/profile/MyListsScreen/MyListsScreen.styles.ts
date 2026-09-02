@@ -9,8 +9,11 @@ export const createStyles = (colors: ThemeColors) =>
       flex: 1,
       backgroundColor: colors.background,
     },
-    loader: {
-      marginTop: 32,
+    skeletonGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      paddingHorizontal: HORIZONTAL_PADDING,
+      paddingTop: 16,
     },
     listContent: {
       paddingHorizontal: HORIZONTAL_PADDING,

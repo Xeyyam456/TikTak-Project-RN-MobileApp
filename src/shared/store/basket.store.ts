@@ -7,14 +7,14 @@ import {
 } from '@shared/services/basket.service';
 import { getApiErrorMessage } from '@shared/utils/apiError';
 import { showErrorToast, showSuccessToast } from '@shared/utils/toast';
-import type { Basket } from '@typings/api';
+import type { Basket, BasketItem, Product } from '@typings/api';
 
 type BasketState = {
   basket: Basket | undefined;
   loading: boolean;
   error: string | undefined;
   fetchBasket: () => Promise<void>;
-  addItem: (productId: number) => Promise<void>;
+  addItem: (product: Product) => Promise<void>;
   removeItem: (productId: number) => Promise<void>;
   clearBasket: () => Promise<void>;
 };
@@ -34,19 +34,25 @@ export const useBasketStore = create<BasketState>((set, get) => ({
       set({ loading: false });
     }
   },
-  addItem: async productId => {
+  addItem: async product => {
+    const productId = product.id;
     const previousBasket = get().basket;
     const existingItem = previousBasket?.items?.find(
       item => item.product.id === productId,
     );
 
-    // Only bump an already-present item optimistically — a brand new item
-    // needs the product's title/price/image to render a basket row, which
-    // this store only has for products already in the basket. The first
-    // add of a product still waits on the real response, same as before.
-    if (previousBasket && existingItem) {
-      set({ basket: adjustItemQuantity(previousBasket, productId, 1) });
-    }
+    // An already-present item just bumps its quantity. A brand new one used
+    // to skip the optimistic update entirely (this store only had product
+    // data for items already in the basket) — the "+" button would sit
+    // there doing nothing until the request resolved, which read as lag.
+    // ProductCard/ProductDetailSheet already have the full product at the
+    // call site now, so a new item can build its own basket row too.
+    set({
+      basket:
+        previousBasket && existingItem
+          ? adjustItemQuantity(previousBasket, productId, 1)
+          : addNewItem(previousBasket, product),
+    });
 
     try {
       const basket = await addToBasket(productId);
@@ -58,7 +64,7 @@ export const useBasketStore = create<BasketState>((set, get) => ({
         `${title} ${existingItem ? 'sayı artırıldı' : 'səbətə əlavə edildi'}`,
       );
     } catch (err) {
-      if (previousBasket) set({ basket: previousBasket });
+      set({ basket: previousBasket });
       showErrorToast(getApiErrorMessage(err));
     }
   },
@@ -134,6 +140,26 @@ function adjustItemQuantity(
   const count = items.reduce((sum, item) => sum + item.quantity, 0);
 
   return { ...basket, items, total: total.toFixed(2), count };
+}
+
+// Synthesizes a basket row for a product that isn't in the basket yet, so
+// the optimistic update in addItem() above has something to show
+// immediately. `id` is a placeholder (real basket items get theirs from
+// the backend) — using a negative number keeps it from ever colliding with
+// a real id, and it's overwritten by the real response moments later
+// regardless.
+function addNewItem(basket: Basket | undefined, product: Product): Basket {
+  const price = Number(product.price);
+  const newItem: BasketItem = {
+    id: -product.id,
+    quantity: 1,
+    total_price: Number.isFinite(price) ? price.toFixed(2) : '0.00',
+    product,
+  };
+  const items = [...(basket?.items ?? []), newItem];
+  const total = items.reduce((sum, item) => sum + (Number(item.total_price) || 0), 0);
+  const count = items.reduce((sum, item) => sum + item.quantity, 0);
+  return { items, total: total.toFixed(2), count };
 }
 
 export function quantityForProduct(basket: Basket | undefined, productId: number) {
