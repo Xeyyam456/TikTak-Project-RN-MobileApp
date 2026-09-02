@@ -144,7 +144,7 @@ function BasketScreen() {
               <BasketRow
                 key={item.id}
                 item={item}
-                onIncrement={() => addItem(item.product.id)}
+                onIncrement={() => addItem(item.product)}
                 onDecrement={() => removeItem(item.product.id)}
               />
             ))}

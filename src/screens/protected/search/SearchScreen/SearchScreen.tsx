@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useQuery } from '@tanstack/react-query';
 import AppHeader from '@shared/components/AppHeader';
 import Input from '@shared/components/Input';
+import Skeleton from '@shared/components/Skeleton';
 import { ClockIcon, CloseIcon } from '@shared/components/icons';
 import { listProducts } from '@shared/services/product.service';
 import { queryKeys } from '@shared/queries/queryKeys';
@@ -47,6 +48,36 @@ function ResultRow({
         <Text style={styles.rowPrice}>{product.price} AZN</Text>
       </View>
     </TouchableOpacity>
+  );
+}
+
+const SKELETON_COUNT = 5;
+
+function ResultRowSkeleton() {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
+  return (
+    <View style={styles.row}>
+      <Skeleton width={56} height={56} borderRadius={10} />
+      <View style={styles.rowText}>
+        <Skeleton width="90%" height={14} style={{ marginBottom: 6 }} />
+        <Skeleton width={60} height={13} />
+      </View>
+    </View>
+  );
+}
+
+function ResultsSkeleton() {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
+  return (
+    <View style={styles.results}>
+      {Array.from({ length: SKELETON_COUNT }).map((_, index) => (
+        <ResultRowSkeleton key={index} />
+      ))}
+    </View>
   );
 }
 
@@ -122,8 +153,8 @@ function SearchScreen() {
   const isDebouncing = query.trim() !== debouncedQuery;
   const loading = !!query.trim() && (isDebouncing || isFetching);
 
-  async function handleAdd(productId: number) {
-    await addItem(productId);
+  async function handleAdd(product: Product) {
+    await addItem(product);
   }
 
   function handleSelectHistory(term: string) {
@@ -198,7 +229,7 @@ function SearchScreen() {
           </View>
         )
       ) : loading ? (
-        <ActivityIndicator color={colors.primary} style={styles.loader} />
+        <ResultsSkeleton />
       ) : results.length === 0 ? (
         <Text style={styles.emptyText}>Heç bir nəticə tapılmadı</Text>
       ) : (
@@ -220,7 +251,7 @@ function SearchScreen() {
           selectedProduct ? quantityForProduct(basket, selectedProduct.id) : 0
         }
         onClose={() => setSelectedProduct(null)}
-        onAdd={() => selectedProduct && handleAdd(selectedProduct.id)}
+        onAdd={() => selectedProduct && handleAdd(selectedProduct)}
       />
     </View>
   );

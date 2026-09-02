@@ -61,8 +61,11 @@ export const createStyles = (colors: ThemeColors) =>
     chipTextActive: {
       color: '#FFFFFF',
     },
-    loader: {
-      marginTop: 32,
+    skeletonGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      paddingHorizontal: HORIZONTAL_PADDING,
+      paddingTop: 14,
     },
     list: {
       marginTop: 14,

@@ -1,16 +1,10 @@
 import { useMemo, useRef, useState } from 'react';
-import {
-  ActivityIndicator,
-  FlatList,
-  RefreshControl,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { FlatList, RefreshControl, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useScrollToTop } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import ErrorState from '@shared/components/ErrorState';
+import Skeleton from '@shared/components/Skeleton';
 import { ChevronRightIcon } from '@shared/components/icons';
 import useReload from '@shared/hooks/useReload';
 import type { Category } from '@typings/api';
@@ -21,6 +15,24 @@ import CategoryCard from '../CategoryCard';
 import { useTheme } from '../../../../theme/ThemeContext';
 import { COLUMNS, createStyles } from './HomeScreen.styles';
 import { useHomeData } from './useHomeData';
+
+const SKELETON_COUNT = 6;
+
+function CategoryGridSkeleton() {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
+  return (
+    <View style={styles.skeletonGrid}>
+      {Array.from({ length: SKELETON_COUNT }).map((_, index) => (
+        <View key={index} style={styles.skeletonCard}>
+          <Skeleton style={styles.skeletonCardImage} />
+          <Skeleton height={14} borderRadius={4} width="80%" />
+        </View>
+      ))}
+    </View>
+  );
+}
 
 function HomeScreen() {
   const insets = useSafeAreaInsets();
@@ -108,9 +120,7 @@ function HomeScreen() {
                 />
               )}
 
-              {loading ? (
-                <ActivityIndicator color={colors.primary} style={styles.loader} />
-              ) : null}
+              {loading ? <CategoryGridSkeleton /> : null}
             </>
           }
         />

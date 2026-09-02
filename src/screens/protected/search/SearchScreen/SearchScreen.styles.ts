@@ -14,9 +14,6 @@ export const createStyles = (colors: ThemeColors) =>
       paddingHorizontal: HORIZONTAL_PADDING,
       paddingTop: 14,
     },
-    loader: {
-      marginTop: 32,
-    },
     emptyText: {
       marginTop: 32,
       paddingHorizontal: HORIZONTAL_PADDING,

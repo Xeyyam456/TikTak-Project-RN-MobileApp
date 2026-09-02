@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, RefreshControl, Text, View } from 'react-native';
+import { RefreshControl, Text, View } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -12,6 +12,7 @@ import BasketSummaryBar, {
 } from '@shared/components/BasketSummaryBar';
 import ErrorState from '@shared/components/ErrorState';
 import ProductCard, { COLUMNS } from '@shared/components/ProductCard';
+import ProductCardSkeleton from '@shared/components/ProductCardSkeleton';
 import ScreenHeader from '@shared/components/ScreenHeader';
 import useReload from '@shared/hooks/useReload';
 import { listFavorites } from '@shared/services/product.service';
@@ -23,6 +24,26 @@ import type { RootStackParamList } from '@typings/navigation';
 import ProductDetailSheet from '../../home/ProductDetailSheet';
 import { useTheme } from '../../../../theme/ThemeContext';
 import { createStyles } from './MyListsScreen.styles';
+
+const SKELETON_COUNT = 6;
+
+function ProductGridSkeleton() {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
+  return (
+    <View style={styles.skeletonGrid}>
+      {Array.from({ length: SKELETON_COUNT }).map((_, index) => (
+        <View
+          key={index}
+          style={[styles.cardWrapper, index % COLUMNS !== 0 && styles.cardWrapperRight]}
+        >
+          <ProductCardSkeleton />
+        </View>
+      ))}
+    </View>
+  );
+}
 
 function MyListsScreen() {
   const insets = useSafeAreaInsets();
@@ -62,8 +83,8 @@ function MyListsScreen() {
     return quantityForProduct(basket, productId);
   }
 
-  async function handleAdd(productId: number) {
-    await addItem(productId);
+  async function handleAdd(product: Product) {
+    await addItem(product);
   }
 
   async function handleDecrement(productId: number) {
@@ -81,7 +102,7 @@ function MyListsScreen() {
       {error ? (
         <ErrorState message={error} onRetry={refetch} />
       ) : loading && favorites.length === 0 ? (
-        <ActivityIndicator color={colors.primary} style={styles.loader} />
+        <ProductGridSkeleton />
       ) : (
         <FlashList<Product>
           data={favorites}
@@ -116,8 +137,8 @@ function MyListsScreen() {
                 product={item}
                 quantity={quantityFor(item.id)}
                 onPress={() => setSelectedProduct(item)}
-                onAdd={() => handleAdd(item.id)}
-                onIncrement={() => handleAdd(item.id)}
+                onAdd={() => handleAdd(item)}
+                onIncrement={() => handleAdd(item)}
                 onDecrement={() => handleDecrement(item.id)}
               />
             </View>
@@ -129,7 +150,7 @@ function MyListsScreen() {
         product={selectedProduct}
         quantity={selectedProduct ? quantityFor(selectedProduct.id) : 0}
         onClose={() => setSelectedProduct(null)}
-        onAdd={() => selectedProduct && handleAdd(selectedProduct.id)}
+        onAdd={() => selectedProduct && handleAdd(selectedProduct)}
         onFavoriteChange={(productId, isFavorite) => {
           if (!isFavorite) {
             setFavorites(current => current.filter(p => p.id !== productId));

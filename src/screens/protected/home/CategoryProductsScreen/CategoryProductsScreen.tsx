@@ -1,6 +1,5 @@
 import { useMemo, useRef, useState } from 'react';
 import {
-  ActivityIndicator,
   RefreshControl,
   ScrollView,
   Text,
@@ -22,6 +21,7 @@ import BasketSummaryBar, {
 } from '@shared/components/BasketSummaryBar';
 import ErrorState from '@shared/components/ErrorState';
 import ProductCard, { COLUMNS } from '@shared/components/ProductCard';
+import ProductCardSkeleton from '@shared/components/ProductCardSkeleton';
 import { GridIcon } from '@shared/components/icons';
 import useReload from '@shared/hooks/useReload';
 import { quantityForProduct, useBasketStore } from '@shared/store/basket.store';
@@ -33,6 +33,26 @@ import { useTheme } from '../../../../theme/ThemeContext';
 import { createStyles } from './CategoryProductsScreen.styles';
 import { useCategoryChipsScroll } from './useCategoryChipsScroll';
 import { useCategoryProductsData } from './useCategoryProductsData';
+
+const SKELETON_COUNT = 6;
+
+function ProductGridSkeleton() {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
+  return (
+    <View style={styles.skeletonGrid}>
+      {Array.from({ length: SKELETON_COUNT }).map((_, index) => (
+        <View
+          key={index}
+          style={[styles.cardWrapper, index % COLUMNS !== 0 && styles.cardWrapperRight]}
+        >
+          <ProductCardSkeleton />
+        </View>
+      ))}
+    </View>
+  );
+}
 
 function CategoryProductsScreen() {
   const insets = useSafeAreaInsets();
@@ -62,8 +82,8 @@ function CategoryProductsScreen() {
     return quantityForProduct(basket, productId);
   }
 
-  async function handleAdd(productId: number) {
-    await addItem(productId);
+  async function handleAdd(product: Product) {
+    await addItem(product);
   }
 
   async function handleDecrement(productId: number) {
@@ -133,7 +153,7 @@ function CategoryProductsScreen() {
       {error ? (
         <ErrorState message={error} onRetry={retry} />
       ) : loading && categories.length === 0 && products.length === 0 ? (
-        <ActivityIndicator color={colors.primary} style={styles.loader} />
+        <ProductGridSkeleton />
       ) : (
         <FlashList<Product>
           ref={listRef}
@@ -169,8 +189,8 @@ function CategoryProductsScreen() {
                 product={item}
                 quantity={quantityFor(item.id)}
                 onPress={() => setSelectedProduct(item)}
-                onAdd={() => handleAdd(item.id)}
-                onIncrement={() => handleAdd(item.id)}
+                onAdd={() => handleAdd(item)}
+                onIncrement={() => handleAdd(item)}
                 onDecrement={() => handleDecrement(item.id)}
               />
             </View>
@@ -182,7 +202,7 @@ function CategoryProductsScreen() {
         product={selectedProduct}
         quantity={selectedProduct ? quantityFor(selectedProduct.id) : 0}
         onClose={() => setSelectedProduct(null)}
-        onAdd={() => selectedProduct && handleAdd(selectedProduct.id)}
+        onAdd={() => selectedProduct && handleAdd(selectedProduct)}
       />
 
       {showSummaryBar && (

@@ -48,11 +48,22 @@ export const createStyles = (colors: ThemeColors) =>
       borderRadius: 10,
       marginBottom: 20,
     },
-    loader: {
-      marginTop: 24,
-    },
     row: {
       gap: GRID_GAP,
       marginBottom: GRID_GAP,
+    },
+    skeletonGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: GRID_GAP,
+    },
+    skeletonCard: {
+      width: (Dimensions.get('window').width - HORIZONTAL_PADDING * 2 - GRID_GAP * (COLUMNS - 1)) / COLUMNS,
+      gap: 6,
+    },
+    skeletonCardImage: {
+      width: '100%',
+      aspectRatio: 1,
+      borderRadius: 10,
     },
   });
