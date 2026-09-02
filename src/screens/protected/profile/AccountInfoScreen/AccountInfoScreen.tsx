@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, RefreshControl, Text, View } from 'react-native';
 import {
   KeyboardAwareScrollView,
@@ -17,7 +17,8 @@ import { getProfile, updateProfile } from '@shared/services/profile.service';
 import { queryKeys } from '@shared/queries/queryKeys';
 import { getApiErrorMessage } from '@shared/utils/apiError';
 import { validateName, validatePassword } from '@shared/utils/validation';
-import { styles } from './AccountInfoScreen.styles';
+import { useTheme } from '../../../../theme/ThemeContext';
+import { createStyles } from './AccountInfoScreen.styles';
 
 // Not editable and not sent on save — the backend's `PUT /profile` has no
 // email field (docs/api.md, `UserProfile` type), so there's nowhere for a
@@ -28,6 +29,8 @@ const PLACEHOLDER_EMAIL = 'Xeyyamelizade5@gmail.com';
 function AccountInfoScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   const queryClient = useQueryClient();
   const {
@@ -116,7 +119,7 @@ function AccountInfoScreen() {
       {loadError ? (
         <ErrorState message={loadError} onRetry={refetch} />
       ) : loading ? (
-        <ActivityIndicator color="#7BC043" style={styles.loader} />
+        <ActivityIndicator color={colors.primary} style={styles.loader} />
       ) : (
         <KeyboardAwareScrollView
           ref={scrollRef}

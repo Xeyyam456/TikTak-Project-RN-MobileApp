@@ -1,9 +1,13 @@
+import { useMemo } from 'react';
 import { Pressable, Text, View } from 'react-native';
+import { useTheme } from '../../../theme/ThemeContext';
 import { CheckIcon } from '../icons';
-import { styles } from './Checkbox.styles';
+import { createStyles } from './Checkbox.styles';
 import type { CheckboxProps } from './Checkbox.types';
 
 function Checkbox({ label, checked, onChange }: CheckboxProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   return (
     <Pressable
       style={styles.row}

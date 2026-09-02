@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useQuery } from '@tanstack/react-query';
@@ -14,10 +14,10 @@ import {
   getSearchHistory,
   removeSearchHistoryEntry,
 } from '@shared/utils/searchHistory';
-import { COLORS } from '../../../../theme/colors';
 import type { Product } from '@typings/api';
 import ProductDetailSheet from '../../home/ProductDetailSheet';
-import { styles } from './SearchScreen.styles';
+import { useTheme } from '../../../../theme/ThemeContext';
+import { createStyles } from './SearchScreen.styles';
 
 const SEARCH_DEBOUNCE_MS = 500;
 const FALLBACK_IMAGE_URL =
@@ -30,6 +30,9 @@ function ResultRow({
   product: Product;
   onPress: () => void;
 }) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   return (
     <TouchableOpacity style={styles.row} activeOpacity={0.7} onPress={onPress}>
       <Image
@@ -56,20 +59,25 @@ function HistoryRow({
   onPress: () => void;
   onRemove: () => void;
 }) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   return (
     <TouchableOpacity style={styles.historyRow} activeOpacity={0.7} onPress={onPress}>
-      <ClockIcon size={18} color={COLORS.textMuted} />
+      <ClockIcon size={18} color={colors.textMuted} />
       <Text style={styles.historyText} numberOfLines={1}>
         {term}
       </Text>
       <TouchableOpacity hitSlop={10} onPress={onRemove}>
-        <CloseIcon size={14} color={COLORS.textMuted} />
+        <CloseIcon size={14} color={colors.textMuted} />
       </TouchableOpacity>
     </TouchableOpacity>
   );
 }
 
 function SearchScreen() {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -190,7 +198,7 @@ function SearchScreen() {
           </View>
         )
       ) : loading ? (
-        <ActivityIndicator color={COLORS.primary} style={styles.loader} />
+        <ActivityIndicator color={colors.primary} style={styles.loader} />
       ) : results.length === 0 ? (
         <Text style={styles.emptyText}>Heç bir nəticə tapılmadı</Text>
       ) : (

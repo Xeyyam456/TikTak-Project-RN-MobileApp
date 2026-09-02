@@ -1,6 +1,7 @@
-import { useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity } from 'react-native';
-import { styles } from './Button.styles';
+import { useTheme } from '../../../theme/ThemeContext';
+import { createStyles } from './Button.styles';
 import type { ButtonProps } from './Button.types';
 
 const DOUBLE_PRESS_GUARD_MS = 600;
@@ -13,6 +14,8 @@ function Button({
   variant = 'primary',
   style,
 }: ButtonProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const lastPressRef = useRef(0);
   const isDisabled = disabled || loading;
 

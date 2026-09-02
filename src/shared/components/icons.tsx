@@ -1,12 +1,14 @@
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
-import { COLORS } from '../../theme/colors';
+import { useTheme } from '../../theme/ThemeContext';
 
 type IconProps = {
   size?: number;
   color?: string;
 };
 
-export function HomeIcon({ size = 24, color = COLORS.textMuted }: IconProps) {
+export function HomeIcon({ size = 24, color: colorProp }: IconProps) {
+  const { colors } = useTheme();
+  const color = colorProp ?? colors.textMuted;
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
@@ -20,7 +22,9 @@ export function HomeIcon({ size = 24, color = COLORS.textMuted }: IconProps) {
   );
 }
 
-export function SearchIcon({ size = 24, color = COLORS.textMuted }: IconProps) {
+export function SearchIcon({ size = 24, color: colorProp }: IconProps) {
+  const { colors } = useTheme();
+  const color = colorProp ?? colors.textMuted;
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Circle cx={11} cy={11} r={7} stroke={color} strokeWidth={2} />
@@ -34,7 +38,9 @@ export function SearchIcon({ size = 24, color = COLORS.textMuted }: IconProps) {
   );
 }
 
-export function UserIcon({ size = 24, color = COLORS.textMuted }: IconProps) {
+export function UserIcon({ size = 24, color: colorProp }: IconProps) {
+  const { colors } = useTheme();
+  const color = colorProp ?? colors.textMuted;
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Circle cx={12} cy={8} r={4} stroke={color} strokeWidth={2} />
@@ -48,7 +54,9 @@ export function UserIcon({ size = 24, color = COLORS.textMuted }: IconProps) {
   );
 }
 
-export function ChevronRightIcon({ size = 24, color = COLORS.textMuted }: IconProps) {
+export function ChevronRightIcon({ size = 24, color: colorProp }: IconProps) {
+  const { colors } = useTheme();
+  const color = colorProp ?? colors.textMuted;
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
@@ -62,7 +70,9 @@ export function ChevronRightIcon({ size = 24, color = COLORS.textMuted }: IconPr
   );
 }
 
-export function EyeIcon({ size = 24, color = COLORS.textMuted }: IconProps) {
+export function EyeIcon({ size = 24, color: colorProp }: IconProps) {
+  const { colors } = useTheme();
+  const color = colorProp ?? colors.textMuted;
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
@@ -77,7 +87,9 @@ export function EyeIcon({ size = 24, color = COLORS.textMuted }: IconProps) {
   );
 }
 
-export function EyeOffIcon({ size = 24, color = COLORS.textMuted }: IconProps) {
+export function EyeOffIcon({ size = 24, color: colorProp }: IconProps) {
+  const { colors } = useTheme();
+  const color = colorProp ?? colors.textMuted;
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
@@ -92,7 +104,9 @@ export function EyeOffIcon({ size = 24, color = COLORS.textMuted }: IconProps) {
   );
 }
 
-export function ImageIcon({ size = 24, color = COLORS.textPrimary }: IconProps) {
+export function ImageIcon({ size = 24, color: colorProp }: IconProps) {
+  const { colors } = useTheme();
+  const color = colorProp ?? colors.textPrimary;
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Rect x={3} y={3} width={18} height={18} rx={3} stroke={color} strokeWidth={2} />
@@ -108,7 +122,9 @@ export function ImageIcon({ size = 24, color = COLORS.textPrimary }: IconProps) 
   );
 }
 
-export function GridIcon({ size = 24, color = COLORS.white }: IconProps) {
+export function GridIcon({ size = 24, color: colorProp }: IconProps) {
+  const { colors } = useTheme();
+  const color = colorProp ?? colors.white;
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Rect x={3} y={3} width={8} height={8} rx={2} fill={color} />
@@ -121,9 +137,11 @@ export function GridIcon({ size = 24, color = COLORS.white }: IconProps) {
 
 export function HeartIcon({
   size = 24,
-  color = COLORS.textPrimary,
+  color: colorProp,
   filled = false,
 }: IconProps & { filled?: boolean }) {
+  const { colors } = useTheme();
+  const color = colorProp ?? colors.textPrimary;
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
@@ -138,7 +156,9 @@ export function HeartIcon({
   );
 }
 
-export function ArrowLeftIcon({ size = 24, color = COLORS.textPrimary }: IconProps) {
+export function ArrowLeftIcon({ size = 24, color: colorProp }: IconProps) {
+  const { colors } = useTheme();
+  const color = colorProp ?? colors.textPrimary;
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
@@ -152,7 +172,9 @@ export function ArrowLeftIcon({ size = 24, color = COLORS.textPrimary }: IconPro
   );
 }
 
-export function TrashIcon({ size = 24, color = COLORS.white }: IconProps) {
+export function TrashIcon({ size = 24, color: colorProp }: IconProps) {
+  const { colors } = useTheme();
+  const color = colorProp ?? colors.white;
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
@@ -167,7 +189,9 @@ export function TrashIcon({ size = 24, color = COLORS.white }: IconProps) {
   );
 }
 
-export function CheckIcon({ size = 24, color = COLORS.white }: IconProps) {
+export function CheckIcon({ size = 24, color: colorProp }: IconProps) {
+  const { colors } = useTheme();
+  const color = colorProp ?? colors.white;
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
@@ -181,7 +205,9 @@ export function CheckIcon({ size = 24, color = COLORS.white }: IconProps) {
   );
 }
 
-export function CloseIcon({ size = 24, color = COLORS.white }: IconProps) {
+export function CloseIcon({ size = 24, color: colorProp }: IconProps) {
+  const { colors } = useTheme();
+  const color = colorProp ?? colors.white;
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
@@ -195,7 +221,9 @@ export function CloseIcon({ size = 24, color = COLORS.white }: IconProps) {
   );
 }
 
-export function AlertIcon({ size = 24, color = COLORS.white }: IconProps) {
+export function AlertIcon({ size = 24, color: colorProp }: IconProps) {
+  const { colors } = useTheme();
+  const color = colorProp ?? colors.white;
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path d="M12 7v6" stroke={color} strokeWidth={3} strokeLinecap="round" />
@@ -204,7 +232,9 @@ export function AlertIcon({ size = 24, color = COLORS.white }: IconProps) {
   );
 }
 
-export function DocumentIcon({ size = 24, color = COLORS.textPrimary }: IconProps) {
+export function DocumentIcon({ size = 24, color: colorProp }: IconProps) {
+  const { colors } = useTheme();
+  const color = colorProp ?? colors.textPrimary;
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
@@ -226,7 +256,9 @@ export function DocumentIcon({ size = 24, color = COLORS.textPrimary }: IconProp
   );
 }
 
-export function ClockIcon({ size = 24, color = COLORS.textPrimary }: IconProps) {
+export function ClockIcon({ size = 24, color: colorProp }: IconProps) {
+  const { colors } = useTheme();
+  const color = colorProp ?? colors.textPrimary;
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Circle cx={12} cy={12} r={9} stroke={color} strokeWidth={2} />
@@ -241,7 +273,9 @@ export function ClockIcon({ size = 24, color = COLORS.textPrimary }: IconProps) 
   );
 }
 
-export function LogoutIcon({ size = 24, color = COLORS.textPrimary }: IconProps) {
+export function LogoutIcon({ size = 24, color: colorProp }: IconProps) {
+  const { colors } = useTheme();
+  const color = colorProp ?? colors.textPrimary;
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
@@ -262,13 +296,32 @@ export function LogoutIcon({ size = 24, color = COLORS.textPrimary }: IconProps)
   );
 }
 
-export function CartIcon({ size = 24, color = COLORS.textPrimary }: IconProps) {
+export function CartIcon({ size = 24, color: colorProp }: IconProps) {
+  const { colors } = useTheme();
+  const color = colorProp ?? colors.textPrimary;
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Circle cx={8} cy={21} r={1} stroke={color} strokeWidth={2} />
       <Circle cx={19} cy={21} r={1} stroke={color} strokeWidth={2} />
       <Path
         d="M2.05 2.05h2l2.66 12.42a2 2 0 002 1.58h9.78a2 2 0 001.95-1.57l1.65-7.43H5.12"
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
+export function SettingsIcon({ size = 24, color: colorProp }: IconProps) {
+  const { colors } = useTheme();
+  const color = colorProp ?? colors.textPrimary;
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Circle cx={12} cy={12} r={3} stroke={color} strokeWidth={2} />
+      <Path
+        d="M19.4 13a7.97 7.97 0 000-2l2.02-1.57a.5.5 0 00.12-.64l-1.92-3.32a.5.5 0 00-.6-.22l-2.38.96a7.93 7.93 0 00-1.73-1l-.36-2.53a.5.5 0 00-.5-.43h-3.84a.5.5 0 00-.5.43l-.36 2.53a7.93 7.93 0 00-1.73 1l-2.38-.96a.5.5 0 00-.6.22L2.66 8.79a.5.5 0 00.12.64L4.8 11a7.97 7.97 0 000 2l-2.02 1.57a.5.5 0 00-.12.64l1.92 3.32a.5.5 0 00.6.22l2.38-.96c.53.42 1.11.76 1.73 1l.36 2.53a.5.5 0 00.5.43h3.84a.5.5 0 00.5-.43l.36-2.53a7.93 7.93 0 001.73-1l2.38.96a.5.5 0 00.6-.22l1.92-3.32a.5.5 0 00-.12-.64L19.4 13z"
         stroke={color}
         strokeWidth={2}
         strokeLinecap="round"

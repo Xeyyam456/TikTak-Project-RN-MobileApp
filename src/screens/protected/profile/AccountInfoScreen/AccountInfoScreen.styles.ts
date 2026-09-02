@@ -1,32 +1,34 @@
 import { StyleSheet } from 'react-native';
 import { FONTS } from '../../../../theme/fonts';
+import type { ThemeColors } from '../../../../theme/colors';
 
-export const styles = StyleSheet.create({
-  flex: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  container: {
-    paddingHorizontal: 24,
-    paddingTop: 8,
-  },
-  loader: {
-    marginTop: 32,
-  },
-  form: {
-    gap: 20,
-  },
-  disabledInput: {
-    color: '#9B9B9B',
-  },
-  formError: {
-    marginTop: 20,
-    fontSize: 12,
-    textAlign: 'center',
-    color: '#E24C4C',
-    fontFamily: FONTS.regular,
-  },
-  submitButton: {
-    marginTop: 32,
-  },
-});
+export const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    flex: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    container: {
+      paddingHorizontal: 24,
+      paddingTop: 8,
+    },
+    loader: {
+      marginTop: 32,
+    },
+    form: {
+      gap: 20,
+    },
+    disabledInput: {
+      color: colors.textMuted,
+    },
+    formError: {
+      marginTop: 20,
+      fontSize: 12,
+      textAlign: 'center',
+      color: colors.danger,
+      fontFamily: FONTS.regular,
+    },
+    submitButton: {
+      marginTop: 32,
+    },
+  });

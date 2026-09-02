@@ -1,6 +1,8 @@
+import { useMemo } from 'react';
 import { Modal, Text, View } from 'react-native';
+import { useTheme } from '../../../theme/ThemeContext';
 import Button from '../Button';
-import { styles } from './ConfirmModal.styles';
+import { createStyles } from './ConfirmModal.styles';
 import type { ConfirmModalProps } from './ConfirmModal.types';
 
 function ConfirmModal({
@@ -15,6 +17,8 @@ function ConfirmModal({
   onConfirm,
   onCancel,
 }: ConfirmModalProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}>
       <View style={styles.overlay}>

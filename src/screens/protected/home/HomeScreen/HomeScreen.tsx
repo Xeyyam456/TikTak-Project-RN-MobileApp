@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -18,13 +18,16 @@ import type { HomeStackParamList } from '@typings/navigation';
 import AddressEditModal from '../AddressEditModal';
 import CampaignCard from '../CampaignCard';
 import CategoryCard from '../CategoryCard';
-import { COLUMNS, styles } from './HomeScreen.styles';
+import { useTheme } from '../../../../theme/ThemeContext';
+import { COLUMNS, createStyles } from './HomeScreen.styles';
 import { useHomeData } from './useHomeData';
 
 function HomeScreen() {
   const insets = useSafeAreaInsets();
   const navigation =
     useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   const {
     profile,
@@ -88,7 +91,7 @@ function HomeScreen() {
                     {profile?.address ?? 'Ünvan seçilməyib'}
                   </Text>
                 </View>
-                <ChevronRightIcon size={20} color="#9B9B9B" />
+                <ChevronRightIcon size={20} color={colors.textMuted} />
               </TouchableOpacity>
 
               {campaigns.length > 0 && (
@@ -106,7 +109,7 @@ function HomeScreen() {
               )}
 
               {loading ? (
-                <ActivityIndicator color="#7BC043" style={styles.loader} />
+                <ActivityIndicator color={colors.primary} style={styles.loader} />
               ) : null}
             </>
           }

@@ -1,9 +1,12 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
-import { styles } from './OrderItemsBox.styles';
+import { useTheme } from '../../../../theme/ThemeContext';
+import { createStyles } from './OrderItemsBox.styles';
 import type { OrderItemsBoxProps } from './OrderItemsBox.types';
 
 function OrderItemsBox({ items }: OrderItemsBoxProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [boxHeight, setBoxHeight] = useState<number | undefined>(undefined);
 
   return (

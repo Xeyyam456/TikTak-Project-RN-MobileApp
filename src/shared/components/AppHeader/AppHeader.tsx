@@ -1,18 +1,21 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { CartIcon } from '@shared/components/icons';
 import { useBasketStore } from '@shared/store/basket.store';
+import { useTheme } from '../../../theme/ThemeContext';
 import type { RootStackParamList } from '@typings/navigation';
-import { styles } from './AppHeader.styles';
+import { createStyles } from './AppHeader.styles';
 
 function AppHeader() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const basket = useBasketStore(state => state.basket);
   const fetchBasket = useBasketStore(state => state.fetchBasket);
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   useEffect(() => {
     fetchBasket();

@@ -1,8 +1,12 @@
+import { useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { styles, SUMMARY_BAR_GAP, SUMMARY_BAR_HEIGHT } from './BasketSummaryBar.styles';
+import { useTheme } from '../../../theme/ThemeContext';
+import { createStyles, SUMMARY_BAR_GAP, SUMMARY_BAR_HEIGHT } from './BasketSummaryBar.styles';
 import type { BasketSummaryBarProps } from './BasketSummaryBar.types';
 
 function BasketSummaryBar({ itemCount, total, onPress }: BasketSummaryBarProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   return (
     <TouchableOpacity
       style={[styles.bar, { height: SUMMARY_BAR_HEIGHT, marginBottom: SUMMARY_BAR_GAP }]}

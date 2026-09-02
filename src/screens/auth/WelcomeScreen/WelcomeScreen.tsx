@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -6,12 +7,15 @@ import AuthSwitchLink from '@shared/components/AuthSwitchLink';
 import Button from '@shared/components/Button';
 import FruitImage from '@assets/images/images1.svg';
 import type { RootStackParamList } from '@typings/navigation';
-import { styles } from './WelcomeScreen.styles';
+import { useTheme } from '../../../theme/ThemeContext';
+import { createStyles } from './WelcomeScreen.styles';
 
 function WelcomeScreen() {
   const insets = useSafeAreaInsets();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   return (
     <ScrollView

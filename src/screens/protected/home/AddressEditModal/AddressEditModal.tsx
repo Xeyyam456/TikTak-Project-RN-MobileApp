@@ -1,14 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Modal, Text, View } from 'react-native';
 import Button from '@shared/components/Button';
 import TextField from '@shared/components/TextField';
 import { updateProfile } from '@shared/services/profile.service';
 import { getApiErrorMessage } from '@shared/utils/apiError';
 import { showSuccessToast } from '@shared/utils/toast';
-import { styles } from './AddressEditModal.styles';
+import { useTheme } from '../../../../theme/ThemeContext';
+import { createStyles } from './AddressEditModal.styles';
 import type { AddressEditModalProps } from './AddressEditModal.types';
 
 function AddressEditModal({ visible, profile, onClose, onSaved }: AddressEditModalProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [addressInput, setAddressInput] = useState('');
   const [addressError, setAddressError] = useState<string>();
   const [saving, setSaving] = useState(false);

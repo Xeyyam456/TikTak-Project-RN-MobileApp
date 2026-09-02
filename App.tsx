@@ -6,7 +6,11 @@ import { useEffect, useState } from 'react';
 import { StatusBar } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { NavigationContainer } from '@react-navigation/native';
+import {
+  DarkTheme as NavigationDarkTheme,
+  DefaultTheme as NavigationDefaultTheme,
+  NavigationContainer,
+} from '@react-navigation/native';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import Toast from 'react-native-toast-message';
 import BootSplash from 'react-native-bootsplash';
@@ -20,6 +24,7 @@ import { SENTRY_DSN } from './src/shared/config/env';
 import { initTokenStorage } from './src/shared/api/tokenStorage';
 import { queryClient } from './src/shared/api/queryClient';
 import { queryPersister } from './src/shared/api/queryStorage';
+import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
 
 Sentry.init({
   dsn: SENTRY_DSN,
@@ -51,23 +56,54 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <PersistQueryClientProvider
-        client={queryClient}
-        persistOptions={{ persister: queryPersister, maxAge: 24 * 60 * 60 * 1000, buster: CACHE_BUSTER }}
-      >
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <KeyboardProvider>
-            <SafeAreaProvider>
-              <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
-              <NavigationContainer ref={navigationRef}>
-                <RootNavigator />
-              </NavigationContainer>
-              <Toast config={toastConfig} />
-            </SafeAreaProvider>
-          </KeyboardProvider>
-        </GestureHandlerRootView>
-      </PersistQueryClientProvider>
+      <ThemeProvider>
+        <PersistQueryClientProvider
+          client={queryClient}
+          persistOptions={{ persister: queryPersister, maxAge: 24 * 60 * 60 * 1000, buster: CACHE_BUSTER }}
+        >
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <KeyboardProvider>
+              <SafeAreaProvider>
+                <AppShell />
+              </SafeAreaProvider>
+            </KeyboardProvider>
+          </GestureHandlerRootView>
+        </PersistQueryClientProvider>
+      </ThemeProvider>
     </ErrorBoundary>
+  );
+}
+
+// Split out from App() so it can call useTheme() — that hook needs to run
+// under <ThemeProvider>, which wraps App()'s own return value.
+function AppShell() {
+  const { isDark, colors } = useTheme();
+
+  return (
+    <>
+      <StatusBar
+        translucent
+        backgroundColor="transparent"
+        barStyle={isDark ? 'light-content' : 'dark-content'}
+      />
+      <NavigationContainer
+        ref={navigationRef}
+        theme={{
+          ...(isDark ? NavigationDarkTheme : NavigationDefaultTheme),
+          colors: {
+            ...(isDark ? NavigationDarkTheme.colors : NavigationDefaultTheme.colors),
+            background: colors.background,
+            card: colors.surface,
+            border: colors.border,
+            text: colors.textPrimary,
+            primary: colors.primary,
+          },
+        }}
+      >
+        <RootNavigator />
+      </NavigationContainer>
+      <Toast config={toastConfig} />
+    </>
   );
 }
 

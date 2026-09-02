@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import {
   Animated,
   Dimensions,
@@ -14,7 +14,8 @@ import {
   State,
 } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { styles } from './BottomSheet.styles';
+import { useTheme } from '../../../theme/ThemeContext';
+import { createStyles } from './BottomSheet.styles';
 import type { BottomSheetProps } from './BottomSheet.types';
 
 // Any value at least as tall as the sheet's rendered content works as the
@@ -25,6 +26,8 @@ const DRAG_CLOSE_THRESHOLD = 100;
 
 function BottomSheet({ visible, onClose, children, contentStyle }: BottomSheetProps) {
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const translateY = useRef(new Animated.Value(OFFSCREEN_Y)).current;
 
   useEffect(() => {

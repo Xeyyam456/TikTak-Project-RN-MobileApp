@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -20,13 +20,18 @@ import { getApiErrorMessage } from '@shared/utils/apiError';
 import { formatOrderDate, getOrderStatusMeta } from '@shared/utils/order';
 import type { Order } from '@typings/api';
 import OrderDetailSheet from '../OrderDetailSheet';
-import { styles } from './OrderHistoryScreen.styles';
+import { useTheme } from '../../../../theme/ThemeContext';
+import { createStyles } from './OrderHistoryScreen.styles';
 
 function CardGap() {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   return <View style={styles.cardGap} />;
 }
 
 function OrderCard({ order, onPress }: { order: Order; onPress: () => void }) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const status = getOrderStatusMeta(order.status);
 
   return (
@@ -55,7 +60,7 @@ function OrderCard({ order, onPress }: { order: Order; onPress: () => void }) {
           </Text>
         </View>
         <View style={styles.viewButton}>
-          <EyeIcon size={18} color="#7BC043" />
+          <EyeIcon size={18} color={colors.primary} />
         </View>
       </View>
     </TouchableOpacity>
@@ -65,6 +70,8 @@ function OrderCard({ order, onPress }: { order: Order; onPress: () => void }) {
 function OrderHistoryScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   const {
     data: orders = [],
@@ -84,7 +91,7 @@ function OrderHistoryScreen() {
       {error ? (
         <ErrorState message={error} onRetry={refetch} />
       ) : loading && orders.length === 0 ? (
-        <ActivityIndicator color="#7BC043" style={styles.loader} />
+        <ActivityIndicator color={colors.primary} style={styles.loader} />
       ) : (
         <FlatList
           data={orders}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -16,7 +16,8 @@ import { getApiErrorMessage } from '@shared/utils/apiError';
 import type { PaymentMethod } from '@typings/api';
 import type { RootStackParamList } from '@typings/navigation';
 import OrderItemsBox from '../OrderItemsBox';
-import { styles } from './CheckoutScreen.styles';
+import { useTheme } from '../../../../theme/ThemeContext';
+import { createStyles } from './CheckoutScreen.styles';
 
 const PAYMENT_OPTIONS: { value: PaymentMethod; label: string }[] = [
   { value: 'CASH', label: 'Qapıda nağd' },
@@ -26,6 +27,8 @@ const PAYMENT_OPTIONS: { value: PaymentMethod; label: string }[] = [
 function CheckoutScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   const basket = useBasketStore(state => state.basket);
   const fetchBasket = useBasketStore(state => state.fetchBasket);
@@ -73,7 +76,7 @@ function CheckoutScreen() {
       {profileError ? (
         <ErrorState message={profileError} onRetry={loadProfile} />
       ) : loadingProfile ? (
-        <ActivityIndicator color="#7BC043" style={styles.loader} />
+        <ActivityIndicator color={colors.primary} style={styles.loader} />
       ) : (
         <>
           <View style={styles.formSection}>

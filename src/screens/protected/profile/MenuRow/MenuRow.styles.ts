@@ -1,16 +1,18 @@
 import { StyleSheet } from 'react-native';
 import { FONTS } from '../../../../theme/fonts';
+import type { ThemeColors } from '../../../../theme/colors';
 
-export const styles = StyleSheet.create({
-  menuRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-    paddingVertical: 16,
-  },
-  menuLabel: {
-    fontSize: 15,
-    color: '#1A1A1A',
-    fontFamily: FONTS.medium,
-  },
-});
+export const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    menuRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 16,
+      paddingVertical: 16,
+    },
+    menuLabel: {
+      fontSize: 15,
+      color: colors.textPrimary,
+      fontFamily: FONTS.medium,
+    },
+  });

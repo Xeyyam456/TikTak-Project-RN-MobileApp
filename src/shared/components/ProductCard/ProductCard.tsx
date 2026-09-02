@@ -1,7 +1,9 @@
+import { useMemo } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Button from '../Button';
 import { formatProductMeasure } from '@shared/utils/productMeasure';
-import { styles } from './ProductCard.styles';
+import { useTheme } from '../../../theme/ThemeContext';
+import { createStyles } from './ProductCard.styles';
 import type { ProductCardProps } from './ProductCard.types';
 
 const FALLBACK_IMAGE_URL =
@@ -15,6 +17,8 @@ function ProductCard({
   onIncrement,
   onDecrement,
 }: ProductCardProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const total = (Number(product.price) * quantity).toFixed(2);
 
   return (
