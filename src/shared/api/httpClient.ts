@@ -3,6 +3,7 @@ import { BASE_URL, LANG } from '@shared/config/env';
 import { showErrorToast } from '@shared/utils/toast';
 import type { ApiEnvelope, AuthTokens } from '@typings/api';
 import { resetToWelcome } from '../../navigation/navigationRef';
+import { queryClient } from './queryClient';
 import {
   clearTokens,
   getAccessToken,
@@ -83,6 +84,7 @@ httpClient.interceptors.response.use(
       }
 
       await clearTokens();
+      queryClient.clear();
       showErrorToast('Sessiyanızın müddəti bitdi, yenidən daxil olun');
       resetToWelcome();
     }
