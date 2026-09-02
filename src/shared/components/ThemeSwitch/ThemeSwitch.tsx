@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Pressable } from 'react-native';
 import Animated, {
   interpolateColor,
@@ -16,8 +16,19 @@ function ThemeSwitch({ value, onValueChange }: ThemeSwitchProps) {
   // same value, so the two stay in lockstep instead of two separately
   // timed animations drifting apart.
   const progress = useSharedValue(value ? 1 : 0);
+  // Toggling this also flips `isDark` at the top of the app, which
+  // re-renders every themed screen at once — if the slide only started
+  // from the `value` prop's own useEffect, it would wait behind that whole
+  // re-render and visibly lag. Starting it immediately on press (and
+  // tracking the last value we already animated to, so the effect below
+  // doesn't redundantly re-trigger once the prop catches up) makes the
+  // thumb move the instant it's tapped regardless of how heavy the rest
+  // of that re-render is.
+  const lastAnimatedValue = useRef(value);
 
   useEffect(() => {
+    if (lastAnimatedValue.current === value) return;
+    lastAnimatedValue.current = value;
     progress.value = withTiming(value ? 1 : 0, { duration: 180 });
   }, [value, progress]);
 
@@ -33,8 +44,15 @@ function ThemeSwitch({ value, onValueChange }: ThemeSwitchProps) {
     transform: [{ translateX: progress.value * THUMB_TRAVEL }],
   }));
 
+  function handlePress() {
+    const next = !value;
+    lastAnimatedValue.current = next;
+    progress.value = withTiming(next ? 1 : 0, { duration: 180 });
+    onValueChange(next);
+  }
+
   return (
-    <Pressable onPress={() => onValueChange(!value)} hitSlop={8}>
+    <Pressable onPress={handlePress} hitSlop={8}>
       <Animated.View style={[styles.track, trackStyle]}>
         <Animated.View style={[styles.thumb, thumbStyle]} />
       </Animated.View>

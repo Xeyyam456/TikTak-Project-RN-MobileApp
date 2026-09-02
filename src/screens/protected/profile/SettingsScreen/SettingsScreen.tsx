@@ -1,10 +1,16 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import Animated, {
+  FadeIn,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import ScreenHeader from '@shared/components/ScreenHeader';
 import ThemeSwitch from '@shared/components/ThemeSwitch';
-import { CheckIcon } from '@shared/components/icons';
+import { ChevronRightIcon } from '@shared/components/icons';
 import { getLanguage, setLanguage, type Language } from '@shared/api/settingsStorage';
 import { useTheme } from '../../../../theme/ThemeContext';
 import { createStyles } from './SettingsScreen.styles';
@@ -22,10 +28,23 @@ function SettingsScreen() {
   const styles = useMemo(() => createStyles(colors), [colors]);
 
   const [language, setLanguageState] = useState<Language>(getLanguage);
+  const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
+  const selectedLanguage = LANGUAGES.find(item => item.code === language) ?? LANGUAGES[0];
+
+  // Base chevron orientation is "right"; 90deg points it down (closed,
+  // "tap to expand"), -90deg points it up (open, "tap to collapse").
+  const chevronProgress = useSharedValue(0);
+  useEffect(() => {
+    chevronProgress.value = withTiming(languageMenuOpen ? 1 : 0, { duration: 180 });
+  }, [languageMenuOpen, chevronProgress]);
+  const chevronStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${90 - chevronProgress.value * 180}deg` }],
+  }));
 
   function handleSelectLanguage(code: Language) {
     setLanguage(code);
     setLanguageState(code);
+    setLanguageMenuOpen(false);
   }
 
   return (
@@ -47,22 +66,32 @@ function SettingsScreen() {
               in-app screen text stays Azerbaijani until full translation
               is built out as a separate piece of work. */}
           <View style={styles.card}>
-            {LANGUAGES.map((item, index) => {
-              const active = item.code === language;
-              return (
-                <TouchableOpacity
-                  key={item.code}
-                  style={[styles.languageRow, index > 0 && styles.languageRowBorder]}
-                  activeOpacity={0.7}
-                  onPress={() => handleSelectLanguage(item.code)}
-                >
-                  <Text style={[styles.languageLabel, active && styles.languageLabelActive]}>
-                    {item.label}
-                  </Text>
-                  {active ? <CheckIcon size={18} color={colors.primary} /> : null}
-                </TouchableOpacity>
-              );
-            })}
+            <TouchableOpacity
+              style={styles.languageRow}
+              activeOpacity={0.7}
+              onPress={() => setLanguageMenuOpen(open => !open)}
+            >
+              <Text style={[styles.languageLabel, styles.languageLabelActive]}>
+                {selectedLanguage.label}
+              </Text>
+              <Animated.View style={chevronStyle}>
+                <ChevronRightIcon size={18} color={colors.textMuted} />
+              </Animated.View>
+            </TouchableOpacity>
+
+            {languageMenuOpen
+              ? LANGUAGES.filter(item => item.code !== language).map(item => (
+                  <Animated.View key={item.code} entering={FadeIn.duration(150)}>
+                    <TouchableOpacity
+                      style={[styles.languageRow, styles.languageRowBorder]}
+                      activeOpacity={0.7}
+                      onPress={() => handleSelectLanguage(item.code)}
+                    >
+                      <Text style={styles.languageLabel}>{item.label}</Text>
+                    </TouchableOpacity>
+                  </Animated.View>
+                ))
+              : null}
           </View>
         </View>
       </View>
