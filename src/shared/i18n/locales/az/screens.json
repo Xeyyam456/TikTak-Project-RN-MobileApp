@@ -78,7 +78,8 @@
     "save": "Yadda saxla",
     "cancel": "Ləğv et",
     "addressRequired": "Ünvan daxil edin",
-    "successToast": "Çatdırılma ünvanı yeniləndi"
+    "successToast": "Çatdırılma ünvanı yeniləndi",
+    "pickFromMap": "Xəritədən seç"
   },
   "categoryProducts": {
     "backToCategories": "Əsas kateqoriyalara qayıt"

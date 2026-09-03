@@ -330,3 +330,33 @@ export function SettingsIcon({ size = 24, color: colorProp }: IconProps) {
     </Svg>
   );
 }
+
+export function MapPinIcon({ size = 24, color: colorProp }: IconProps) {
+  const { colors } = useTheme();
+  const color = colorProp ?? colors.danger;
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M12 22s7-6.2 7-12a7 7 0 10-14 0c0 5.8 7 12 7 12z"
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill={color}
+        fillOpacity={0.15}
+      />
+      <Circle cx={12} cy={10} r={2.5} stroke={color} strokeWidth={2} />
+    </Svg>
+  );
+}
+
+export function LocateIcon({ size = 24, color: colorProp }: IconProps) {
+  const { colors } = useTheme();
+  const color = colorProp ?? colors.textPrimary;
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Circle cx={12} cy={12} r={3} stroke={color} strokeWidth={2} />
+      <Path d="M12 2v3M12 19v3M2 12h3M19 12h3" stroke={color} strokeWidth={2} strokeLinecap="round" />
+    </Svg>
+  );
+}

@@ -4,6 +4,11 @@
        notifyOrderPlaced) — the manifest entry is still required for the
        system permission dialog to exist at all. -->
   <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+  <!-- Runtime-requested via LocationManager.requestPermissions() (see
+       MapAddressPicker's "locate me" button) — same reasoning as the
+       notification permission above. -->
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
   <application
     android:name=".MainApplication"
