@@ -53,4 +53,10 @@ export const createStyles = (colors: ThemeColors) =>
       fontFamily: FONTS.semiBold,
       color: colors.primary,
     },
+    hint: {
+      fontSize: 12,
+      fontFamily: FONTS.regular,
+      color: colors.textMuted,
+      marginTop: 8,
+    },
   });

@@ -9,6 +9,8 @@
     "title": "Settings",
     "appearance": "Appearance",
     "darkMode": "Dark mode",
+    "darkModeResetHint": "Press and hold to sync with the system theme",
+    "darkModeReset": "Theme synced to system",
     "language": "Language"
   },
   "tabBar": {

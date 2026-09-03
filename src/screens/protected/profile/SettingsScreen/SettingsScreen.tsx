@@ -13,6 +13,7 @@ import ScreenHeader from '@shared/components/ScreenHeader';
 import ThemeSwitch from '@shared/components/ThemeSwitch';
 import { ChevronRightIcon } from '@shared/components/icons';
 import { getLanguage, setLanguage, type Language } from '@shared/api/settingsStorage';
+import { showSuccessToast } from '@shared/utils/toast';
 import { useTheme } from '../../../../theme/ThemeContext';
 import { createStyles } from './SettingsScreen.styles';
 
@@ -25,7 +26,7 @@ const LANGUAGES: { code: Language; label: string }[] = [
 function SettingsScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
-  const { colors, isDark, setDarkModeEnabled } = useTheme();
+  const { colors, isDark, setDarkModeEnabled, resetDarkModeToSystem } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const { t, i18n } = useTranslation();
 
@@ -50,6 +51,11 @@ function SettingsScreen() {
     setLanguageMenuOpen(false);
   }
 
+  function handleResetDarkMode() {
+    resetDarkModeToSystem();
+    showSuccessToast(t('settings.darkModeReset'));
+  }
+
   return (
     <View style={[styles.flex, { paddingTop: insets.top }]}>
       <ScreenHeader title={t('settings.title')} onBack={() => navigation.goBack()} />
@@ -59,8 +65,13 @@ function SettingsScreen() {
           <Text style={styles.sectionTitle}>{t('settings.appearance')}</Text>
           <View style={[styles.card, styles.toggleRow]}>
             <Text style={styles.languageLabel}>{t('settings.darkMode')}</Text>
-            <ThemeSwitch value={isDark} onValueChange={setDarkModeEnabled} />
+            <ThemeSwitch
+              value={isDark}
+              onValueChange={setDarkModeEnabled}
+              onLongPress={handleResetDarkMode}
+            />
           </View>
+          <Text style={styles.hint}>{t('settings.darkModeResetHint')}</Text>
         </View>
 
         <View>

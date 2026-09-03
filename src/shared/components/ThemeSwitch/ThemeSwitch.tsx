@@ -10,7 +10,7 @@ import { useTheme } from '../../../theme/ThemeContext';
 import { styles, THUMB_TRAVEL } from './ThemeSwitch.styles';
 import type { ThemeSwitchProps } from './ThemeSwitch.types';
 
-function ThemeSwitch({ value, onValueChange }: ThemeSwitchProps) {
+function ThemeSwitch({ value, onValueChange, onLongPress }: ThemeSwitchProps) {
   const { colors } = useTheme();
   // Drives both the thumb's slide and the track's color crossfade off the
   // same value, so the two stay in lockstep instead of two separately
@@ -52,7 +52,7 @@ function ThemeSwitch({ value, onValueChange }: ThemeSwitchProps) {
   }
 
   return (
-    <Pressable onPress={handlePress} hitSlop={8}>
+    <Pressable onPress={handlePress} onLongPress={onLongPress} hitSlop={8}>
       <Animated.View style={[styles.track, trackStyle]}>
         <Animated.View style={[styles.thumb, thumbStyle]} />
       </Animated.View>

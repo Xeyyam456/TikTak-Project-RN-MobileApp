@@ -4,6 +4,7 @@ import { DARK_COLORS, LIGHT_COLORS, type ThemeColors } from './colors';
 import {
   getDarkModeEnabled,
   hasDarkModeOverride,
+  resetDarkModeOverride,
   setDarkModeEnabled as persistDarkModeEnabled,
 } from '../shared/api/settingsStorage';
 
@@ -15,6 +16,10 @@ type Theme = {
   // touched it, it no longer tracks system theme changes (see
   // settingsStorage.getDarkModeEnabled's first-launch-only fallback).
   setDarkModeEnabled: (enabled: boolean) => void;
+  // Undoes the manual override above and snaps back to whatever the OS
+  // theme currently is — the only way back to "follow system" once the
+  // switch has been touched (see SettingsScreen's long-press on it).
+  resetDarkModeToSystem: () => void;
 };
 
 const ThemeContext = createContext<Theme | undefined>(undefined);
@@ -58,8 +63,18 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     setIsDark(enabled);
   }
 
+  function resetDarkModeToSystem() {
+    resetDarkModeOverride();
+    setIsDark(Appearance.getColorScheme() === 'dark');
+  }
+
   const value = useMemo<Theme>(
-    () => ({ colors: isDark ? DARK_COLORS : LIGHT_COLORS, isDark, setDarkModeEnabled }),
+    () => ({
+      colors: isDark ? DARK_COLORS : LIGHT_COLORS,
+      isDark,
+      setDarkModeEnabled,
+      resetDarkModeToSystem,
+    }),
     [isDark],
   );
 

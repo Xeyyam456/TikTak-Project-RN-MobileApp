@@ -34,6 +34,15 @@ export function setDarkModeEnabled(enabled: boolean): void {
   storage.set(DARK_MODE_KEY, enabled);
 }
 
+// Undoes setDarkModeEnabled() — lets the app go back to following the OS
+// theme live instead of being stuck on whatever was last manually chosen.
+// Wired to a long-press on SettingsScreen's switch (see ThemeContext's
+// resetDarkModeToSystem()), since there's otherwise no way back to
+// "system" once the switch has been tapped even once.
+export function resetDarkModeOverride(): void {
+  storage.remove(DARK_MODE_KEY);
+}
+
 export function getLanguage(): Language {
   return (storage.getString(LANGUAGE_KEY) as Language | undefined) ?? 'az';
 }
