@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Modal, Text, View } from 'react-native';
+import { Modal, Text, TouchableOpacity, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Button from '@shared/components/Button';
+import MapAddressPicker from '@shared/components/MapAddressPicker';
 import TextField from '@shared/components/TextField';
+import { MapPinIcon } from '@shared/components/icons';
 import { updateProfile } from '@shared/services/profile.service';
 import { getApiErrorMessage } from '@shared/utils/apiError';
 import { showSuccessToast } from '@shared/utils/toast';
@@ -17,6 +19,7 @@ function AddressEditModal({ visible, profile, onClose, onSaved }: AddressEditMod
   const [addressInput, setAddressInput] = useState('');
   const [addressError, setAddressError] = useState<string>();
   const [saving, setSaving] = useState(false);
+  const [mapPickerVisible, setMapPickerVisible] = useState(false);
 
   useEffect(() => {
     if (visible) {
@@ -62,12 +65,25 @@ function AddressEditModal({ visible, profile, onClose, onSaved }: AddressEditMod
             error={addressError}
             autoFocus
           />
+          <TouchableOpacity
+            style={styles.pickFromMapRow}
+            onPress={() => setMapPickerVisible(true)}
+          >
+            <MapPinIcon size={18} color={colors.primary} />
+            <Text style={styles.pickFromMapText}>{t('addressEditModal.pickFromMap')}</Text>
+          </TouchableOpacity>
           <Button title={t('addressEditModal.save')} onPress={handleSave} loading={saving} />
           <Text style={styles.modalCancel} onPress={onClose}>
             {t('addressEditModal.cancel')}
           </Text>
         </View>
       </View>
+
+      <MapAddressPicker
+        visible={mapPickerVisible}
+        onClose={() => setMapPickerVisible(false)}
+        onSelect={setAddressInput}
+      />
     </Modal>
   );
 }

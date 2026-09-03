@@ -57,5 +57,12 @@
     "orderPlacedBody": "#{{orderNumber}} nömrəli sifarişiniz uğurla qeydə alındı.",
     "orderPreparingTitle": "Sifarişiniz hazırlanır",
     "orderPreparingBody": "#{{orderNumber}} nömrəli sifarişiniz hazırlanmağa başladı."
+  },
+  "mapAddressPicker": {
+    "title": "Xəritədən ünvan seç",
+    "hint": "Xəritəni sürüşdürüb düz nişanın altındakı yerə gətirin",
+    "confirm": "Bu ünvanı seç",
+    "locationPermissionDenied": "Yerləşmə icazəsi verilmədi",
+    "locationUnavailable": "Hazırkı yer tapılmadı"
   }
 }

@@ -21,6 +21,17 @@ export const createStyles = (colors: ThemeColors) =>
       color: colors.textPrimary,
       fontFamily: FONTS.bold,
     },
+    pickFromMapRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      alignSelf: 'flex-start',
+    },
+    pickFromMapText: {
+      fontSize: 13,
+      color: colors.primary,
+      fontFamily: FONTS.semiBold,
+    },
     modalCancel: {
       textAlign: 'center',
       fontSize: 14,

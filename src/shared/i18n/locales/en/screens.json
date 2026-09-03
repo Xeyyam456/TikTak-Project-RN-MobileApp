@@ -78,7 +78,8 @@
     "save": "Save",
     "cancel": "Cancel",
     "addressRequired": "Enter an address",
-    "successToast": "Delivery address updated"
+    "successToast": "Delivery address updated",
+    "pickFromMap": "Pick from map"
   },
   "categoryProducts": {
     "backToCategories": "Back to categories"

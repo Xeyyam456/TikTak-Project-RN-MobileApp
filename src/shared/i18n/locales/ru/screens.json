@@ -78,7 +78,8 @@
     "save": "Сохранить",
     "cancel": "Отмена",
     "addressRequired": "Введите адрес",
-    "successToast": "Адрес доставки обновлён"
+    "successToast": "Адрес доставки обновлён",
+    "pickFromMap": "Выбрать на карте"
   },
   "categoryProducts": {
     "backToCategories": "Назад к категориям"

@@ -57,5 +57,12 @@
     "orderPlacedBody": "Заказ №{{orderNumber}} успешно оформлен.",
     "orderPreparingTitle": "Ваш заказ готовится",
     "orderPreparingBody": "Заказ №{{orderNumber}} начали готовить."
+  },
+  "mapAddressPicker": {
+    "title": "Выбрать адрес на карте",
+    "hint": "Передвиньте карту так, чтобы метка указывала на нужное место",
+    "confirm": "Использовать этот адрес",
+    "locationPermissionDenied": "Разрешение на геолокацию не предоставлено",
+    "locationUnavailable": "Не удалось определить текущее местоположение"
   }
 }

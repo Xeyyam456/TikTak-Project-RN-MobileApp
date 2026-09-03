@@ -57,5 +57,12 @@
     "orderPlacedBody": "Order #{{orderNumber}} has been successfully placed.",
     "orderPreparingTitle": "Your order is being prepared",
     "orderPreparingBody": "Order #{{orderNumber}} is now being prepared."
+  },
+  "mapAddressPicker": {
+    "title": "Pick address from map",
+    "hint": "Drag the map so the pin points at your location",
+    "confirm": "Use this address",
+    "locationPermissionDenied": "Location permission was not granted",
+    "locationUnavailable": "Could not determine your current location"
   }
 }
