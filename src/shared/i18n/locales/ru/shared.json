@@ -50,5 +50,12 @@
   },
   "basketSummaryBar": {
     "label": "Заказы"
+  },
+  "notifications": {
+    "channelName": "Заказы",
+    "orderPlacedTitle": "Ваш заказ оформлен",
+    "orderPlacedBody": "Заказ №{{orderNumber}} успешно оформлен.",
+    "orderPreparingTitle": "Ваш заказ готовится",
+    "orderPreparingBody": "Заказ №{{orderNumber}} начали готовить."
   }
 }

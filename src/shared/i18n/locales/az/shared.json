@@ -50,5 +50,12 @@
   },
   "basketSummaryBar": {
     "label": "Sifarişlər"
+  },
+  "notifications": {
+    "channelName": "Sifarişlər",
+    "orderPlacedTitle": "Sifarişiniz qəbul edildi",
+    "orderPlacedBody": "#{{orderNumber}} nömrəli sifarişiniz uğurla qeydə alındı.",
+    "orderPreparingTitle": "Sifarişiniz hazırlanır",
+    "orderPreparingBody": "#{{orderNumber}} nömrəli sifarişiniz hazırlanmağa başladı."
   }
 }

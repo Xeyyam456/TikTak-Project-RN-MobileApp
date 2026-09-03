@@ -1,5 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
   <uses-permission android:name="android.permission.INTERNET" />
+  <!-- Runtime-requested via notifee.requestPermission() on Android 13+ (see
+       notifyOrderPlaced) — the manifest entry is still required for the
+       system permission dialog to exist at all. -->
+  <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
   <application
     android:name=".MainApplication"

@@ -2,11 +2,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Button from '@shared/components/Button';
 import ScreenHeader from '@shared/components/ScreenHeader';
 import { CheckIcon } from '@shared/components/icons';
+import { notifyOrderPlaced } from '@shared/utils/notifications';
 import type { RootStackParamList } from '@typings/navigation';
 import { useTheme } from '../../../../theme/ThemeContext';
 import { createStyles } from './OrderSuccessScreen.styles';
@@ -35,6 +36,7 @@ function goToOrderHistory(
 function OrderSuccessScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const route = useRoute<RouteProp<RootStackParamList, 'OrderSuccess'>>();
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const { t } = useTranslation();
@@ -48,6 +50,14 @@ function OrderSuccessScreen() {
     const timeout = setTimeout(() => setSecondsLeft(s => s - 1), 1000);
     return () => clearTimeout(timeout);
   }, [secondsLeft, navigation]);
+
+  // Runs once per successful order, independent of the countdown re-render
+  // above — a denied notification permission fails silently inside
+  // notifyOrderPlaced, so there's nothing to show here either way.
+  useEffect(() => {
+    notifyOrderPlaced(route.params.orderNumber);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <View style={[styles.flex, { paddingTop: insets.top }]}>

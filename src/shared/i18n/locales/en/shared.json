@@ -50,5 +50,12 @@
   },
   "basketSummaryBar": {
     "label": "Orders"
+  },
+  "notifications": {
+    "channelName": "Orders",
+    "orderPlacedTitle": "Your order was placed",
+    "orderPlacedBody": "Order #{{orderNumber}} has been successfully placed.",
+    "orderPreparingTitle": "Your order is being prepared",
+    "orderPreparingBody": "Order #{{orderNumber}} is now being prepared."
   }
 }

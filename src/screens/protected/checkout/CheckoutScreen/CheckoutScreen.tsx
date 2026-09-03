@@ -58,14 +58,14 @@ function CheckoutScreen() {
     setSubmitError(undefined);
     setSubmitting(true);
     try {
-      await checkout({
+      const order = await checkout({
         paymentMethod,
         address: profile.address ?? '',
         phone: profile.phone,
         note: note || undefined,
       });
       await fetchBasket();
-      navigation.navigate('OrderSuccess');
+      navigation.navigate('OrderSuccess', { orderNumber: order.orderNumber });
     } catch (error) {
       setSubmitError(getApiErrorMessage(error));
     } finally {

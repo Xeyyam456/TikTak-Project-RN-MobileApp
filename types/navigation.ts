@@ -7,7 +7,7 @@ export type RootStackParamList = {
   Main: NavigatorScreenParams<ProtectedTabParamList> | undefined;
   Basket: undefined;
   Checkout: undefined;
-  OrderSuccess: undefined;
+  OrderSuccess: { orderNumber: string };
 };
 
 export type ProtectedTabParamList = {
