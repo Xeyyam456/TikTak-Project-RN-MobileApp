@@ -64,8 +64,50 @@ function HomeScreen() {
 
   return (
     <View style={styles.flex}>
+      {!error && (
+        // Fixed above the category grid on purpose — the address bar and
+        // campaign banner used to live in the grid FlatList's
+        // ListHeaderComponent, which scrolls with the list content, so they
+        // rose up and disappeared as soon as there were enough categories
+        // to scroll. They now sit outside the FlatList entirely so only the
+        // category grid scrolls underneath them.
+        <View style={styles.fixedHeader}>
+          <TouchableOpacity
+            style={styles.addressCard}
+            onPress={() => setAddressModalVisible(true)}
+            activeOpacity={0.7}
+          >
+            <View style={styles.addressTextGroup}>
+              <Text style={styles.addressLabel}>{t('home.addressLabel')}</Text>
+              <Text style={styles.addressValue} numberOfLines={1}>
+                {profile?.address ?? t('home.noAddress')}
+              </Text>
+            </View>
+            <ChevronRightIcon size={20} color={colors.textMuted} />
+          </TouchableOpacity>
+
+          {campaigns.length > 0 && (
+            <FlatList
+              ref={campaignListRef}
+              data={campaigns}
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={item => String(item.id)}
+              style={styles.campaignCarousel}
+              renderItem={({ item }) => <CampaignCard campaign={item} />}
+              onScrollToIndexFailed={() => {}}
+            />
+          )}
+        </View>
+      )}
+
       {error ? (
         <ErrorState message={error} onRetry={retry} />
+      ) : loading ? (
+        <View style={styles.listContent}>
+          <CategoryGridSkeleton />
+        </View>
       ) : (
         <FlatList
           ref={categoryListRef}
@@ -92,39 +134,6 @@ function HomeScreen() {
               }
             />
           )}
-          ListHeaderComponent={
-            <>
-              <TouchableOpacity
-                style={styles.addressCard}
-                onPress={() => setAddressModalVisible(true)}
-                activeOpacity={0.7}
-              >
-                <View style={styles.addressTextGroup}>
-                  <Text style={styles.addressLabel}>{t('home.addressLabel')}</Text>
-                  <Text style={styles.addressValue} numberOfLines={1}>
-                    {profile?.address ?? t('home.noAddress')}
-                  </Text>
-                </View>
-                <ChevronRightIcon size={20} color={colors.textMuted} />
-              </TouchableOpacity>
-
-              {campaigns.length > 0 && (
-                <FlatList
-                  ref={campaignListRef}
-                  data={campaigns}
-                  horizontal
-                  pagingEnabled
-                  showsHorizontalScrollIndicator={false}
-                  keyExtractor={item => String(item.id)}
-                  style={styles.campaignCarousel}
-                  renderItem={({ item }) => <CampaignCard campaign={item} />}
-                  onScrollToIndexFailed={() => {}}
-                />
-              )}
-
-              {loading ? <CategoryGridSkeleton /> : null}
-            </>
-          }
         />
       )}
 

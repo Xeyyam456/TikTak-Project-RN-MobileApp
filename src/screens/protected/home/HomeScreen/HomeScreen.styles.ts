@@ -16,6 +16,9 @@ export const createStyles = (colors: ThemeColors) =>
     },
     listContent: {
       paddingHorizontal: HORIZONTAL_PADDING,
+    },
+    fixedHeader: {
+      paddingHorizontal: HORIZONTAL_PADDING,
       paddingTop: 14,
     },
     addressCard: {
