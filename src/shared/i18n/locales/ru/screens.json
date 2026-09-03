@@ -11,7 +11,13 @@
     "darkMode": "Тёмная тема",
     "darkModeResetHint": "Нажмите и удерживайте, чтобы синхронизировать с системой",
     "darkModeReset": "Тема синхронизирована с системой",
-    "language": "Язык"
+    "language": "Язык",
+    "storage": "Хранилище",
+    "clearCache": "Очистить кэш",
+    "clearCacheConfirmTitle": "Очистить кэш?",
+    "clearCacheConfirmMessage": "Сохранённые данные о товарах, категориях и заказах будут удалены и загружены заново.",
+    "clearCacheSuccessToast": "Кэш очищен",
+    "version": "Версия {{version}}"
   },
   "tabBar": {
     "home": "Главная",
@@ -144,7 +150,12 @@
     "orderHistory": "История заказов",
     "logout": "Выйти",
     "logoutConfirmMessage": "Вы уверены, что хотите выйти из аккаунта?",
-    "logoutSuccessToast": "Вы успешно вышли"
+    "logoutSuccessToast": "Вы успешно вышли",
+    "support": "Поддержка",
+    "supportWhatsapp": "WhatsApp",
+    "supportFacebook": "Facebook",
+    "supportEmail": "Эл. почта",
+    "linkOpenError": "Не удалось открыть ссылку"
   },
   "search": {
     "placeholder": "Поиск...",
