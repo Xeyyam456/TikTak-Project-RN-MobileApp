@@ -9,6 +9,8 @@
     "title": "Tənzimləmələr",
     "appearance": "Görünüş",
     "darkMode": "Qaranlıq rejim",
+    "darkModeResetHint": "Sistem temasına qaytarmaq üçün basıb saxlayın",
+    "darkModeReset": "Tema sistemə uyğunlaşdırıldı",
     "language": "Dil"
   },
   "tabBar": {
