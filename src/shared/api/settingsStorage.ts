@@ -20,6 +20,16 @@ export function getDarkModeEnabled(systemPrefersDark: boolean): boolean {
   return stored ?? systemPrefersDark;
 }
 
+// Distinguishes "no manual choice ever made" from "explicitly set to
+// false" — getDarkModeEnabled() can't tell those apart on its own since
+// both cases need a boolean. ThemeContext uses this to decide whether a
+// live OS theme change (device flipped to dark while the app is already
+// open) should update the app's theme, or whether a manual in-app
+// override should keep winning.
+export function hasDarkModeOverride(): boolean {
+  return storage.contains(DARK_MODE_KEY);
+}
+
 export function setDarkModeEnabled(enabled: boolean): void {
   storage.set(DARK_MODE_KEY, enabled);
 }
