@@ -59,4 +59,11 @@ export const createStyles = (colors: ThemeColors) =>
       color: colors.textMuted,
       marginTop: 8,
     },
+    versionText: {
+      fontSize: 12,
+      fontFamily: FONTS.regular,
+      color: colors.textMuted,
+      textAlign: 'center',
+      marginTop: 4,
+    },
   });

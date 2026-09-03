@@ -11,7 +11,13 @@
     "darkMode": "Qaranlıq rejim",
     "darkModeResetHint": "Sistem temasına qaytarmaq üçün basıb saxlayın",
     "darkModeReset": "Tema sistemə uyğunlaşdırıldı",
-    "language": "Dil"
+    "language": "Dil",
+    "storage": "Yaddaş",
+    "clearCache": "Keşi təmizlə",
+    "clearCacheConfirmTitle": "Keşi təmizləyək?",
+    "clearCacheConfirmMessage": "Yadda saxlanılan məhsul, kateqoriya və sifariş məlumatları silinəcək və yenidən yüklənəcək.",
+    "clearCacheSuccessToast": "Keş təmizləndi",
+    "version": "Versiya {{version}}"
   },
   "tabBar": {
     "home": "Əsas",
@@ -144,7 +150,12 @@
     "orderHistory": "Sifariş tarixçəsi",
     "logout": "Çıxış",
     "logoutConfirmMessage": "Hesabdan çıxmaq istədiyinizə əminsiniz?",
-    "logoutSuccessToast": "Uğurla çıxış edildi"
+    "logoutSuccessToast": "Uğurla çıxış edildi",
+    "support": "Dəstək",
+    "supportWhatsapp": "WhatsApp",
+    "supportFacebook": "Facebook",
+    "supportEmail": "E-poçt",
+    "linkOpenError": "Keçid açıla bilmədi"
   },
   "search": {
     "placeholder": "Axtar...",

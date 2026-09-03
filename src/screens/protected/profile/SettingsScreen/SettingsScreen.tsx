@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import Animated, {
   FadeIn,
@@ -9,10 +10,12 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import ConfirmModal from '@shared/components/ConfirmModal';
 import ScreenHeader from '@shared/components/ScreenHeader';
 import ThemeSwitch from '@shared/components/ThemeSwitch';
-import { ChevronRightIcon } from '@shared/components/icons';
+import { ChevronRightIcon, TrashIcon } from '@shared/components/icons';
 import { getLanguage, setLanguage, type Language } from '@shared/api/settingsStorage';
+import { APP_VERSION } from '@shared/config/appInfo';
 import { showSuccessToast } from '@shared/utils/toast';
 import { useTheme } from '../../../../theme/ThemeContext';
 import { createStyles } from './SettingsScreen.styles';
@@ -29,9 +32,11 @@ function SettingsScreen() {
   const { colors, isDark, setDarkModeEnabled, resetDarkModeToSystem } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const { t, i18n } = useTranslation();
+  const queryClient = useQueryClient();
 
   const [language, setLanguageState] = useState<Language>(getLanguage);
   const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
+  const [clearCacheModalVisible, setClearCacheModalVisible] = useState(false);
   const selectedLanguage = LANGUAGES.find(item => item.code === language) ?? LANGUAGES[0];
 
   // Base chevron orientation is "right"; 90deg points it down (closed,
@@ -54,6 +59,15 @@ function SettingsScreen() {
   function handleResetDarkMode() {
     resetDarkModeToSystem();
     showSuccessToast(t('settings.darkModeReset'));
+  }
+
+  function handleConfirmClearCache() {
+    // Only the TanStack Query cache (products/categories/basket/orders) —
+    // not tokenStorage or settingsStorage, so this can't accidentally log
+    // the user out or reset their theme/language preference.
+    queryClient.clear();
+    setClearCacheModalVisible(false);
+    showSuccessToast(t('settings.clearCacheSuccessToast'));
   }
 
   return (
@@ -107,7 +121,34 @@ function SettingsScreen() {
               : null}
           </View>
         </View>
+
+        <View>
+          <Text style={styles.sectionTitle}>{t('settings.storage')}</Text>
+          <TouchableOpacity
+            style={[styles.card, styles.languageRow]}
+            activeOpacity={0.7}
+            onPress={() => setClearCacheModalVisible(true)}
+          >
+            <Text style={[styles.languageLabel, { color: colors.danger }]}>
+              {t('settings.clearCache')}
+            </Text>
+            <TrashIcon size={18} color={colors.danger} />
+          </TouchableOpacity>
+        </View>
+
+        <Text style={styles.versionText}>{t('settings.version', { version: APP_VERSION })}</Text>
       </View>
+
+      <ConfirmModal
+        visible={clearCacheModalVisible}
+        icon={<TrashIcon size={28} color={colors.danger} />}
+        title={t('settings.clearCacheConfirmTitle')}
+        message={t('settings.clearCacheConfirmMessage')}
+        confirmLabel={t('settings.clearCache')}
+        destructive
+        onConfirm={handleConfirmClearCache}
+        onCancel={() => setClearCacheModalVisible(false)}
+      />
     </View>
   );
 }

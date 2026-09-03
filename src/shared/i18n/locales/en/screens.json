@@ -11,7 +11,13 @@
     "darkMode": "Dark mode",
     "darkModeResetHint": "Press and hold to sync with the system theme",
     "darkModeReset": "Theme synced to system",
-    "language": "Language"
+    "language": "Language",
+    "storage": "Storage",
+    "clearCache": "Clear cache",
+    "clearCacheConfirmTitle": "Clear the cache?",
+    "clearCacheConfirmMessage": "Saved product, category, and order data will be deleted and reloaded.",
+    "clearCacheSuccessToast": "Cache cleared",
+    "version": "Version {{version}}"
   },
   "tabBar": {
     "home": "Home",
@@ -144,7 +150,12 @@
     "orderHistory": "Order history",
     "logout": "Log out",
     "logoutConfirmMessage": "Are you sure you want to log out?",
-    "logoutSuccessToast": "You're logged out"
+    "logoutSuccessToast": "You're logged out",
+    "support": "Support",
+    "supportWhatsapp": "WhatsApp",
+    "supportFacebook": "Facebook",
+    "supportEmail": "Email",
+    "linkOpenError": "Could not open the link"
   },
   "search": {
     "placeholder": "Search...",

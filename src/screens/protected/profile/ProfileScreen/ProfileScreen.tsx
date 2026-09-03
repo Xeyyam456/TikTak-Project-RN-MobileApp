@@ -11,6 +11,7 @@ import {
   ClockIcon,
   DocumentIcon,
   HeartIcon,
+  HelpIcon,
   LogoutIcon,
   SettingsIcon,
 } from '@shared/components/icons';
@@ -107,6 +108,11 @@ function ProfileScreen() {
             icon={<ClockIcon size={22} />}
             label={t('profile.orderHistory')}
             onPress={() => navigation.navigate('OrderHistory')}
+          />
+          <MenuRow
+            icon={<HelpIcon size={22} />}
+            label={t('profile.support')}
+            onPress={() => navigation.navigate('Support')}
           />
           <MenuRow
             icon={<SettingsIcon size={22} />}
