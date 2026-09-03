@@ -1,8 +1,9 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from 'react';
-import { useColorScheme } from 'react-native';
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { AppState, Appearance, useColorScheme } from 'react-native';
 import { DARK_COLORS, LIGHT_COLORS, type ThemeColors } from './colors';
 import {
   getDarkModeEnabled,
+  hasDarkModeOverride,
   setDarkModeEnabled as persistDarkModeEnabled,
 } from '../shared/api/settingsStorage';
 
@@ -21,6 +22,36 @@ const ThemeContext = createContext<Theme | undefined>(undefined);
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const scheme = useColorScheme();
   const [isDark, setIsDark] = useState(() => getDarkModeEnabled(scheme === 'dark'));
+
+  // useColorScheme() re-renders this component when the OS theme changes
+  // while the app is already open (e.g. the user flips their device into
+  // dark mode from quick settings), but a useState initializer only runs
+  // once at mount — without this effect, isDark would stay stuck at
+  // whatever it was on launch. Only follow the live change if the user
+  // hasn't set a manual in-app override (SettingsScreen's switch); once
+  // they have, that choice keeps winning regardless of OS changes.
+  useEffect(() => {
+    if (hasDarkModeOverride()) return;
+    setIsDark(scheme === 'dark');
+  }, [scheme]);
+
+  // Belt-and-suspenders for the effect above: confirmed on-device (real
+  // Xiaomi/MIUI hardware, not just the emulator) that useColorScheme()'s
+  // live change event fires reliably for the *first* in-foreground OS
+  // theme flip but can silently stop firing for a second one in the same
+  // app session — flipping the device back to light left the app stuck
+  // on dark. AppState's 'active' transition is a more reliable signal:
+  // it fires whenever the app regains foreground (e.g. after visiting the
+  // quick-settings dark-mode tile and returning), and by then the OS has
+  // already recomputed Appearance.getColorScheme(), so re-reading it
+  // directly here catches whatever the live listener missed.
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', state => {
+      if (state !== 'active' || hasDarkModeOverride()) return;
+      setIsDark(Appearance.getColorScheme() === 'dark');
+    });
+    return () => subscription.remove();
+  }, []);
 
   function setDarkModeEnabled(enabled: boolean) {
     persistDarkModeEnabled(enabled);
