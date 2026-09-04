@@ -27,8 +27,13 @@ Tiktak — meyvə-tərəvəz (e-commerce) mobil tətbiqidir: istifadəçi qeydiy
 15. [Ekranlar (screens)](#hissə-15-ekranlar)
 16. [Toast bildirişləri sistemi](#hissə-16-toast-bildirişləri)
 17. [Alətlər və build sistemi](#hissə-17-alətlər-və-build-sistemi)
-18. [Platform-spesifik məsələlər və öyrənilmiş dərslər](#hissə-18-öyrənilmiş-dərslər)
-19. [Lüğət](#hissə-19-lüğət)
+18. [Server state idarəetməsi — TanStack Query](#hissə-18-server-state-idarəetməsi)
+19. [Tema — Dark Mode](#hissə-19-tema-dark-mode)
+20. [Beynəlxalqlaşdırma (i18n)](#hissə-20-beynəlxalqlaşdırma-i18n)
+21. [Yerli bildirişlər (Notifee)](#hissə-21-yerli-bildirişlər)
+22. [Xəritədən ünvan seçimi (MapLibre)](#hissə-22-xəritədən-ünvan-seçimi)
+23. [Platform-spesifik məsələlər və öyrənilmiş dərslər](#hissə-23-öyrənilmiş-dərslər)
+24. [Lüğət](#hissə-24-lüğət)
 
 ---
 
@@ -309,16 +314,17 @@ export async function login(
 
 ### `Promise.all()`
 
-Bir neçə asinxron işi **paralel** (eyni vaxtda) başladıb, **hamısı bitəndə** davam etmək üçün. `useHomeData.ts` (sətir 25):
+Bir neçə asinxron işi **paralel** (eyni vaxtda) başladıb, **hamısı bitəndə** davam etmək üçün. `useHomeData.ts`-in `retry` funksiyası (bax Hissə 18, TanStack Query-yə keçəndən sonra da bu naxış qalıb, sadəcə `getProfile()` yox, `query.refetch()` üzərindən):
 ```ts
-return Promise.all([getProfile(), listCategories(), listCampaigns()])
-  .then(([profileData, categoryList, campaignList]) => {
-    setProfile(profileData);
-    setCategories(categoryList);
-    setCampaigns(campaignList);
-  })
+const retry = useCallback(() => {
+  return Promise.all([
+    profileQuery.refetch(),
+    categoriesQuery.refetch(),
+    campaignsQuery.refetch(),
+  ]);
+}, [profileQuery, categoriesQuery, campaignsQuery]);
 ```
-Əgər bunları **ardıcıl** (`await getProfile(); await listCategories(); await listCampaigns();`) çağırsaydıq, hər biri növbəti başlamazdan əvvəl bitməli olardı — 3 sorğu cəmi 300ms çəkərdisə, indi 100ms-ə düşür (paralel işlədiyi üçün).
+Əgər bunları **ardıcıl** (`await profileQuery.refetch(); await categoriesQuery.refetch(); ...`) çağırsaydıq, hər biri növbəti başlamazdan əvvəl bitməli olardı — 3 sorğu cəmi 300ms çəkərdisə, indi 100ms-ə düşür (paralel işlədiyi üçün). Diqqət: bu, məlumatın **ilk gətirilməsi** üçün deyil (o, aşağıda göstərilən `useQueries`-in öz işidir), yalnız "Yenidən cəhd et" düyməsinin **üçünü birdən** yenidən sorğulaması üçündür.
 
 ### React-in ilk baxışı: `useState` və `useEffect`
 
@@ -705,8 +711,8 @@ Bəzi funksionallıq (kamera, fayl sistemi, cihaz yaddaşı) **sırf JavaScript 
 ### Android vs iOS — nə fərqlidir?
 
 - **Fayl sistemi/qovluqlar**: `android/` və `ios/` qovluqları hər platformanın öz native layihəsini saxlayır (Android üçün Gradle, iOS üçün Xcode/CocoaPods layihəsi).
-- **Klaviatura davranışı**: Android-in `adjustResize` rejimi klaviatura açılanda ekranı sıxışdırır, iOS isə bunu etmir — `react-native-keyboard-controller`-in işlədilmə səbəbi məhz bu fərqi hamarlamaqdır (bax Hissə 18).
-- **Splash screen**: Android 12+ splash ikonunu **məcburi dairəvi** kəsir, iOS-da belə məhdudiyyət yoxdur (bax Hissə 18).
+- **Klaviatura davranışı**: Android-in `adjustResize` rejimi klaviatura açılanda ekranı sıxışdırır, iOS isə bunu etmir — `react-native-keyboard-controller`-in işlədilmə səbəbi məhz bu fərqi hamarlamaqdır (bax Hissə 23).
+- **Splash screen**: Android 12+ splash ikonunu **məcburi dairəvi** kəsir, iOS-da belə məhdudiyyət yoxdur (bax Hissə 23).
 - **Naviqasiya jestləri**: iOS-da "sağa sürüşdürüb geri qayıtmaq" sistem səviyyəsindədir, Android-də bu, React Navigation-un `gestureEnabled` seçimi ilə idarə olunur (bax `HomeStackNavigator.tsx`-dəki `gestureEnabled: false`).
 - **`Platform.OS`** — kodda `if (Platform.OS === 'ios') {...}` yazaraq platform-spesifik budaqlar yaratmaq mümkündür. `CLAUDE.md`-nin "Working agreements" hissəsində qeyd olunduğu kimi, bu layihə hazırda **əsasən Android-də** test olunub, iOS tərəfi hələ tam işlənməyib — gələcək iş kimi planlaşdırılıb.
 
@@ -756,17 +762,21 @@ Tiktak/
     │   └── TabBar.tsx
     ├── screens/                ← Bütün ekranlar (bax Hissə 15)
     │   ├── auth/                ← Giriş-öncəsi: Welcome, Login, Register
-    │   └── protected/           ← Giriş-sonrası: home/, basket/, checkout/, search/, profile/
+    │   └── protected/           ← Giriş-sonrası: home/ (o cümlədən MapAddressPicker-i açan AddressEditModal), basket/, checkout/, search/, profile/ (o cümlədən SettingsScreen, SupportScreen)
     ├── shared/                 ← Ekranlar-arası paylaşılan hər şey
-    │   ├── api/                 ← httpClient.ts, tokenStorage.ts (bax Hissə 11)
-    │   ├── components/          ← Button, TextField, ScreenHeader, ErrorState və s. (bax Hissə 14)
-    │   ├── config/               ← env.ts (BASE_URL və s.)
+    │   ├── api/                 ← httpClient.ts, tokenStorage.ts, queryClient.ts, queryStorage.ts, settingsStorage.ts (bax Hissə 11, 18, 19)
+    │   ├── components/          ← Button, TextField, ScreenHeader, ErrorState, ThemeSwitch, Skeleton, MapAddressPicker və s. (bax Hissə 14, 19, 22)
+    │   ├── config/               ← env.ts (BASE_URL, SENTRY_DSN, SUPPORT_* və s.), appInfo.ts (APP_VERSION)
     │   ├── hooks/                ← useReload.ts
-    │   ├── services/             ← Hər backend sahəsi üçün bir fayl (bax Hissə 12)
+    │   ├── i18n/                 ← i18next konfiqurasiyası + locales/<lang>/{shared,screens}.json (bax Hissə 20)
+    │   ├── queries/               ← queryKeys.ts — TanStack Query açar-fabrikası (bax Hissə 18)
+    │   ├── services/             ← Hər backend sahəsi üçün bir fayl, o cümlədən geocoding.service.ts (bax Hissə 12, 22)
     │   ├── store/                ← basket.store.ts (Zustand, bax Hissə 13)
-    │   └── utils/                ← validation.ts, apiError.ts, toast.ts, order.ts
+    │   └── utils/                ← validation.ts, apiError.ts, toast.ts, order.ts, notifications.ts (bax Hissə 21)
     └── theme/
-        └── fonts.ts              ← Font adları sabiti
+        ├── fonts.ts              ← Font adları sabiti
+        ├── colors.ts             ← LIGHT_COLORS/DARK_COLORS (bax Hissə 19)
+        └── ThemeContext.tsx      ← ThemeProvider/useTheme (bax Hissə 19)
 ```
 
 **Diqqət:** `types/` qovluğu `src/`-in **daxilində deyil**, layihənin **kökündədir**. Bu qəsdəndir — `types/` yalnız **birdən çox əlaqəsiz fayl arasında** paylaşılan tiplər üçündür (`UserProfile`, naviqasiya param-ları kimi). Bir komponentin öz prop tipi (`ButtonProps` kimi) isə **öz qovluğunda**, `ComponentName.types.ts` faylında qalır — bunları mərkəzləşdirmək (`types/`-ə köçürmək) səhv olardı, çünki o zaman "bu tip hardan istifadə olunur" sualına cavab tapmaq çətinləşərdi.
@@ -898,41 +908,89 @@ Bu, tətbiqin **əsl** başlanğıc nöqtəsidir — React Native-in öz `AppReg
 
 ### `App.tsx` — "provider-lər zənciri"
 
+Bu fayl layihənin ən çox dəyişən hissələrindən biridir — dark mode, TanStack Query, i18n, Sentry və Keychain-əsaslı token şifrələməsi əlavə olunduqca, provider zənciri də böyüyüb. **Cari** (2026-09-04) versiyası:
+
 ```tsx
+import * as Sentry from '@sentry/react-native';
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
+import { initTokenStorage } from './src/shared/api/tokenStorage';
+import { queryClient } from './src/shared/api/queryClient';
+import { queryPersister } from './src/shared/api/queryStorage';
+import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
+// Side-effect import — i18next-in sinxron init-ini (bax Hissə 20) hər şeydən
+// ƏVVƏL işə salır, elə buna görə lazily bir ekrandan yox, birbaşa buradan
+// import olunur.
+import './src/shared/i18n/i18n';
+
+Sentry.init({ dsn: SENTRY_DSN, enabled: !__DEV__, tracesSampleRate: 0.2 });
+
+const CACHE_BUSTER = 'v1';
+
 function App() {
+  const [ready, setReady] = useState(false);
+
   useEffect(() => {
-    BootSplash.hide({ fade: true });
+    initTokenStorage().then(() => {
+      setReady(true);
+      BootSplash.hide({ fade: true });
+    });
   }, []);
 
+  if (!ready) {
+    return null; // native splash hələ ekranda qalır
+  }
+
   return (
-    <ErrorBoundary>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <KeyboardProvider>
-          <SafeAreaProvider>
-            <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
-            <NavigationContainer ref={navigationRef}>
-              <RootNavigator />
-            </NavigationContainer>
-            <Toast />
-          </SafeAreaProvider>
-        </KeyboardProvider>
-      </GestureHandlerRootView>
-    </ErrorBoundary>
+    <ThemeProvider>
+      <ErrorBoundary>
+        <PersistQueryClientProvider
+          client={queryClient}
+          persistOptions={{ persister: queryPersister, maxAge: 24 * 60 * 60 * 1000, buster: CACHE_BUSTER }}
+        >
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <KeyboardProvider>
+              <SafeAreaProvider>
+                <AppShell />
+              </SafeAreaProvider>
+            </KeyboardProvider>
+          </GestureHandlerRootView>
+        </PersistQueryClientProvider>
+      </ErrorBoundary>
+    </ThemeProvider>
+  );
+}
+
+function AppShell() {
+  const { isDark, colors } = useTheme();
+  return (
+    <>
+      <StatusBar translucent backgroundColor="transparent" barStyle={isDark ? 'light-content' : 'dark-content'} />
+      <NavigationContainer ref={navigationRef} theme={{ /* ... colors.background/surface/border/textPrimary/primary */ }}>
+        <RootNavigator />
+      </NavigationContainer>
+      <Toast config={toastConfig} />
+    </>
   );
 }
 ```
 
 React-də "provider" naxışı — bir komponent ağacın **başında** dayanıb, altındakı **bütün** komponentlərə ortaq bir imkan/state verir (Context API vasitəsilə, arxa planda). Burada hər qatın öz rolu var, **sırası əhəmiyyətlidir** (ən xaricdəki ən əvvəl icra olunur, ən son bağlanır):
 
-1. **`ErrorBoundary`** — ən xaricdə, çünki alt ağacın **istənilən yerində** bir JS xətası baş versə, bunu tutub tətbiqi tamamilə ağardan (white screen) qorumalıdır (bax Hissə 14).
-2. **`GestureHandlerRootView`** — `react-native-gesture-handler`-in işləməsi üçün **kökdə, bir dəfə** olmalıdır (`CLAUDE.md`-də vurğulanır: iç-içə ikinci nüsxə lazım deyil, `BottomSheet` daxilində əlavə bir dənə var idi, sadəcə bir keçmiş debug cəhdinin izi kimi qalıb, funksional problem yaratmır çünki daxili `TouchableOpacity`-lər core RN-dəndir).
-3. **`KeyboardProvider`** — `react-native-keyboard-controller`-in bütün klaviatura-uyğunlaşdırma məntiqinin işləməsi üçün ehtiyac duyduğu konteksti verir.
-4. **`SafeAreaProvider`** — `useSafeAreaInsets()`-in işləməsi üçün ehtiyac duyduğu konteksti verir.
-5. **`NavigationContainer`** — React Navigation-un kökü, bütün ekran-keçidlərini idarə edir. `ref={navigationRef}` — bu, **çox vacib bir naxışdır**, Hissə 9-da ətraflı izah olunur.
-6. **`RootNavigator`** — bizim öz naviqasiya ağacımız (bax Hissə 9).
-7. **`Toast`** — `NavigationContainer`-dən **kənarda, ondan sonra** yerləşdirilib ki, bütün ekranların **üzərində** görünsün, ekran keçidlərindən asılı olmadan (bax Hissə 16).
+0. **`ready` qapısı (component render-dən əvvəl)** — bu, əslində "provider" deyil, provider zəncirinin **hamısından əvvəl** gələn bir gözləmə mərhələsidir. `initTokenStorage()` (bax Hissə 10) MMKV-nin özünün şifrələmə açarını Android Keystore/iOS Keychain-dən **asinxron** oxumalıdır — bu bir dəfəlik, adətən millisaniyələr çəkən işi gözləmədən token-lərə etibarlı müraciət etmək mümkün deyil. `ready` `false` olduğu müddətdə `App()` `null` qaytarır — bu, **boş ağ ekran** demək **deyil**, çünki native splash screen (`BootSplash`) hələ ekranda qalır, `ready` `true` olub `BootSplash.hide()` çağırılana qədər. Nəticə: istifadəçi heç vaxt "yüklənir..." keçid ekranı görmür, sadəcə splash bir az uzun qalır.
+1. **`ThemeProvider`** — indi **ən xarici** provider-dir, `ErrorBoundary`-nin özündən də **kənarda**. Bu, qəsdən belədir: `ErrorBoundary`-nin xəta düşəndə göstərdiyi fallback UI-nin özü bir `<Button>` işlədir, `Button` isə daxilində `useTheme()` çağırır — əgər `ThemeProvider` `ErrorBoundary`-nin **içində** olsaydı, çöküb `ErrorBoundary` işə düşəndə, onun öz fallback-i **ThemeContext-siz** qalıb özü də çökərdi (bir təhlükəsizlik torunun özünün, təhlükəsizlik torunun altına düşməsi kimi bir şey).
+2. **`ErrorBoundary`** — alt ağacın **istənilən yerində** bir JS xətası baş versə, bunu tutub tətbiqi tamamilə ağardan (white screen) qorumalıdır (bax Hissə 14).
+3. **`PersistQueryClientProvider`** — TanStack Query-nin öz kontekstini yaradır **və** `queryStorage.ts`-in MMKV-persister-i ilə keşi diskdən bərpa edir (bax Hissə 18). `ErrorBoundary`-nin içində yerləşməsi məntiqlidir — keş bərpası zamanı (nəzəri olaraq) bir xəta baş versə, bunu `ErrorBoundary` tuta bilsin.
+4. **`GestureHandlerRootView`** — `react-native-gesture-handler`-in işləməsi üçün **kökdə, bir dəfə** olmalıdır (`CLAUDE.md`-də vurğulanır: iç-içə ikinci nüsxə lazım deyil, `BottomSheet` daxilində əlavə bir dənə var idi, sadəcə bir keçmiş debug cəhdinin izi kimi qalıb, funksional problem yaratmır çünki daxili `TouchableOpacity`-lər core RN-dəndir).
+5. **`KeyboardProvider`** — `react-native-keyboard-controller`-in bütün klaviatura-uyğunlaşdırma məntiqinin işləməsi üçün ehtiyac duyduğu konteksti verir.
+6. **`SafeAreaProvider`** — `useSafeAreaInsets()`-in işləməsi üçün ehtiyac duyduğu konteksti verir.
+7. **`AppShell`** — ayrıca komponentə çıxarılıb, çünki `useTheme()` çağırmalıdır, `useTheme()` isə yalnız `ThemeProvider`-in **daxilində** işləyir — `App()`-in özü `ThemeProvider`-i **əhatə edən** komponent olduğu üçün, `App()`-in daxilində birbaşa `useTheme()` çağırmaq mümkün deyil (hook öz provayderinin "üstündə" işləyə bilməz). `AppShell` daxilində: `StatusBar`-ın mətn rəngi (`barStyle`) `isDark`-a görə seçilir (tünd fonda açıq mətn, işıqlı fonda tünd mətn), `NavigationContainer`-in öz `theme` prop-u `colors`-dan doldurulur ki, React Navigation-un daxili elementləri (məsələn ekran keçidi zamanı görünən fon rəngi) də tünd rejimlə **uyğunlaşsın**.
+8. **`NavigationContainer`** — React Navigation-un kökü, bütün ekran-keçidlərini idarə edir. `ref={navigationRef}` — bu, **çox vacib bir naxışdır**, Hissə 9-da ətraflı izah olunur.
+9. **`RootNavigator`** — bizim öz naviqasiya ağacımız (bax Hissə 9).
+10. **`Toast`** — `NavigationContainer`-dən **kənarda, ondan sonra** yerləşdirilib ki, bütün ekranların **üzərində** görünsün, ekran keçidlərindən asılı olmadan (bax Hissə 16).
 
-`useEffect(() => { BootSplash.hide({ fade: true }); }, [])` — tətbiq ilk render olunanda, native splash screen-i (loqo göstərən ilkin ekran) yumşaq keçidlə (fade) gizlədir — bu, JS bundle-ının yüklənməsi bitənə qədər istifadəçinin boş/ağ ekran görməsinin qarşısını alır.
+**`Sentry.init({ dsn: SENTRY_DSN, enabled: !__DEV__, tracesSampleRate: 0.2 })`** — modulun **ən başında**, komponentdən kənarda, tətbiq başlayan kimi **bir dəfə** çağırılır. `enabled: !__DEV__` — development build-də (Metro-dan işə düşən, `__DEV__ === true` olan build) Sentry **heç vaxt** işə düşmür, yalnız release build-lərdə xəta/performans məlumatı göndərir. Bu, development zamanı yaranan (məsələn Fast Refresh-in özündən qaynaqlanan) "xəta"ların, real istifadəçi xətaları ilə qarışıb Sentry panelini zibilləməsinin qarşısını alır. `tracesSampleRate: 0.2` — performans izləməsinin (transaction tracing) sorğuların **20%-ini** nümunə kimi göndərməsi deməkdir — hamısını göndərmək lazımsız yerə şəbəkə/backend yükü yaradardı, 20% statistik olaraq kifayət qədər siqnal verir.
+
+`useEffect(() => { BootSplash.hide({ fade: true }); }, [])` — tətbiq ilk render olunanda, native splash screen-i (loqo göstərən ilkin ekran) yumşaq keçidlə (fade) gizlədir — bu, JS bundle-ının yüklənməsi bitənə qədər istifadəçinin boş/ağ ekran görməsinin qarşısını alır. **İndi** bu çağırış `ready`-nin `true` olduğu andan sonra baş verir (yuxarıdakı 0-cı addıma bax) — əvvəllər bu, komponentin ilk mount-unda birbaşa baş verirdi, çünki `tokenStorage` gözləməyə ehtiyac duymurdu.
 
 ---
 
@@ -972,7 +1030,7 @@ function RootNavigator() {
 ```ts
 const initialRouteName = getAccessToken() ? 'Main' : 'Welcome';
 ```
-Bu, `getAccessToken()`-in **sinxron** olmasına əsaslanır (bax Hissə 10, MMKV) — heç bir "yüklənir..." ekranı **lazım deyil**, çünki token-in olub-olmadığı **dərhal**, birinci render-də məlum olur.
+Bu **oxuma özü** hələ də `getAccessToken()`-in **sinxron** olmasına əsaslanır (bax Hissə 10, MMKV) — `RootNavigator` özü heç bir `await`, heç bir "yüklənir..." vəziyyəti daşımır. Amma **düzəliş (2026-09-01):** `RootNavigator` artıq `App.tsx`-in özü tərəfindən, `initTokenStorage()`-in bitməsinə qədər **ümumiyyətlə render olunmur** (bax Hissə 8-in "provider zənciri" izahındakı `ready` qapısı) — çünki `tokenStorage.ts`-in MMKV instansı özü indi Keychain-dən gələn bir şifrələmə açarı ilə **asinxron** yaradılır. Yəni: "token varmı" sualının **özü** sinxrondur, amma bu suala cavab vermək üçün lazım olan MMKV instansının **mövcud olması** artıq asinxron bir addımdan asılıdır. Bu, incə, amma vacib bir fərqdir — kod oxuyarkən `getAccessToken()`-in sinxronluğuna baxıb "deməli, bu, heç vaxt gözləmə tələb etmir" nəticəsinə tələsməyin, `App.tsx`-in onu **nə zaman** çağırmağa icazə verdiyinə də baxın.
 
 ### `navigationRef.ts` — komponent olmayan yerdən naviqasiya
 
@@ -1045,6 +1103,10 @@ function HomeStackNavigator() {
 ```
 `AppHeader` (loqo + səbət ikonu) `Stack.Navigator`-un **xaricində**, amma onu əhatə edən `View`-in daxilindədir — beləliklə bu header **hər iki** daxili ekranda (`HomeMain` və `CategoryProducts`) sabit qalır, hər ekranın öz header-i yazılmasına ehtiyac qalmır. `CategoryProducts`-da `gestureEnabled: false` — bu ekranda sağa-sürüşdürüb-geri-qayıtma jesti **söndürülüb** (görünür, bu ekranın öz daxili üfüqi sürüşdürmə elementləri — kateqoriya çipləri kimi — ilə qarışmasın deyə).
 
+### `ProfileStackNavigator.tsx` — "Hesabım" tab-ının daxili stack-i
+
+`HomeStackNavigator`-dan fərqli olaraq, bunun sabit bir header-i yoxdur (hər daxili ekran öz `ScreenHeader`-ini özü göstərir, bax Hissə 14) — sadəcə 6 ekranı ardıcıl stack-ə əlavə edir: `ProfileMain` (`ProfileScreen`, tab-ın özünün ilk ekranı), `AccountInfo`, `MyLists`, `OrderHistory`, `Settings`, `Support`. Son ikisi — `Settings` və `Support` — 2026-09-02/04-də əlavə olunub və bir-birindən **qəsdən ayrı** ekranlardır, halbuki ilk versiyada "Dəstək" `SettingsScreen`-in daxilində bir alt-bölmə idi. Bu qərarın "niyə"si Hissə 15-in "Profile axını" bölməsində izah olunur.
+
 ---
 
 ## Hissə 10: Autentifikasiya
@@ -1052,28 +1114,61 @@ function HomeStackNavigator() {
 ### `tokenStorage.ts` — token-lər haradadır?
 
 ```ts
-import { createMMKV } from 'react-native-mmkv';
+import { createMMKV, type MMKV } from 'react-native-mmkv';
+import * as Keychain from 'react-native-keychain';
 
-export const storage = createMMKV({ id: 'tiktak-storage' });
+let storage: MMKV | undefined;
+
+async function getOrCreateEncryptionKey(): Promise<string> {
+  const existing = await Keychain.getGenericPassword({ service: KEYCHAIN_SERVICE });
+  if (existing) return existing.password;
+  const key = generateEncryptionKey();
+  await Keychain.setGenericPassword('tiktak', key, { service: KEYCHAIN_SERVICE });
+  return key;
+}
+
+export async function initTokenStorage(): Promise<void> {
+  const encryptionKey = await getOrCreateEncryptionKey();
+  storage = createMMKV({ id: 'tiktak-storage', encryptionKey, encryptionType: 'AES-256' });
+  if (!getRememberMe()) clearTokens();
+}
+
+function requireStorage(): MMKV {
+  if (!storage) throw new Error('tokenStorage used before initTokenStorage() resolved');
+  return storage;
+}
 
 export function getAccessToken(): string | null {
-  return storage.getString(ACCESS_TOKEN_KEY) ?? null;
+  return requireStorage().getString(ACCESS_TOKEN_KEY) ?? null;
 }
 ```
 
 **MMKV nədir?** Bu, telefon diskində açar-dəyər (key-value) formatında məlumat saxlamaq üçün Tencent-in yazdığı, **C++ əsaslı** native kitabxanadır. Köhnə `AsyncStorage`-dan fərqi: `AsyncStorage` **hər** oxuma/yazma üçün asinxron körpüdən keçirdi (yavaş), MMKV isə memory-mapped fayl texnikası ilə demək olar **anlıq, sinxron** oxuma verir.
 
-**Niyə sinxronluq vacibdir?** `RootNavigator`-da gördüyümüz kimi:
-```ts
-const initialRouteName = getAccessToken() ? 'Main' : 'Welcome';
-```
-Bu sətir **komponentin ilk render-ində, dərhal** işə düşür. Əgər `getAccessToken()` asinxron olsaydı (`AsyncStorage`-da olduğu kimi), tətbiq token-i "gözləyərkən" ya boş ekran göstərməli, ya da "yüklənir..." spinner-i əlavə etməli idi. MMKV-nin sinxronluğu bu **ara ekranı tamamilə lazımsız edir**.
+**Düzəliş (2026-09-01): bu fayl artıq "tam sinxron" deyil — bunu diqqətlə oxuyun, çünki bu, sənədin özündəki (əvvəlki versiyalarda) əsas iddialardan birini dəyişir.** Layihəyə Keychain-əsaslı MMKV şifrələməsi (yuxarıda) əlavə olunanda, bir problem yarandı: `createMMKV({...})`-un özü **artıq şifrələmə açarına** ehtiyac duyur, açar isə **Android Keystore/iOS Keychain**-dən gəlir (`react-native-keychain` vasitəsilə) — bu, telefonun öz təhlükəsizlik alt-sisteminə müraciətdir və **yalnız asinxron** ola bilər (`Keychain.getGenericPassword()` bir `Promise` qaytarır). Yəni: `storage` obyektinin **özünü** artıq modul yüklənən kimi, sinxron yaratmaq mümkün deyil.
+
+**Bu, praktikada nəyə görə problem deyil?** Çünki `getAccessToken()`/`getRefreshToken()`/`getRememberMe()` kimi **hər ayrı oxuma** hələ də sinxrondur — `requireStorage()` sadəcə "instansı artıq var, ya yox" yoxlayır (bu, heç bir gözləmə tələb etməyən adi bir `if`-dir), instans **varsa**, ondan sonrakı `storage.getString(...)` çağırışı MMKV-nin öz sürətli, sinxron API-si ilə işləyir — dəyişən yalnız **bir dəfəlik, ilkin** açarın haradan gəldiyidir. Problem, sadəcə "instans **hələ** yaradılmayıbsa" halına aiddir — buna görə `App.tsx` (bax Hissə 8) `initTokenStorage()`-i **bir dəfə**, tətbiq açılan kimi çağırıb bitməsini gözləyir (`ready` state-i ilə), və `RootNavigator`-un özü (deməli, `getAccessToken()`-in ilk çağırışı) yalnız **bu bitdikdən sonra** render olunur. Nəticədə, `getAccessToken()`-i çağıran kodun **özü** heç vaxt `await` yazmır (Hissə 9-da gördüyümüz kimi), amma bu, yalnız o kodun **artıq** `initTokenStorage()` bitmiş bir mühitdə çağırıldığına görə mümkündür — bu qarantiyanı təmin edən məsuliyyət `App.tsx`-in üzərindədir, `tokenStorage.ts`-in özünün deyil.
+
+**Niyə bu qədər zəhmətə dəyər — niyə sadəcə şifrələnməmiş MMKV saxlanılmayıb?** Çünki MMKV-nin diskdəki faylı, əgər şifrələnməyibsə, telefona fiziki/root girişi olan biri tərəfindən **birbaşa** oxuna bilər (access/refresh token-lər aşkar mətn kimi). Şifrələmənin özü (`encryptionType: 'AES-256'`) bunun qarşısını alır, amma şifrələmə açarının **özü** haradasa saxlanmalıdır — əgər həmin açar da sadəcə MMKV-nin/koddakı bir sabitin içində saxlansaydı, "kilidin açarını kilidin özünün yanında saxlamaq" kimi mənasız olardı. Android Keystore/iOS Keychain isə əməliyyat sisteminin **öz təhlükəsizlik hardware/OS-səviyyəli** mexanizmidir — açar oradan, tətbiqin öz JS/native kodundan **kənar** bir yerdə mühafizə olunur.
 
 > `getAccessToken`-in imzasında `Promise` yoxdur, amma bəzi kod yerlərində hələ də `await getAccessToken()` yazılıb (məsələn `httpClient.ts`-in request interceptor-unda). Bu, xəta **deyil** — JavaScript-də `await qeyri-Promise-dəyər` sadəcə həmin dəyəri **dərhal** qaytarır, heç bir gecikmə yaratmır. Kod miqrasiya zamanı (AsyncStorage-dan MMKV-yə keçəndə) bu sətirləri təmizləmək **vacib olmadığı üçün** toxunulmayıb.
 
 ### `react-native-mmkv@4` — diqqət ediləsi tələ
 
 `createMMKV({ id: 'tiktak-storage' })` — **funksiya çağırışı**dır, `new MMKV(...)` **deyil**. MMKV-nin 4-cü versiyası kitabxananı sıfırdan, Nitro Modules adlı yeni bir native-körpü arxitekturasında yazıb — bu versiyada `MMKV` artıq **yalnız bir TypeScript tipidir**, runtime-da mövcud bir sinif (class) **deyil**. `new MMKV()` yazsanız, "Cannot read property 'prototype' of undefined" xətası ilə çökərsiniz. Bu, kitabxananın **köhnə** sənədləşməsinə uyğun kod yazanların düşdüyü çox yayılmış bir tələdir.
+
+### Niyə **dörd** ayrı MMKV instansı var?
+
+`tokenStorage.ts`-in şifrələnmiş, asinxron-başladılan instansından başqa, layihədə daha 3 MMKV instansı var — **hamısı qəsdən şifrələnməmiş və sinxron**:
+
+| Instans | Fayl | Nə saxlayır | Niyə şifrələnməyib |
+|---|---|---|---|
+| `tiktak-storage` | `tokenStorage.ts` | access/refresh token, remember-me | Həssas — Keychain-açarı ilə şifrələnib (yuxarı) |
+| `tiktak-settings` | `settingsStorage.ts` | dark mode, dil seçimi | Həssas deyil, çıxışdan (logout) sonra da **qalmalıdır** — istifadəçi tərcihi hesabla bağlı deyil |
+| `tiktak-search-history` | `searchHistory.ts` | son axtarışlar (maks. 10) | Həssas deyil, Keystore gözləməsinə dəyməz — `SearchScreen` mount olan kimi **dərhal** oxumalıdır |
+| `tiktak-query-cache` | `queryStorage.ts` | TanStack Query keşi (məhsul/kateqoriya/səbət/sifariş cavabları) | Həssas deyil, üstəlik `tokenStorage`-dan **asılı olmayan** başlanğıc lazımdır (bax Hissə 18) |
+
+Bu, "hər həssas olmayan məlumatı sinxron saxla, yalnız **əsl** həssas məlumatı (token-lər) asinxron/şifrələnmiş bir yolla qoru" prinsipinin əməli tətbiqidir — hər əlavə instans üçün "bu, Keystore gecikməsinə/mürəkkəbliyinə dəyərmi?" sualı ayrıca verilib.
 
 ### "Sessiyanı aktiv saxla" (Remember me) məntiqi
 
@@ -1090,13 +1185,16 @@ export async function login(payload: LoginPayload, rememberMe: boolean): Promise
 ```
 
 ```ts
-// tokenStorage.ts, faylın ən sonunda, modul yüklənəndə BİR DƏFƏ işə düşür
+// tokenStorage.ts — initTokenStorage() funksiyasının içində,
+// storage instansı yaradıldıqdan DƏRHAL sonra (yuxarıda, Hissə 10-un
+// başındakı kod parçasına bax — bu, HƏMİN initTokenStorage-in bir hissəsidir,
+// ayrıca bir "modul yüklənəndə" bloku deyil)
 if (!getRememberMe()) {
   clearTokens();
 }
 ```
 
-Bu son bloku diqqətlə oxuyun — o, `tokenStorage.ts` modulunun **importlanma anında**, yəni tətbiqin **soyuq başlanğıcında** (cold start — proses tamamilə yenidən başlayanda) **bir dəfə** işə düşür. Tətbiqi arxa plana atıb (background) geri gəlmək JS prosesini **yenidən başlatmır** (proses yaşamağa davam edir) — ona görə bu yoxlama **yalnız** telefon tətbiqi tam bağlayıb yenidən açanda təsir edir. Nəticə: "Sessiyanı aktiv saxla" işarələnməyibsə, istifadəçi tətbiqi arxa plana atıb geri qayıda bilər (sessiya davam edir), amma tətbiqi **tam bağlayıb yenidən açsa**, yenidən giriş etməli olur — dəqiq "sessiya yalnız tətbiq açıq olduğu müddətdə" davranışı, ayrıca "yaddaşda-saxlanan-diskdə-yox" token növü qurmadan.
+Bu bloku diqqətlə oxuyun — **Düzəliş (2026-09-01)**: Keychain-şifrələməsindən əvvəl bu yoxlama həqiqətən modulun importlanma anında, sinxron işləyirdi; indi isə `initTokenStorage()`-in **içindədir** (yuxarıdakı kod parçasına bax), çünki `storage` instansının özü artıq yalnız asinxron Keystore-oxumasından sonra yaranır. Nəticə etibarı ilə davranış **eyni qalıb**, sadəcə "harada" işə düşməsi dəyişib: `initTokenStorage()` `App.tsx`-də tətbiqin **hər soyuq başlanğıcında bir dəfə** çağırılır (proses tamamilə yenidən başlayanda — Hissə 8-ə bax), tətbiqi arxa plana atıb (background) geri gəlmək isə JS prosesini yenidən başlatmır (proses yaşamağa davam edir, `initTokenStorage()` təkrar çağırılmır) — ona görə bu yoxlama **yalnız** telefon tətbiqi tam bağlayıb yenidən açanda təsir edir. Nəticə: "Sessiyanı aktiv saxla" işarələnməyibsə, istifadəçi tətbiqi arxa plana atıb geri qayıda bilər (sessiya davam edir), amma tətbiqi **tam bağlayıb yenidən açsa**, yenidən giriş etməli olur — dəqiq "sessiya yalnız tətbiq açıq olduğu müddətdə" davranışı, ayrıca "yaddaşda-saxlanan-diskdə-yox" token növü qurmadan.
 
 ### `signup` vs `login` — niyə fərqli davranırlar?
 
@@ -1262,6 +1360,7 @@ Hər `*.service.ts` faylı **bir backend "sahəsinə"** (domain) uyğun gəlir �
 - **`basket.service.ts`** — `getBasket`, `addToBasket`, `removeFromBasket`, `clearBasket`. Bu funksiyalar **özləri** heç bir state saxlamır, sadəcə HTTP sorğusu göndərib nəticəni qaytarır — state idarəetməsi `basket.store.ts`-in işidir (bax Hissə 13, bu ayrılıq vacibdir).
 - **`order.service.ts`** — `checkout`, `listOrders`, `getOrder`. `checkout`-un cavabı **raw `Order`** kimi işlədilir (zərfsiz) — `CLAUDE.md` bunu "hələ yenidən yoxlanmayıb" deyə qeyd edir, çünki `CheckoutScreen` bu qaytarılan dəyəri istifadə **etmir** (uğurlu olsa sadəcə naviqasiya edir), ona görə bir uyğunsuzluq olsa belə, hələ üzə çıxmayıb.
 - **`upload.service.ts`** — `uploadFile`, `FormData` ilə şəkil yükləmə (Hissə 3-də `as unknown as Blob` nümunəsi buradandır).
+- **`geocoding.service.ts`** — digərlərindən **fərqli**, çünki `httpClient`-i işlətmir, öz ayrıca `fetch()` çağırışı ilə **xarici** (bizim öz backend-imiz olmayan) bir servisə — Nominatim-ə — müraciət edir. Ətraflı izah Hissə 22-də.
 
 **Ümumi naxış:** hər servis funksiyası **çox nazikdir** — heç bir biznes-məntiq, state, ya UI ilə bağlı kod yoxdur, sadəcə "bu URL-ə bu formada sorğu göndər, bu formada cavab qaytar". Bu, **ayrılmış məsuliyyət** (separation of concerns) prinsipinin əməli tətbiqidir: ekranlar "necə göstərim", store-lar "state-i necə saxlayım", servislər isə yalnız "backend-lə necə danışım" sualına cavab verir.
 
@@ -1283,7 +1382,7 @@ type BasketState = {
   loading: boolean;
   error: string | undefined;
   fetchBasket: () => Promise<void>;
-  addItem: (productId: number) => Promise<void>;
+  addItem: (product: Product) => Promise<void>;
   removeItem: (productId: number) => Promise<void>;
   clearBasket: () => Promise<void>;
 };
@@ -1296,7 +1395,7 @@ export const useBasketStore = create<BasketState>((set, get) => ({
     set({ loading: true, error: undefined });
     try {
       const basket = await getBasket();
-      set({ basket });
+      set({ basket: sortBasketItems(basket) });
     } catch (err) {
       set({ error: getApiErrorMessage(err) });
     } finally {
@@ -1314,25 +1413,58 @@ const addItem = useBasketStore(state => state.addItem);
 ```
 `useBasketStore(state => state.basket)` — "yalnız `basket` sahəsini izlə" deməkdir. Bu **seçici (selector)** naxışıdır — əgər `loading` dəyişsə, amma bu komponent yalnız `basket`-i izləyirsə, komponent **lazımsız yerə yenidən render olunmur** (performans üçün vacibdir).
 
-### `addItem`/`removeItem` — "əvvəlki miqdarı bil, sonra qərar ver" naxışı
+### `addItem`/`removeItem` — optimistic update: "əvvəlcə göstər, sonra təsdiqlə, xəta olsa geri al"
+
+Bu funksiyalar **2026-09-02**-də tamamilə yenidən yazılıb — köhnə versiya sadəcə sorğu göndərib nəticəni gözləyirdi (bax Hissə 4-ün "Optimistic update" izahının ilkin nümunəsi kimi `ProductDetailSheet`-in favorit düyməsi), yeni versiya isə **eyni naxışı** səbətin özünə tətbiq edir:
 
 ```ts
-addItem: async productId => {
-  const previousQuantity = quantityForProduct(get().basket, productId);
-  const basket = await addToBasket(productId);
-  set({ basket });
-  const title =
-    basket.items?.find(item => item.product.id === productId)?.product.title
-    ?? 'Məhsul';
-  showSuccessToast(
-    `${title} ${previousQuantity === 0 ? 'səbətə əlavə edildi' : 'sayı artırıldı'}`,
-  );
+addItem: async product => {
+  const productId = product.id;
+  const previousBasket = get().basket;
+  const existingItem = previousBasket?.items?.find(item => item.product.id === productId);
+
+  // Dərhal, sorğu göndərilməzdən ƏVVƏL, state-i "sanki artıq baş vermiş kimi" yenilə:
+  set({
+    basket:
+      previousBasket && existingItem
+        ? adjustItemQuantity(previousBasket, productId, 1)
+        : addNewItem(previousBasket, product),
+  });
+
+  try {
+    const basket = await addToBasket(productId);
+    set({ basket: sortBasketItems(basket) }); // əsl cavabla "üzərinə yaz"
+    showSuccessToast(existingItem ? i18n.t('basket.quantityIncreased', {...}) : i18n.t('basket.addedToBasket', {...}));
+  } catch (err) {
+    set({ basket: previousBasket }); // sorğudan ƏVVƏLKİ vəziyyətə tam geri qayıt
+    showErrorToast(getApiErrorMessage(err));
+  }
 },
 ```
 
-Diqqət yetirin: bu **tək** funksiya iki fərqli halı ("ilk dəfə səbətə əlavə edildi" vs "artıq səbətdə olan məhsulun sayı artırıldı") **eyni backend endpoint-i ilə** idarə edir (`/basket/:id/add` — istər ilk əlavə, istər artırma, eyni sorğu). Fərqi **frontend özü** müəyyən edir: sorğu göndərilməzdən **əvvəl**, `get().basket`-dən (backend sorğusuna ehtiyac olmadan, mövcud state-dən) əvvəlki miqdarı öyrənir. Əgər `0`-dırsa (məhsul əvvəllər səbətdə deyildi) → "əlavə edildi" mesajı, əks halda → "artırıldı" mesajı.
+**Niyə `addItem` indi `productId: number` yox, `product: Product` (bütün obyekt) qəbul edir?** Köhnə imza (`addItem: (productId: number) => Promise<void>`) yalnız **artıq səbətdə olan** bir məhsulun miqdarını optimistik artıra bilirdi, çünki store-un öz `basket.items`-i içində həmin məhsulun adı/qiyməti/şəkli **artıq var idi**. Amma **tamam yeni** bir məhsul (hələ səbətdə heç olmayan) səbətə ilk dəfə əlavə olunanda, store-un onun haqqında **heç bir** məlumatı yox idi — optimistik update mümkün deyildi, "+' düyməsi sorğu bitənə qədər **heç nə etmirmiş kimi** görünürdü (kiçik, amma hiss olunan bir gecikmə). Çağıran ekranların (`ProductCard`, `ProductDetailSheet`) özündə isə məhsulun **tam** obyekti onsuz da var idi (kartın özü onu göstərmək üçün alıb) — ona görə `addItem`-ə `productId` əvəzinə bütün `product`-u ötürmək, store-a **yeni** bir sətir "uydurmaq" (`addNewItem`, aşağıda) üçün lazım olan hər şeyi verdi.
 
-**Niyə bu, mərkəzi store-da, hər ekranda ayrı-ayrı yazılmayıb?** Çünki səbətə məhsul əlavə etmək **bir çox** ekrandan mümkündür — `CategoryProductsScreen`, `MyListsScreen`, `ProductDetailSheet`, `BasketScreen`-in özü. Əgər bu "hansı mesajı göstərim" məntiqini **hər** ekranda təkrarlasaydıq, 4 yerdə eyni şərti yazmalı olardıq — kimsə birini unutsa, ya səhv yazsa, uyğunsuzluq yaranardı. Store-da **bir dəfə** yazılıb, çünki bütün bu ekranlar **eyni store-un eyni `addItem` funksiyasını** çağırır — toast mesajı **avtomatik**, hər yerdə eyni davranışla çıxır.
+**`adjustItemQuantity`/`addNewItem` — iki fərqli "optimistik təxmin" funksiyası:**
+```ts
+function adjustItemQuantity(basket: Basket, productId: number, delta: 1 | -1): Basket {
+  const items = (basket.items ?? [])
+    .map(item => item.product.id !== productId ? item : { ...item, quantity: item.quantity + delta, /* ... total_price yenidən hesablanır */ })
+    .filter(item => item.quantity > 0); // 0-a enən sətir siyahıdan silinir
+  // ... total/count yenidən hesablanır
+}
+
+function addNewItem(basket: Basket | undefined, product: Product): Basket {
+  const newItem: BasketItem = { id: -product.id, quantity: 1, total_price: ..., product };
+  // ... items-ə əlavə olunur, total/count yenidən hesablanır
+}
+```
+`addNewItem`-də `id: -product.id` diqqətəlayiqdir — bu, **əsl** bir sətir ID-si deyil, sadəcə **yer tutan** (placeholder) bir dəyərdir. Mənfi işarə seçilib ki, real backend ID-ləri (həmişə müsbət) ilə **heç vaxt** toqquşmasın. Bu ID uzun müddət yaşamır — `addToBasket()` sorğusu qayıdan kimi, bütün `basket` obyekti **əsl** backend cavabı ilə (`set({ basket: sortBasketItems(basket) })`) tamamilə **əvəz olunur**, uydurma ID də özü ilə yox olur.
+
+**Xəta olanda niyə "delta-nı geri al" yox, "bütünü əvvəlki vəziyyətə qaytar"?** `catch` bloku `set({ basket: previousBasket })` yazır — yəni sorğudan **əvvəlki tam basket obyektini** saxlayıb, xəta olanda onu **olduğu kimi** geri qoyur, "indi optimistik dəyişikliyi necə əks-tərsinə çevirim" hesablaması aparmır. Bu, daha **etibarlı** bir strategiyadır: "əks-tərs delta" hesablamaq (`adjustItemQuantity(basket, productId, -delta)` kimi) nəzəri olaraq eyni nəticəni verməli idi, amma əgər bu aralıqda **başqa** bir dəyişiklik (məsələn eyni məhsula ikinci sürətli toxunma) baş vermişdisə, iki "əks-tərs" hesablama bir-birinin üstündən keçib **səhv** nəticə verə bilərdi. Sadə "əvvəlki tam snapshot-a qayıt" isə həmişə **dəqiq** doğrudur, çünki `previousBasket` sorğu başlamazdan **əvvəlki** son bilinən, backend-lə **təsdiqlənmiş** vəziyyətdir.
+
+**Niyə bu, mərkəzi store-da, hər ekranda ayrı-ayrı yazılmayıb?** Çünki səbətə məhsul əlavə etmək **bir çox** ekrandan mümkündür — `CategoryProductsScreen`, `MyListsScreen`, `ProductDetailSheet`, `BasketScreen`-in özü. Əgər bu "necə optimistik göstərim, hansı mesajı verim" məntiqini **hər** ekranda təkrarlasaydıq, 4 yerdə eyni (kövrək) məntiqi yazmalı olardıq — kimsə birini unutsa, ya səhv yazsa, uyğunsuzluq yaranardı. Store-da **bir dəfə** yazılıb, çünki bütün bu ekranlar **eyni store-un eyni `addItem` funksiyasını** çağırır — optimistik UI **avtomatik**, hər yerdə eyni davranışla çıxır.
+
+**Diqqət — toast mesajları artıq sabit Azərbaycanca sətir deyil, `i18n.t(...)` çağırışıdır** (`showSuccessToast(i18n.t('basket.addedToBasket', { title }))`). Bu, Hissə 20-də izah olunan i18n sisteminin bir hissəsidir — `basket.store.ts` bir React komponenti **deyil** (Zustand store-u, sıravi TS modulu), ona görə `useTranslation()` hook-unu **çağıra bilmir** (hook-lar yalnız komponent/hook daxilində işləyir) — bunun əvəzinə, `i18next`-in özünün export etdiyi **statik** `i18n` obyektinin `i18n.t(...)` metodu birbaşa import edilib işlədilir. Bu, "hook lazım olan yerdə hook, hook mümkün olmayan yerdə statik instans" seçiminin praktiki nümunəsidir.
 
 ### `quantityForProduct` — niyə store-un xaricində, amma eyni fayldadır?
 
@@ -1476,7 +1608,7 @@ function BasketSummaryBar({ itemCount, total, onPress }: BasketSummaryBarProps) 
   );
 }
 ```
-`CategoryProductsScreen` və `MyListsScreen`-də, səbətdə ən azı bir məhsul olanda ekranın **altında üzən** (floating) bir zolaq — "N sifariş, cəmi ₼X" göstərir, basılanda `Basket` ekranına aparır. Komponentin özü `SUMMARY_BAR_HEIGHT`/`SUMMARY_BAR_GAP` sabitlərini `index.ts` vasitəsilə **ictimai** edir (Hissə 6-da izah olunan "layout sabitini export etmə" naxışı) — çünki onu göstərən ekranlar, siyahının altına **məhz bu hündürlük qədər** boşluq buraxmalıdır (əks halda son kart zolağın altında gizlənər — Hissə 18-in 4-cü dərsi ilə eyni kateqoriyadan bir problem).
+`CategoryProductsScreen` və `MyListsScreen`-də, səbətdə ən azı bir məhsul olanda ekranın **altında üzən** (floating) bir zolaq — "N sifariş, cəmi ₼X" göstərir, basılanda `Basket` ekranına aparır. Komponentin özü `SUMMARY_BAR_HEIGHT`/`SUMMARY_BAR_GAP` sabitlərini `index.ts` vasitəsilə **ictimai** edir (Hissə 6-da izah olunan "layout sabitini export etmə" naxışı) — çünki onu göstərən ekranlar, siyahının altına **məhz bu hündürlük qədər** boşluq buraxmalıdır (əks halda son kart zolağın altında gizlənər — Hissə 23-ün 4-cü dərsi ilə eyni kateqoriyadan bir problem).
 
 ### `ConfirmModal` — təsdiq modalı
 
@@ -1484,7 +1616,7 @@ function BasketSummaryBar({ itemCount, total, onPress }: BasketSummaryBarProps) 
 
 ### `BottomSheet` — özəl, "aşağıdan-çıxan" sheet
 
-Bu, layihənin ən mürəkkəb UI komponentidir və özündə bir "niyə bunu özümüz yazdıq" hekayəsi daşıyır (Hissə 18-də ətraflı). Qısaca: `Modal` (React Native-in öz komponenti, ayrı native "pəncərə" açır) + `Animated` (React Native-in köhnə, worklets-siz animasiya API-si) + `PanGestureHandler` (sürüşdürərək bağlamaq üçün) birləşməsidir. `translateY` adlı bir `Animated.Value` sheet-in şaquli mövqeyini idarə edir — `0` "tam açıq", `OFFSCREEN_Y` (ekran hündürlüyü) "tam gizli" deməkdir.
+Bu, layihənin ən mürəkkəb UI komponentidir və özündə bir "niyə bunu özümüz yazdıq" hekayəsi daşıyır (Hissə 23-də ətraflı). Qısaca: `Modal` (React Native-in öz komponenti, ayrı native "pəncərə" açır) + `Animated` (React Native-in köhnə, worklets-siz animasiya API-si) + `PanGestureHandler` (sürüşdürərək bağlamaq üçün) birləşməsidir. `translateY` adlı bir `Animated.Value` sheet-in şaquli mövqeyini idarə edir — `0` "tam açıq", `OFFSCREEN_Y` (ekran hündürlüyü) "tam gizli" deməkdir.
 
 Sürüşdürmə məntiqi diqqətlidir:
 ```ts
@@ -1537,7 +1669,30 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 
 ### Home axını
 
-**`HomeScreen`** — `useHomeData()` hook-u ilə profil + kateqoriyalar + kampaniyalar məlumatını gətirir (Hissə 4-də `useEffect`/`useCallback` izahı bura aiddir). `useScrollToTop(categoryListRef)` — React Navigation-un hook-u, "artıq fokuslanmış tab-a təkrar basanda siyahını yuxarı sürüşdür" davranışını verir (native tab-bar-ların ənənəvi davranışı).
+**`HomeScreen`** — `useHomeData()` hook-u ilə profil + kateqoriyalar + kampaniyalar məlumatını gətirir; bu hook **2026-09-02**-də sadə `useState`/`useEffect`+`Promise.all`-dan TanStack Query-nin `useQueries`-inə keçirilib (Hissə 18-ə bax — Hissə 2-nin `Promise.all()` nümunəsi indi bu hook-un **yenilənmiş**, `refetch`-əsaslı formasını göstərir). `useScrollToTop(categoryListRef)` — React Navigation-un hook-u, "artıq fokuslanmış tab-a təkrar basanda siyahını yuxarı sürüşdür" davranışını verir (native tab-bar-ların ənənəvi davranışı).
+
+**`HomeScreen`-in ünvan kartı və kampaniya karuseli — sabit (fixed) header (fixed 2026-09-04):** Bu ekran, kateqoriya grid-i üçün bir `FlatList` işlədir. İlkin versiyada ünvan kartı + kampaniya karuseli bu `FlatList`-in **`ListHeaderComponent`**-i kimi verilmişdi — bu, **görünüşcə** məntiqli seçim idi ("bunlar da siyahının bir hissəsidir"), amma bir ciddi yan-təsiri var idi: `ListHeaderComponent` siyahının **özü ilə birlikdə sürüşür**. Kateqoriya sayı bir ekranı doldurub aşağı sürüşdürməyə başlayanda, ünvan kartı və banner də **onlarla birlikdə yuxarı çıxıb ekrandan yoxa çıxırdı** — halbuki dizayn baxımından bunlar **sabit qalmalı** idi, yalnız kateqoriya grid-i sürüşməli idi.
+
+**Düzəliş:** ünvan kartı + karusel `FlatList`-dən **tamamilə çıxarılıb**, ona bitişik, ayrı bir `View` (`styles.fixedHeader`) daxilinə köçürülüb:
+```tsx
+<View style={styles.flex}>
+  {!error && (
+    <View style={styles.fixedHeader}>
+      {/* ünvan kartı + kampaniya karuseli */}
+    </View>
+  )}
+  {error ? (
+    <ErrorState .../>
+  ) : loading ? (
+    <View style={styles.listContent}><CategoryGridSkeleton /></View>
+  ) : (
+    <FlatList data={categories} .../>  {/* artıq heç bir ListHeaderComponent yoxdur */}
+  )}
+</View>
+```
+Bu iki ayrı `View`-un **eyni valideynin** (`styles.flex`) uşaqları olması vacibdir — `fixedHeader` normal axında (flexbox-un default `flexDirection: 'column'`-u ilə) yuxarıda qalır, altındakı `FlatList` isə **öz** sürüşmə sahəsində sərbəstdir, `fixedHeader`-in içindəki heç nə onunla birlikdə hərəkət etmir.
+
+**Dərs (ümumiləşdirilə bilən):** `ListHeaderComponent`/`ListFooterComponent` "bu, sadəcə siyahının yuxarısında/aşağısında göstərilən statik məzmundur" kimi düşünülə bilər, amma **əslində** siyahının sürüşən məzmununun bir **hissəsidir** — sürüşür. Əgər bir UI elementi "siyahı ilə **yanaşı**, amma sürüşmədən sabit qalmalıdır" tələbini daşıyırsa, o, `ListHeaderComponent` yox, siyahının **özündən kənar**, eyni valideyndə bacı-qardaş (`sibling`) bir element olmalıdır. Başqa bir ekranda oxşar "sabit qalmalı, amma sürüşür" bug-ı görsəniz, əvvəlcə bu elementin yanlışlıqla bir `ListHeaderComponent`/`ListFooterComponent`-in içinə qoyulub-qoyulmadığını yoxlayın.
 
 `AddressEditModal` alt-komponenti — "Çatdırılma ünvanı" kartına basılanda açılan, ünvanı redaktə edən öz-özlük (self-contained) bir modal: öz `addressInput`/`addressError`/`saving` state-i, öz `handleSave`-i var, `HomeScreen`-ə yalnız `visible`/`profile`/`onClose`/`onSaved` prop-ları ilə bağlıdır.
 
@@ -1623,6 +1778,28 @@ Sheet-də bir məhsulu favoritlərdən çıxarsanız/geri qatsanız, ekran **bü
 
 **`OrderHistoryScreen`** — `OrderCard` (status nişanı `getOrderStatusMeta`-dan rəng alır, Hissə 3-dəki `Record<OrderStatus, ...>` nümunəsi), `OrderDetailSheet` isə seçilmiş sifarişin ətraflı görünüşü (`BottomSheet` üzərində, `ProductDetailSheet` kimi).
 
+**`SettingsScreen`** (2026-09-02, "Yaddaş" + "Versiya" bölmələri 2026-09-04) — üç bölmədən ibarətdir:
+- **"Görünüş"** — dark mode açarı (`ThemeSwitch`, Hissə 19), uzun-basma ilə sistemə sıfırlama.
+- **"Dil"** — açılan siyahı, seçim `handleSelectLanguage`-də üç şeyi **eyni anda** edir: `setLanguage(code)` (MMKV-yə yazır, Hissə 20), `i18n.changeLanguage(code)` (bütün ekranları dərhal yeni dildə yenidən render etdirir) və yerli `language` state-ini yeniləyir (öz açılan siyahısının "hazırda seçili" işarəsini göstərmək üçün).
+- **"Yaddaş"** — `queryClient.clear()` çağıran, `ConfirmModal` ilə təsdiq alınan "Keşi təmizlə" düyməsi. Diqqət: bu, `tokenStorage`-a **toxunmur** — yalnız TanStack Query-nin keşini (Hissə 18) təmizləyir, ona görə istifadəçi bu düyməni basmaqla **yanlışlıqla çıxış etmir**, sadəcə bütün ekranlar bir sonrakı fokusda **yenidən** backend-dən sorğu göndərir.
+
+Ekranın altında bir **versiya sətri** də var: `t('settings.version', { version: APP_VERSION })`. `APP_VERSION` (`src/shared/config/appInfo.ts`) `package.json`-un `version` sahəsini **birbaşa JSON import** ilə oxuyur:
+```ts
+import { version } from '../../../package.json';
+export const APP_VERSION = version;
+```
+Bu, native bir "cihaz məlumatı" paketi (`react-native-device-info` kimi) tələb etmədən işləyir, çünki JSON fayl importu artıq layihədə **başqa yerdə də** (i18n-in `locales/*.json` faylları, Hissə 20) sınanmış, işlək bir mexanizmdir — TypeScript-in `resolveJsonModule` seçimi (`@react-native/typescript-config`-dən miras alınır) buna icazə verir.
+
+**`SupportScreen`** (2026-09-04) — WhatsApp/Facebook/E-poçt sətirləri, hər biri `Linking.openURL(...)` çağırır:
+```ts
+onPress={() => openLink(`https://wa.me/${SUPPORT_WHATSAPP_NUMBER}`)}
+// ...
+onPress={() => openLink(`mailto:${SUPPORT_EMAIL}`)}
+```
+`wa.me/<nömrə>` linki — `whatsapp://send?phone=...` sxemi **yox** — qəsdən seçilib: `wa.me` **universal** bir veb linkdir, WhatsApp quraşdırılıbsa tətbiqi açır, quraşdırılmayıbsa brauzerdə WhatsApp Web-ə yönləndirir — `whatsapp://` sxemi isə tətbiq yoxdursa sadəcə **səssizcə uğursuz olardı** (`canOpenURL` yoxlaması əlavə etmək lazım gələrdi). `openLink` funksiyası `Linking.openURL(...).catch(...)` ilə hər ehtimala qarşı bir xəta toast-ı da göstərir.
+
+**Niyə `SupportScreen` `SettingsScreen`-in bir alt-bölməsi kimi başladı, sonra ayrı ekrana çıxarıldı?** Bu, sənədin özündə saxlanmağa dəyər bir qərar tarixçəsidir. İlk versiyada "Dəstək" bölməsi `SettingsScreen`-in daxilində, "Görünüş"/"Dil" bölmələri ilə yanaşı idi. Bu, **açıq istifadəçi rəyi** ilə dəyişdirildi: kömək axtaran bir istifadəçi, məntiqi olaraq, "Tənzimləmələr"i açmağı **düşünməyə bilər** — dəstək/əlaqə, "necə görünsün" sualından fərqli bir ehtiyacdır. Nəticədə `ProfileScreen`-in özündə, `Tənzimləmələr` sətri ilə **yanaşı, ayrı** bir "Dəstək" sətri əlavə olundu (`navigation.navigate('Support')`), `SettingsScreen`-dən bütün WhatsApp/Facebook/E-poçt kodu çıxarılıb yeni `SupportScreen`-ə köçürüldü. **Dərs:** "bu, hardasa bir yerə sığmalıdır" ilə "bu, istifadəçinin **axtaracağı** yerdə olmalıdır" eyni sual deyil — ilk instinkt (mövcud bir ekrana əlavə etmək, yeni ekran yaratmaqdan çəkinmək) həmişə düzgün İA (information architecture) qərarı olmaya bilər.
+
 ---
 
 ## Hissə 16: Toast bildirişləri
@@ -1699,7 +1876,358 @@ module.exports = {
 
 ---
 
-## Hissə 18: Öyrənilmiş dərslər
+## Hissə 18: Server state idarəetməsi — TanStack Query
+
+**2026-09-02**-dən əvvəl, demək olar **hər** ekran öz server-məlumatını eyni naxışla gətirirdi: `useState` (data + `loading` + `error`) + `useEffect`-də çağırılan bir `load...()` funksiyası (Hissə 4-də `useCallback`/`useEffect` izahının əsasını təşkil edən `loadProfile` nümunəsi məhz bu köhnə naxışdandır). Bu naxış işləyirdi, amma bir neçə təkrarlanan problemi var idi: (1) hər ekran öz `loading`/`error` state-ini **özü** idarə edirdi — 10 ekranda demək olar **eyni** boilerplate; (2) bir ekrandan başqasına keçib geri qayıdanda, məlumat **hər dəfə yenidən** sıfırdan sorğulanırdı, hətta 2 saniyə əvvəl artıq gətirilmiş olsa belə — hər dəfə boş spinner; (3) `HomeScreen` və `CheckoutScreen` kimi bir neçə ekran **eyni** profil məlumatını **ayrı-ayrı** sorğulayırdı — heç bir paylaşılan keş yox idi.
+
+**TanStack Query** (React Query-nin yeni adı) bu üç problemi də həll edən bir "server state" kitabxanasıdır — Zustand-ın **client state** (səbət kimi, sırf frontend-də yaşayan) üçün etdiyini, TanStack Query **server-dən gələn** state üçün edir. Fərq vacibdir: server state-in öz xüsusiyyətləri var — köhnəlmiş ola bilər (başqa bir istifadəçi/cihaz onu dəyişmiş ola bilər), təkrar sorğulana bilər, keşlənə bilər — Zustand kimi sadə bir "yaddaşda saxla" modeli bunları nəzərə almır.
+
+### `queryClient.ts` — mərkəzi `QueryClient`
+
+```ts
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 30_000,
+      // persistOptions.maxAge (App.tsx, aşağı) ilə UYĞUN olmalıdır — gcTime
+      // bir sorğunun yaddaşdan (RAM-dan) nə vaxt silinəcəyini müəyyən edir,
+      // silinəndə isə növbəti disk-yazma (persist) zamanı da özü ilə aparır.
+      // Əgər gcTime persister-in maxAge-indən qısa olsaydı, bir sorğu diskə
+      // yazılmazdan ƏVVƏL yaddaşdan silinə bilərdi — persistlik səssizcə
+      // pozulardı.
+      gcTime: 24 * 60 * 60 * 1000,
+      retry: 1,
+    },
+  },
+});
+```
+- **`staleTime: 30_000`** — bir sorğunun cavabı **30 saniyə** "təzə" sayılır. Bu müddət ərzində eyni `queryKey`-lə edilən **hər** çağırış (məsələn ekran arasında keçid) heç bir yeni şəbəkə sorğusu göndərmir, keşdəki dəyəri **dərhal** qaytarır. 30 saniyədən sonra "köhnəlmiş" sayılır — sonrakı istifadə (məsələn ekran yenidən fokuslananda) arxa planda **səssizcə** yenidən sorğulanır, amma köhnə dəyər hələ ekranda **görünərkən** (istifadəçi boş spinner görmür, köhnə dəyər → yeni dəyər keçidi görür).
+- **`gcTime`** — "garbage collection time": bir sorğu artıq **heç bir komponent tərəfindən izlənmirsə** (bütün ekranlar bağlanıb), bu müddətdən sonra yaddaşdan tamamilə silinir. 24 saatlıq dəyər, aşağıdakı persister-in `maxAge`-i ilə **qəsdən eyni** saxlanılıb (yuxarıdakı şərhi oxuyun).
+- **`retry: 1`** — bir sorğu uğursuz olsa, TanStack Query **avtomatik 1 dəfə** yenidən cəhd edir (default 3-dür, bu, kiçik bir mobil tətbiq üçün lazımsız gecikmə yaradırdı).
+
+### `queryStorage.ts` — MMKV-yə "yazan" persister
+
+```ts
+const cache = createMMKV({ id: 'tiktak-query-cache' });
+
+export const queryPersister = createAsyncStoragePersister({
+  storage: {
+    getItem: key => cache.getString(key) ?? null,
+    setItem: (key, value) => cache.set(key, value),
+    removeItem: key => { cache.remove(key); },
+  },
+});
+```
+`createAsyncStoragePersister` — adından göründüyü kimi, əslində `AsyncStorage`-in **asinxron** interfeysini gözləyir (`getItem`/`setItem` `Promise` qaytarmalıdır — köhnəlmiş `createSyncStoragePersister` əvəzinə bu işlədilir, çünki o, deprecated elan olunub). Amma MMKV-nin `getString`/`set`/`remove`-u **sinxrondur** — JavaScript-də bu, problem **deyil**: sinxron bir dəyəri `async`/`Promise`-gözləyən bir yerə ötürmək, sadəcə həmin dəyəri **dərhal həll olunmuş** (already-resolved) bir promise kimi göndərmək deməkdir, heç bir performans itkisi olmadan (Hissə 10-da `await qeyri-Promise-dəyər`-in eyni prinsipi).
+
+`createMMKV({ id: 'tiktak-query-cache' })` — bu, `tokenStorage.ts`-in şifrələnmiş instansından **tamamilə ayrı, şifrələnməmiş** bir instansdır (Hissə 10-un "Niyə dörd ayrı MMKV instansı var?" cədvəlinə bax). Səbəb ikiqatdır: (1) bu keş yalnız məhsul/kateqoriya/səbət/sifariş **cavablarını** saxlayır, heç vaxt token — həssas deyil; (2) daha praktiki səbəb — `tokenStorage`-ın instansı `initTokenStorage()`-in Keychain-oxumasını **gözləməlidir** (Hissə 8/10), amma `queryPersister` `App.tsx`-də **modul yüklənən kimi**, hələ `ready` olmadan, sinxron yaradılır. Əgər bu keş `tokenStorage`-dan asılı olsaydı, TanStack Query-nin öz bərpası (`PersistQueryClientProvider`) `initTokenStorage()`-i gözləməli olardı — bu, iki müstəqil gecikmə mənbəyini süni şəkildə **zəncirləyər**di.
+
+### `queryKeys.ts` — açar-fabrikası naxışı
+
+```ts
+export const queryKeys = {
+  profile: ['profile'] as const,
+  categories: ['categories'] as const,
+  campaigns: ['campaigns'] as const,
+  favorites: ['favorites'] as const,
+  orders: ['orders'] as const,
+  products: (params?: { limit?: number; search?: string }) => ['products', params ?? {}] as const,
+};
+```
+TanStack Query hər sorğunu bir **açarla** (`queryKey`, bir array) tanıyır — eyni açarla edilən çağırışlar **eyni keş sətrini** paylaşır. Bu faylın vəzifəsi, açarları **bir mərkəzi yerdə** tərtib etmək — `queryKeys.profile` kimi yazmaq, `['profile']`-i əl ilə hər sorğuda yenidən yazmaqdan (yazı səhvi riski: bir yerdə `'profile'`, başqa yerdə səhvən `'Profile'` yazsanız, TanStack Query bunları **fərqli** sorğular sayar, keş **paylaşılmaz**) daha etibarlıdır. `products` isə **funksiya** olaraq tərtib edilib, çünki bu sorğunun açarı **parametrlərdən asılıdır** — `queryKeys.products({ search: 'alma' })` və `queryKeys.products()` **ayrı** keş sətirləridir (fərqli axtarış termini = fərqli nəticələr, paylaşılmamalıdır), `queryKeys.profile` kimi sabit isə heç bir parametr almır (profil hər zaman **eyni** məlumatdır, kim daxil olubsa).
+
+### `useQuery`/`useQueries` — `useEffect`+`useState`-i necə əvəz edir
+
+Ən sadə hal — `ProfileScreen.tsx`:
+```ts
+const { data: profile, isPending: loading, error: queryError, refetch } =
+  useQuery({ queryKey: queryKeys.profile, queryFn: getProfile });
+```
+Bu **tək sətir**, köhnə naxışın (`useState` × 3 + `useCallback` + `useEffect`, Hissə 4) etdiyi hər şeyi əvəz edir: `data` (uğurlu nəticə), `isPending` (ilk yüklənmə davam edir), `error`, `refetch` (yenidən sorğulama funksiyası, `ErrorState`-in `onRetry`-i üçün) — **hamısı** TanStack Query-nin özü tərəfindən idarə olunur, komponent heç bir `useEffect` yazmır (`useQuery`-nin özünün daxilində bir `useEffect`-ə bənzər mexanizm var, amma bunu **siz** yazmırsınız).
+
+**Paralel çoxlu sorğu** — `useHomeData.ts`:
+```ts
+const [profileQuery, categoriesQuery, campaignsQuery] = useQueries({
+  queries: [
+    { queryKey: queryKeys.profile, queryFn: getProfile },
+    { queryKey: queryKeys.categories, queryFn: listCategories },
+    { queryKey: queryKeys.campaigns, queryFn: listCampaigns },
+  ],
+});
+const loading = profileQuery.isPending || categoriesQuery.isPending || campaignsQuery.isPending;
+const firstError = profileQuery.error ?? categoriesQuery.error ?? campaignsQuery.error;
+```
+`useQueries` (cəm formada, `useQuery`-dən fərqli) — sayı **dəyişkən ola bilən** bir sorğu qrupunu paralel idarə edir, hər birinin öz `data`/`isPending`/`error`-unu **ayrı-ayrı** array elementi kimi qaytarır. Nəticə köhnə `Promise.all`-a **bənzəyir** (paralel başlayır), amma fərq böyükdür: hər sorğu **öz** keş sətrinə bağlıdır, `staleTime` daxilində təkrar sorğulanmır, və `HomeScreen`-in profili ilə `CheckoutScreen`-in profili (hər ikisi `queryKeys.profile` açarını işlədir) **eyni** keş sətrini paylaşır — biri yeniləyəndə (`queryClient.setQueryData`), o biri də **avtomatik** yenilənmiş görür, ikinci bir sorğu göndərmədən.
+
+**`queryClient.setQueryData` — "arxa planda sakitcə yenilə" naxışı.** `useHomeData.ts`-də maraqlı bir detal:
+```ts
+useFocusEffect(
+  useCallback(() => {
+    getProfile()
+      .then(data => queryClient.setQueryData(queryKeys.profile, data))
+      .catch(() => {});
+  }, [queryClient]),
+);
+```
+`HomeScreen` tab-lar arası keçiddə **unmount olmur** (React Navigation tab-ları default olaraq "canlı" saxlayır), ona görə istifadəçi "Hesab məlumatlarım"da ünvanı dəyişib "Əsas"a qayıdanda, `HomeScreen`-in göstərdiyi ünvan **köhnəlmiş** ola bilərdi (`useQuery`-nin öz avtomatik yenidən-sorğulaması yalnız `staleTime` bitəndə/komponent yenidən mount olanda işə düşür, sadəcə fokuslanmaqla deyil). Bu effekt, ekran **hər fokuslananda**, `getProfile()`-i **imperativ** (bir `useQuery` kimi deyil, sadəcə bir funksiya çağırışı kimi) çağırıb, nəticəni **birbaşa** keşin içinə yazır. `.catch(() => {})` diqqətəlayiqdir — bu, **arxa-plan sinxronizasiyasıdır**, uğursuz olsa, `profileQuery.error`-u "korlamamalıdır" (əks halda, artıq **düzgün** məlumatı olan bir ekran, sadəcə bu fon-yeniləməsi uğursuz oldu deyə, xəta ekranına düşərdi).
+
+### Çıxışda keşin təmizlənməsi
+
+```ts
+// ProfileScreen.tsx-in handleConfirmLogout-u
+queryClient.clear();
+```
+İstifadəçi çıxış edəndə, TanStack Query-nin **bütün** keşi (yaddaşda da, MMKV-də persist olunmuş da) silinir. Səbəb açıqdır: eyni cihazda **başqa** bir istifadəçi daxil olsa, əvvəlki istifadəçinin profil/sifariş/səbət məlumatları **bir anlıq belə** görünməməlidir (hətta "köhnəlmiş, arxa planda yenilənəcək" formasında belə). `SettingsScreen`-in "Keşi təmizlə" düyməsi də **eyni** `queryClient.clear()`-i çağırır, amma fərqli bir kontekstdə (Hissə 15-ə bax) — çıxışda **məcburi təhlükəsizlik tədbiri**, Settings-də isə **istəyə bağlı** bir "yenilə" imkanı.
+
+### Basketin optimistik yenilənməsi
+
+`basket.store.ts` (Zustand) — TanStack Query-nin **əhatə etmədiyi** yeganə "server state"dir, çünki səbətin özünün **optimistik** (server cavabından əvvəl UI-ı yeniləyən) davranışı TanStack Query-nin öz standart naxışından fərqli, əl ilə yazılmış bir məntiqdir. Bu, Hissə 13-də ətraflı izah olunub — burada yalnız "niyə TanStack Query yox" sualının cavabı: TanStack Query-nin özündə də optimistik update mexanizmi (`onMutate`) var, amma bu layihədə səbət artıq Zustand-da idi (TanStack Query-dən **əvvəl** yazılmışdı) və onun öz "əvvəlki tam snapshot-u saxla, xəta olsa geri qaytar" məntiqi artıq işləyirdi — iki fərqli state-idarəetmə kitabxanasını **eyni** data üçün paralel işlətmək (Zustand-da saxlayıb, TanStack Query-də də "mutation" kimi izləmək) lazımsız mürəkkəblik yaradardı.
+
+---
+
+## Hissə 19: Tema — Dark Mode
+
+### `colors.ts` — iki paralel palitra, **eyni açarlarla**
+
+```ts
+export type ThemeColors = {
+  primary: string; danger: string; textPrimary: string; textSecondary: string;
+  border: string; background: string; surface: string; overlay: string; /* ... */
+};
+
+export const LIGHT_COLORS: ThemeColors = { background: '#FFFFFF', surface: '#FFFFFF', textPrimary: '#1A1A1A', /* ... */ };
+export const DARK_COLORS: ThemeColors = { background: '#121214', surface: '#1E1E20', textPrimary: '#F2F2F2', /* ... */ };
+```
+`ThemeColors` tipi, iki obyektin (`LIGHT_COLORS`/`DARK_COLORS`) **məcburi eyni açarlara** malik olmasını təmin edir (Hissə 3-dəki `Record<K, V>` nümunəsi ilə eyni ruhda) — biri yeni bir rəng açarı əlavə edib o birini unutsanız, TypeScript dərhal xəta verər. Diqqətəlayiq bir təfərrüat: işıqlı rejimdə `background` və `surface` **eyni** (`#FFFFFF`) dəyərə malikdir — çünki dark-mode-dan **əvvəl**, ekran fonu ilə kart fonu arasında heç bir fərq yox idi, ikisi də sadəcə ağ idi. Bu iki ayrı açarın yaranmasının **əsl** səbəbi elə dark mode-dur: tünd rejimdə səhifənin fonu (`#121214`) ilə kartın fonu (`#1E1E20`) **bir qədər fərqli** olmalıdır ki, kartlar səhifədən **vizual olaraq ayrılsın** (əks halda hər şey eyni tündlükdə "yastı" görünərdi) — işıqlı rejimdə bu fərq lazım deyildi, ona görə heç vaxt kəşf edilməmişdi.
+
+### `createStyles(colors)` — statik `StyleSheet.create`-dən fərqi
+
+Dark mode-dan **əvvəl**, hər `.styles.ts` faylı modul-səviyyəli, **statik** bir obyekt idi:
+```ts
+export const styles = StyleSheet.create({ flex: { backgroundColor: '#FFFFFF' } });
+```
+Bu, rəng **sabitdirsə** işləyir — amma rəng `isDark`-a görə **dəyişməlidirsə**, statik bir obyekt bunu bacarmır (modul bir dəfə yüklənəndə "dondurulur"). Həll — hər `.styles.ts` faylı indi bir **fabrika funksiyası** ixrac edir:
+```ts
+export const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({ flex: { backgroundColor: colors.background } });
+```
+Komponentin özündə isə:
+```ts
+const { colors } = useTheme();
+const styles = useMemo(() => createStyles(colors), [colors]);
+```
+`useMemo(() => createStyles(colors), [colors])` — **niyə** hər render-də birbaşa `createStyles(colors)` çağırılmır? Çünki `StyleSheet.create(...)` çağırışının özü (kiçik də olsa) bir iş görür — `useMemo` bunu, yalnız `colors` **həqiqətən** dəyişəndə (yəni tema `isDark`-dan `!isDark`-a keçəndə) yenidən hesablanmasını təmin edir, hər adi render-də (məsələn `count` state-i dəyişəndə) **təkrar** çağırılmasının qarşısını alır — Hissə 4-ün `useCallback` izahı ilə eyni performans mühakiməsi, sadəcə funksiya nəticəsini (stil obyektini) yaddaşda saxlamaq üçün.
+
+### `ThemeContext.tsx` — `ThemeProvider`/`useTheme`
+
+```ts
+export function ThemeProvider({ children }: { children: ReactNode }) {
+  const scheme = useColorScheme();
+  const [isDark, setIsDark] = useState(() => getDarkModeEnabled(scheme === 'dark'));
+  // ... iki useEffect (aşağıda)
+  const value = useMemo<Theme>(
+    () => ({ colors: isDark ? DARK_COLORS : LIGHT_COLORS, isDark, setDarkModeEnabled, resetDarkModeToSystem }),
+    [isDark],
+  );
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+}
+```
+Bu, Hissə 19-un (bu hissənin özünün) təməl React Context nümunəsidir — `ThemeContext` ağacın **istənilən yerindən** `useTheme()` ilə oxuna bilən bir dəyər (`{ colors, isDark, setDarkModeEnabled, resetDarkModeToSystem }`) "yayır", `App.tsx`-in ən xaricindən (Hissə 8) başlayaraq.
+
+### Sistem temasını **canlı** izləmək — niyə **iki** effekt lazımdır?
+
+İlk baxışdan, `useColorScheme()`-in özü "reaktiv" görünür (OS teması dəyişəndə komponenti yenidən render etdirir) — amma `isDark` `useState`-in **ilkin dəyəri** kimi bir dəfə hesablanıb, sonra `scheme` dəyişsə belə **öz-özünə yenilənmir** (`useState`-in başlanğıc arqumenti yalnız **ilk** render-də oxunur). Ona görə birinci effekt lazımdır:
+```ts
+useEffect(() => {
+  if (hasDarkModeOverride()) return;
+  setIsDark(scheme === 'dark');
+}, [scheme]);
+```
+Bu, `scheme` dəyişəndə (istifadəçi cihazı tətbiq **açıq ikən** tünd/işıqlı rejimə keçirəndə) `isDark`-ı **əl ilə** yeniləyir — amma yalnız `hasDarkModeOverride()` `false`-dursa (aşağıda izah olunur).
+
+**Bəs niyə bir də `AppState`-ə əsaslanan ikinci effekt var?**
+```ts
+useEffect(() => {
+  const subscription = AppState.addEventListener('change', state => {
+    if (state !== 'active' || hasDarkModeOverride()) return;
+    setIsDark(Appearance.getColorScheme() === 'dark');
+  });
+  return () => subscription.remove();
+}, []);
+```
+Bu, sırf **nəzəri** ehtiyat deyil — **real cihazda** (Xiaomi/MIUI) sınaqdan sonra əlavə olunub. Müşahidə: `useColorScheme()`-in canlı dəyişiklik hadisəsi (native `Appearance` dəyişikliyi) **sessiyanın birinci** dəyişikliyi üçün etibarlı işləyirdi, amma **eyni sessiyada ikinci** dəyişiklikdə (cihazı yenidən tünd/işıqlıya keçirəndə) **səssizcə dayanırdı** — tətbiq ilk keçiddə düzgün izləyir, ikinci keçiddə "ilişib qalırdı". Bu, JS tərəfindən aşkar edilə bilməyən, platform/ROM-səviyyəli bir davranışdır. Həll — `AppState`-in `'active'` hadisəsinə (tətbiq fon-dan ön-plana **hər** qayıdışında) əsaslanan bir "ehtiyat yoxlama": tətbiq ön-plana qayıdanda, `Appearance.getColorScheme()`-i **birbaşa, yenidən** sorğulayır — bu, canlı hadisə mexanizminin buraxdığı hər dəyişikliyi, istifadəçi tətbiqə qayıtdığı an "tutur". **Dərs (ümumiləşdirilə bilən):** platform API-larının "canlı hadisə" mexanizmləri **nəzəri olaraq** etibarlı görünsə belə, konkret cihaz/ROM kombinasiyalarında sükutla uğursuz ola bilər — kritik bir UX üçün, "hadisəyə güvən" + "vaxtaşırı/lifecycle-əsaslı yenidən-yoxla" ikisini **birlikdə** işlətmək daha etibarlıdır (`OrderSuccessScreen`-in `navigate()` yerinə `reset()` seçməsi ilə eyni fəlsəfə kateqoriyası, Hissə 23).
+
+### Əl ilə override və onun "geri qayıdış yolu"
+
+`settingsStorage.ts`:
+```ts
+export function getDarkModeEnabled(systemPrefersDark: boolean): boolean {
+  const stored = storage.getBoolean(DARK_MODE_KEY);
+  return stored ?? systemPrefersDark; // heç nə saxlanmayıbsa, sistemin dəyərini işlət
+}
+export function hasDarkModeOverride(): boolean {
+  return storage.contains(DARK_MODE_KEY); // "heç saxlanmayıb" ilə "false saxlanıb"-ı ayırd edir
+}
+export function resetDarkModeOverride(): void {
+  storage.remove(DARK_MODE_KEY);
+}
+```
+**Niyə `hasDarkModeOverride()` ayrıca bir funksiyadır, `getDarkModeEnabled()`-in özü kifayət etmir?** Çünki `getDarkModeEnabled()`-in qaytardığı `boolean` **iki fərqli vəziyyəti eyni cür göstərir**: "istifadəçi heç vaxt açarı toxunmayıb, indi sistemin dəyəri təsadüfən `false`-dur" ilə "istifadəçi açarı açıq basıb, sonra `false`-a çevirib" nəticə etibarilə **eyni** `false` qaytarır — amma bu iki hal **fərqli davranış** tələb edir: birincidə sistem dəyişəndə tema **izləməlidir** (yuxarıdakı effektlər), ikincidə **izləməməlidir** (istifadəçinin qərarı üstün gəlməlidir). `storage.contains(...)` (MMKV-nin "bu açar **mövcuddurmu**" sorğusu, dəyərindən asılı olmayaraq) bu iki halı **ayırd edən yeganə** etibarlı üsuldur.
+
+**Real bir istifadəçi-təcrübəsi problemi və onun düzəlişi:** `SettingsScreen`-in açarına **bir dəfə belə** toxunmaq (hətta sadəcə sınamaq üçün) `tiktak_dark_mode_enabled`-i MMKV-yə **həmişəlik** yazırdı — bundan sonra tətbiq sistemi **bir daha heç vaxt** izləmirdi, açarı geri "sistemə uyğunlaşdırmaq" üçün heç bir yol **yox idi**. Bu, inkişaf zamanı **iki dəfə** "dark mode sistemi izləmir, deməli bu, bir bug-dır" qarışıqlığına səbəb oldu — hər iki dəfə də **kod bug-ı deyil**, sadəcə köhnə bir sessiyadan qalma override aşkarlandı (müvəqqəti bir `console.log(hasDarkModeOverride(), Appearance.getColorScheme())` ilə yoxlanıldı). **Düzəliş (2026-09-04):** açara **uzun basma** (`onLongPress`), `resetDarkModeToSystem()`-i çağırır:
+```ts
+function resetDarkModeToSystem() {
+  resetDarkModeOverride();
+  setIsDark(Appearance.getColorScheme() === 'dark');
+}
+```
+`ThemeSwitch.tsx`-in özü `onLongPress?: () => void` adlı **optional** bir prop qəbul edir, `Pressable`-a ötürülür — komponentin özü "reset" konsepsiyasını **bilmir**, sadəcə "uzun basılanda bu callback-i çağır" imkanını verir, qərarı çağıran tərəfə (`SettingsScreen`) buraxır. Uzun-basma jesti **qəsdən** seçilib — adi bir basma ilə **çaşdırılmayacaq** qədər fərqli, "gizli" bir hərəkət olduğu üçün — bunun yeganə görünən izi, açarın altındakı daimi bir izahat sətridir (`"Sistem temasına qaytarmaq üçün basıb saxlayın"`) və uğurlu sıfırlamadan sonra göstərilən bir toast (özündə görünən heç bir başqa əlaməti olmadığı üçün, geri-bildirim vacibdir).
+
+**Dərs (ümumiləşdirilə bilən):** bir UI-a **əl ilə override** (defolt/avtomatik davranışı əzən bir seçim) əlavə edərkən, ona **mütləq** bir "defolt/avtomatik-a qayıt" yolu da əlavə edin — override-ın özü nə qədər sadə olsa da, "geri qayıtma yolu"nun olmaması, istifadəçini (və gələcək debug edəni) "bu, bug-dırmı?" sualı ilə tək qoyur.
+
+---
+
+## Hissə 20: Beynəlxalqlaşdırma (i18n)
+
+### `i18n.ts` — niyə **sinxron**, komponentdən **kənar** başladılır?
+
+```ts
+import 'intl-pluralrules'; // Hermes-də daxili Intl.PluralRules yoxdur
+
+const az = deepMerge(azShared, azScreens);
+const en = deepMerge(enShared, enScreens);
+const ru = deepMerge(ruShared, ruScreens);
+
+i18n.use(initReactI18next).init({
+  resources: { az: { translation: az }, en: { translation: en }, ru: { translation: ru } },
+  lng: getLanguage(),
+  fallbackLng: 'az',
+  interpolation: { escapeValue: false },
+});
+```
+Bu fayl `App.tsx`-in **ən başında**, bir side-effect import kimi (`import './src/shared/i18n/i18n';`, heç bir dəyər almadan) çağırılır — Hissə 10-un `tokenStorage`-ın sinxron oxumalarının **niyə** vacib olduğu izahı ilə **eyni** mühakimə: əgər `i18n.init()` bir ekranın daxilində, `useEffect`-lə asinxron başladılsaydı, **ilk render** hansı dildə olacağını bilmədən keçərdi (bir anlıq ingilis default-u, sonra "sıçrayış" AZ-a) — sinxron, tətbiq açılmazdan **əvvəl** başladılan init, bu sıçrayışın qarşısını alır. `intl-pluralrules` — Hermes (React Native-in JS mühərriki) daxili `Intl.PluralRules` daşımır, bu polyfill olmadan i18next-in cəm-forması (plural) resolver-i işə düşəndə (heç bir cəm forması işlədilməsə belə, **init zamanı** yoxlanılır) konsol-da qorxuducu görünən (amma funksional zərəri olmayan) bir xəbərdarlıq banner-i çıxarır.
+
+### `shared.json`/`screens.json` bölünməsi və `deepMerge()`
+
+Hər dil üçün **iki** ayrı fayl: `locales/<lang>/shared.json` (`src/shared/`-in sahibliyində — komponent/util mətnləri) və `locales/<lang>/screens.json` (`src/screens/`-in sahibliyində — ekran mətnləri). Bölünmənin səbəbi **sırf təşkilati** — iki fərqli hissə üzərində paralel işləyən iki nəfər (ya iki agent) **eyni faylda** toqquşmasın deyə — istifadə zamanı fərq yoxdur, ikisi **eyni** `translation` ad-sahəsinə (namespace) birləşdirilir:
+```ts
+function deepMerge(a: Record<string, unknown>, b: Record<string, unknown>) {
+  const result: Record<string, unknown> = { ...a };
+  for (const key of Object.keys(b)) {
+    const aValue = a[key];
+    const bValue = b[key];
+    result[key] =
+      aValue && bValue && typeof aValue === 'object' && typeof bValue === 'object'
+        ? deepMerge(aValue as Record<string, unknown>, bValue as Record<string, unknown>)
+        : bValue;
+  }
+  return result;
+}
+```
+**Niyə bu, sadə `{ ...shared, ...screens }` (Hissə 2-dəki spread operatoru) ilə edilmir?** Çünki spread **dayaz**dır (shallow) — yalnız **ən üst** səviyyəli açarları birləşdirir, iç-içə obyektləri **tamamilə əvəz edir**. Real bir nümunə: hər iki fayl da öz `basket` adlı bir üst-səviyyə açarına malikdir — `shared.json`-da `basket.store.ts`-in toast mətnləri (`basket.addedToBasket` və s.), `screens.json`-da isə `BasketScreen`-in öz UI mətnləri (məsələn `basket.clearConfirm`). `{ ...shared, ...screens }` yazsaydıq, `screens`-in `basket` obyekti `shared`-in `basket` obyektini **tamamilə əzərdi** (son yazılan qalib gəlir) — nəticədə `basket.store.ts`-in bütün toast mətnləri **sakitcə yoxa çıxardı**, heç bir xəta atmadan (bu, tam olaraq Hissə 11-in "backend cavabının sabit olmayan sabitliyi" dərsi ilə eyni kateqoriyadan bir bug-dır — **səssiz məlumat itkisi**). `deepMerge()` isə **rekursiv**dir — hər iç-içə səviyyədə, hər iki tərəfin açarlarını **birləşdirir**, yalnız **son, "yarpaq" səviyyəli** (obyekt olmayan) dəyərlərdə ikinci arqument qalib gəlir.
+
+### `settingsStorage.ts`-in dil hissəsi
+
+```ts
+export function getLanguage(): Language { return (storage.getString(LANGUAGE_KEY) as Language | undefined) ?? 'az'; }
+export function setLanguage(language: Language): void { storage.set(LANGUAGE_KEY, language); }
+```
+`SettingsScreen`-in dil seçimi (Hissə 15) bu funksiyanı **və** `i18n.changeLanguage(code)`-u **birlikdə** çağırır — biri **saxlayır** (növbəti soyuq başlanğıcda `i18n.ts`-in `lng: getLanguage()` ilə oxunacaq), o biri isə **cari sessiyanı dərhal** yeni dilə keçirir. Yalnız birini çağırsaydıq: təkcə `setLanguage` yazsaydıq, tətbiqi bağlayıb-açana qədər dəyişiklik **görünməzdi**; təkcə `i18n.changeLanguage` çağırsaydıq, dəyişiklik növbəti soyuq başlanğıcda **itərdi**.
+
+### "AZN" niyə tərcümə olunmur — və "kart ölçüsünə toxunma" qaydası
+
+İki kiçik, amma **açıq şəkildə** istifadəçi ilə razılaşdırılmış məhsul qərarı:
+- **"AZN"** valyuta göstəricisi **hər üç dildə eyni** qalır (tərcümə olunmur) — bu, təsadüf deyil, ISO valyuta kodu konvensiyasına (dünya üzrə "AZN" hər yerdə eyni tanınır, "manat"/"manat"/"манат" kimi tərcümələr qarışıqlıq yaradardı) əsaslanan **şüurlu** bir qərardır, ehtiyatən "unudulmuş tərcümə" kimi düzəldilməməlidir.
+- **Kart/konteyner ölçüsü heç vaxt mətnə görə böyüdülmür** — rus dilində "Səbətə əlavə et" kimi mətnlər azərbaycancadan/ingiliscədən **uzun** çıxa bilir. İlk instinkt "düyməni/kartı genişləndir" idi, amma bu **açıq şəkildə rədd edilib** — əvəzinə `Button`-a `textStyle` prop-u (mətnin özünün ölçüsünü kiçiltmək üçün) və hər yerdə bir təhlükəsizlik toru kimi `numberOfLines={1}` (mətn heç vaxt sətri aşmasın, kəsilsə belə, kartın öz ölçüsü pozulmasın) əlavə olundu. **Dərs:** çoxdilli bir UI-da mətn uzunluğu **dəyişkəndir** — bir dizaynı yalnız bir dildə (adətən ilk yazılan dildə) sınayıb "uyğun gəlir" nəticəsinə gəlmək kifayət etmir, konteynerin ölçüsünü **məzmuna** görə deyil, məzmunu **konteynerə** görə uyğunlaşdırmaq daha sabit bir strategiyadır.
+
+---
+
+## Hissə 21: Yerli bildirişlər (Notifee)
+
+**Diqqət — bu, Hissə 16-dakı `Toast` ilə eyni şey deyil.** Toast — tətbiq **açıq** ikən, ekranın üzərində görünən, keçici bir UI elementidir. Bu hissədəki bildirişlər isə **əməliyyat sisteminin** öz bildiriş mərkəzinə göndərilir — tətbiq fonda olsa, hətta bağlı olsa belə görünə bilər (Android-in bildiriş paneli, "notification tray").
+
+### `notifyOrderPlaced()` — real push olmadan "push effekti"
+
+```ts
+export async function notifyOrderPlaced(orderNumber: string): Promise<void> {
+  const settings = await notifee.requestPermission();
+  if (settings.authorizationStatus < 1) return; // icazə verilməyib, sükutla çıx
+
+  await ensureOrdersChannel();
+  await notifee.displayNotification({ title: ..., body: ..., android: { channelId: ORDERS_CHANNEL_ID, ... } });
+
+  const trigger: TimestampTrigger = { type: TriggerType.TIMESTAMP, timestamp: Date.now() + PREPARING_DELAY_MS };
+  await notifee.createTriggerNotification({ title: ..., body: ..., android: {...} }, trigger);
+}
+```
+Bu funksiya **iki** bildiriş yaradır: (1) `displayNotification` — **dərhal** görünən "sifarişiniz qəbul edildi" bildirişi; (2) `createTriggerNotification` — 30 saniyə **sonra** (`TriggerType.TIMESTAMP`) avtomatik görünəcək, "sifarişiniz hazırlanır" bildirişi. **Vacib bir dürüstlük qeydi:** layihənin heç bir **real** backend push infrastrukturu yoxdur (FCM/APNs qeydiyyatı, server-dən push göndərmə) — ikinci bildiriş, əslində serverin "indi hazırlanmağa başladı" deyə göndərəcəyi **fərz edilən** bir push-u, tamamilə **client-side**, sadəcə bir taymer ilə **simulyasiya edir**. Bu, real bir məhdudiyyətdir, gizlədilməməlidir — `notifications.ts`-in özündə bunu açıq bildirən bir şərh var.
+
+**`notifee.requestPermission()` niyə hər çağırışda yenidən sorğulanır, bir dəfə yox?** Android 13+ bildiriş icazəsini **runtime**-da (əvvəlcədən manifest-də deyil) tələb edir, istifadəçi bunu istənilən vaxt Tənzimləmələr-dən söndürə bilər — `requestPermission()` artıq verilmiş icazə üçün **təkrar** dialoq göstərmir (OS özü bunu idarə edir), amma verilməyibsə, hər çağırışda **yenidən soruşmağa cəhd edir**, bu da istifadəçiyə "əvvəl rədd etdim, sonra fikrimi dəyişdim" imkanı saxlayır. `authorizationStatus < 1` yoxlaması ilə rədd halında **sükutla** (heç bir xəta, heç bir toast) çıxılır — çünki icazənin rədd edilməsi, sifarişin özünün uğursuz olduğu demək **deyil**, sadəcə istifadəçi bildiriş istəmir.
+
+### Bildiriş kanalı (channel) və `index.js`-in rolu
+
+```ts
+let channelReady: Promise<void> | undefined;
+function ensureOrdersChannel(): Promise<void> {
+  if (!channelReady) {
+    channelReady = notifee.createChannel({ id: ORDERS_CHANNEL_ID, name: ..., importance: AndroidImportance.HIGH }).then(() => undefined);
+  }
+  return channelReady;
+}
+```
+Bu, Hissə 11-dəki `refreshPromise`-la **eyni** "in-flight promise" naxışıdır — kanal yalnız **bir dəfə** yaradılmalıdır, `channelReady` dəyişəni bunu təmin edir (paralel çağırışlar eyni promise-i gözləyir, ikinci `createChannel` çağırışı getmir). Android 8+-da **hər** bildiriş bir kanala aid olmalıdır (istifadəçi kanal-səviyyəsində səs/vibrasiya/görünmə tənzimləyə bilsin deyə) — bu tətbiqdə tək bir "Sifarişlər" kanalı kifayətdir.
+
+**`registerBackgroundNotificationHandler()` niyə `App.tsx`-də deyil, `index.js`-də çağırılır?** Bu, Hissə 8-in giriş nöqtəsi izahı ilə əlaqəlidir — tətbiq **fonda/bağlı** ikən bir bildirişə basılsa, Android JS mühitini **`App` komponenti mount olmazdan əvvəl** oyandıra bilər. Əgər handler `App.tsx`-in daxilində (bir komponentin effektində) qeydiyyatdan keçirilsəydi, bu erkən "oyanış" anında handler **hələ mövcud olmazdı** — hadisə itərdi. `index.js`-də, `AppRegistry.registerComponent`-dən **əvvəl** qeydiyyatdan keçirmək, handler-in tətbiqin **hər** başlanğıc ssenarisində (soyuq başlanğıc, fon-dan oyanma) mövcud olmasını təmin edir.
+
+---
+
+## Hissə 22: Xəritədən ünvan seçimi (MapLibre)
+
+### Niyə Google Maps yox?
+
+`react-native-maps` (Google Maps-in ən çox işlədilən RN sarğısı) araşdırılıb, amma bir **məhdudiyyət** kəşf edilib: Google Maps SDK-sı, hətta pulsuz limit daxilində qalsanız belə, **billing (ödəniş) hesabı bağlı bir API açarı** tələb edir — kredit kartı əlavə etməli olursunuz, hətta heç vaxt ödəniş alınmasa belə. Bu, real bir istifadə maneəsi kimi qiymətləndirilib və istifadəçi ilə açıq müzakirə edilib. Nəticədə **`@maplibre/maplibre-react-native`** (açıq mənbəli, `react-native-maps`-in Google Maps-a bağlı olmayan alternativi) + **OpenFreeMap**-in (`https://tiles.openfreemap.org/styles/liberty`) pulsuz, açar tələb etməyən vektor xəritə "tile"-ları seçilib — heç bir kredit kartı, heç bir billing hesabı lazım deyil.
+
+### `MapAddressPicker.tsx` — "sabit peçka, hərəkət edən xəritə" naxışı
+
+```tsx
+<Map ref={mapRef} mapStyle={MAP_STYLE_URL} style={styles.map} logo={false}>
+  <Camera ref={cameraRef} initialViewState={{ center: DEFAULT_CENTER, zoom: DEFAULT_ZOOM }} />
+  <UserLocation />
+</Map>
+<View style={styles.pinWrapper} pointerEvents="none">
+  <MapPinIcon size={40} />
+</View>
+```
+Diqqətə çarpan həll — pin (nişan) xəritənin **daxilində**, bir marker kimi **deyil**, xəritənin **üzərində**, ekranın tam ortasında **sabit** bir ayrı `View`-dur (`pointerEvents="none"` — bu, pinin özünün toxunma hadisələrini **tutmamasını**, altdakı xəritənin sürüşdürmə jestlərini maneə törətmədən keçirməsini təmin edir). İstifadəçi "xəritəni sürüşdürür" kimi hiss etsə də, əslində **xəritə** hərəkət edir, **pin** ekranda **sabit qalır** — bu, "GPS koordinatını seç" probleminin sadə, intuitiv bir həllidir: təsdiq düyməsi basılanda, sadəcə xəritənin **hazırkı mərkəz koordinatı** (`mapRef.current.getCenter()`) oxunur, "pinin harada olduğunu" hesablamağa ehtiyac qalmır, çünki pin **həmişə** mərkəzdədir.
+
+### `geocoding.service.ts` — koordinatdan ünvana
+
+```ts
+export async function reverseGeocode(lat: number, lon: number): Promise<string> {
+  const params = new URLSearchParams({ format: 'json', lat: String(lat), lon: String(lon), 'accept-language': 'az' });
+  const response = await fetch(`${NOMINATIM_REVERSE_URL}?${params}`, { headers: { 'User-Agent': 'TikTak-Mobile-App' } });
+  // ... !response.ok ya da display_name yoxdursa xəta atır
+  return data.display_name;
+}
+```
+Bu fayl, layihənin **yeganə** `httpClient.ts`-i işlətməyən servisi — çünki Nominatim (OpenStreetMap-in pulsuz reverse-geocoding — "koordinat → oxunaqlı ünvan" — servisi) bizim öz backend-imiz **deyil**, `BASE_URL`/token/interceptor-larla heç bir əlaqəsi yoxdur, sadəcə açıq bir REST API-dir, adi `fetch()` kifayət edir. `User-Agent` başlığı **məcburidir** — Nominatim-in istifadə siyasəti, sorğuların tətbiqi tanıdan bir `User-Agent` daşımasını tələb edir (anonim/naməlum trafiki məhdudlaşdırmaq üçün); bu olmadan sorğular rədd edilə bilər.
+
+### "Məni tap" düyməsi
+
+```ts
+async function handleLocateMe() {
+  const granted = await LocationManager.requestPermissions();
+  if (!granted) { showErrorToast(...); return; }
+  const position = await LocationManager.getCurrentPosition();
+  if (!position) { showErrorToast(...); return; }
+  cameraRef.current?.flyTo({ center: [position.coords.longitude, position.coords.latitude], zoom: LOCATE_ZOOM, duration: 800 });
+}
+```
+`LocationManager` — MapLibre-nin özünün, cihazın GPS-inə çıxış verən API-si (`ACCESS_FINE_LOCATION`/`ACCESS_COARSE_LOCATION` icazələri `AndroidManifest.xml`-də bəyan olunub). `cameraRef.current?.flyTo(...)` — kameranı (xəritənin görüş nöqtəsini) **animasiyalı** şəkildə istifadəçinin həqiqi GPS koordinatına köçürür; `<UserLocation />` komponenti isə ayrıca, xəritə üzərində istifadəçinin **cari mövqeyini** göstərən mavi bir nöqtə çəkir (Google Maps-in tanış "mavi nöqtə"sinin ekvivalenti).
+
+---
+
+## Hissə 23: Öyrənilmiş dərslər
 
 Bu hissə `CLAUDE.md`-nin "Gotchas" bölməsindəki, **ən öyrədici** qərarları seçib beynəlxalq bir təqdimatda da izah edilə biləcək formada təqdim edir — bunlar "nə üçün belə yazılıb" sualının ən dəyərli cavablarıdır.
 
@@ -1745,13 +2273,38 @@ Hissə 15-in "Basket və Checkout axını" bölməsində ətraflı izah olunub: 
 
 **Dərs:** naviqasiya kitabxanasının "nəzəri olaraq bunu etməlidir" davranışı ilə "bunu **zəmanətlə** etməlidir" tələbi arasında fərq var — bir ekranın geri-naviqasiya ilə **heç vaxt** əlçatan olmaması kimi qəti tələblər üçün, ehtimala əsaslanan `navigate()` yox, birmənalı `reset()` seçilməlidir. Bu cür bug-lar tək bir "sınaq ssenarisi" ilə (sifariş ver → uğur ekranını gör) üzə çıxmır — yalnız ekranlar arası **dəfələrlə, müxtəlif ardıcıllıqla** keçid edərək test edəndə aşkarlanır.
 
+### 8. `expo-image` — bəzən "daha yaxşı alət" sadəcə **işləmir**, buna da hazır olun
+
+Şəkil keşləmə (image caching) üçün ilk növbədə `fast-image` (köhnə, amma New Architecture ilə öz riski olan) araşdırılıb, sonra ondan daha müasir sayılan `expo-image`-ə keçilib — amma `expo-image`-in asılı olduğu `expo-modules-core@57`, bu layihənin RN 0.83.10-u ilə **Kotlin səviyyəsində** uyğunsuz çıxdı: kitabxananın generasiya etdiyi `KPromiseWrapper.kt` React Native-in öz `Promise` interfeysini gözlədiyindən **fərqli** bir nullability imzası (`String?` əvəzinə `String`) istifadə edirdi — bu, "kodu düzəlt" səviyyəsində bir problem deyildi, kitabxananın **öz generasiya etdiyi** kodun bu RN versiyası ilə compile olunmaması idi. Nəticə: bütün `expo`/`expo-modules-core`/`expo-image` asılılıqları tam çıxarılıb, **şəkil keşləmə fikri tamamilə tərk edilib** (müvəqqəti təxirə salınmayıb — bu layihənin bu RN versiyasında **daimi** bir məhdudiyyət kimi qeydə alınıb).
+
+**Dərs:** yeni bir asılılıq əlavə etməzdən **əvvəl**, onun Kotlin/Swift-Java nisbətini, `New Architecture` dəstəyini, `expo` peer-asılılığının `optional: true` olub-olmadığını yoxlamaq və **kod yazmazdan əvvəl** bir native build sınamaq — bu layihədə `expo-image`-in uğursuzluğundan sonra **standart** bir ön-yoxlama halına gəlib (məsələn `@notifee/react-native` — saf Java, ilk cəhddə build olundu; `@maplibre/maplibre-react-native` — heç bir Kotlin/Promise problemi yaratmadı). Bu ön-yoxlama əvvəldən tətbiq edilsəydi, `expo-image` problemi qat-qat tez aşkarlanardı.
+
+### 9. Metro-nun "transform cache"-i sadəcə qismən silinmiş fayl-map-indən (haste map) fərqli bir şeydir
+
+3-cü dərsdə (`Metro`-nun haste map-inin köhnəlməsi) izah olunan problemin **daha kəskin** bir forması: bir sessiyada, `.json` lokalizasiya fayllarına və bir SVG ikon path-inə **sürətli, ardıcıl** dəyişikliklər edildikdən sonra, **tam bir `am force-stop` + yenidən açma** belə **köhnə** JS-i göstərməyə davam etdi — yeni tərcümələr görünmürdü (seçilmiş dil ingiliscə olsa belə, açar Azərbaycanca fallback-i göstərirdi), yeni ikon path-i də əvvəlki versiyasında qalırdı. Bunun **haste map**-dən fərqi budur: haste map problemi adətən "fayl tapılmır" xətası kimi **görünən** bir simptom verir, bu isə **heç bir xəta vermədən**, sadəcə **köhnə** bir bundle-ı sükutla göstərməyə davam edir — daha çətin diaqnoz qoyulur, çünki kod mənbəyi diskdə **düzgün** olduğu üçün, ilk instinkt "bəlkə mən kodu səhv yazmışam" olur. Həll — Metro prosesini **tam** dayandırıb (`Get-NetTCPConnection -LocalPort 8081` ilə PID tapıb `Stop-Process`), `npx react-native start --reset-cache` ilə **tamamilə təzə** başlatmaq.
+
+**Dərs:** əgər bir `.json`/SVG dəyişikliyi normal bir tam-relaunch-dan sonra da görünmürsə, əvvəlcə dəyişikliyin özünü (deyəsən "səhv yazmışam" deyə) şübhə altına almaq əvəzinə, Metro-nun transform keşinin köhnəlmiş ola biləcəyini yoxlayın.
+
+### 10. Tanınan bir brend işarəsini əldən "təxmin edərək" çəkmək riskli bir qənaətdir
+
+`icons.tsx`-in `WhatsAppIcon`-u **iki dəfə** əl ilə (bir söhbət bulancığı konturu + içində əl ilə çəkilmiş bir "telefon" xətti) yazılıb — ikinci cəhddə, bulancıq konturunun **dairəvi** forması ilə ortadan keçən **diaqonal** bir xətt birləşəndə, nəticə niyyət edildiyi kimi "telefon" yox, **"giriş qadağandır" (no-entry) işarəsi** kimi göründü (dairə + üzərindən keçən xətt — bu kombinasiya universal olaraq "qadağa" kimi oxunur, niyyətdən asılı olmayaraq). Düzəliş — freehand primitivləri birləşdirməkdənsə, **tanınmış, tək-path-lı** bir WhatsApp konturu (ümumi icon paketlərində geniş yayılmış bir forma) işlədilməsi oldu.
+
+**Dərs:** "cart", "parametrlər", "ox" kimi **generic** konsepsiyalar üçün əl ilə sadə SVG path-lər çəkmək tamamilə etibarlıdır (bunların "düzgün" tək bir forması yoxdur). Amma konkret, tanınan bir **brend/tətbiq** işarəsini (WhatsApp, Facebook kimi) təmsil etməli olduğunuz zaman, onu freehand primitivlərdən (xətt+dairə+s.) "təxmin edərək" qurmaq risklidir — nəticə niyyət edilənə bənzəməkdənsə, tamam **başqa** bir tanınan işarəyə (qadağa nişanı kimi) bənzəyə bilər. Bu hallarda, tanınmış, hazır bir tək-path həll daha etibarlıdır, hətta path-in özü bir qədər uzun/az "səliqəli" görünsə belə.
+
+### 11. Əl ilə override-ə **həmişə** bir "defolt-a qayıt" yolu əlavə edin
+
+Hissə 19-da (Dark Mode) ətraflı izah olunub: dark-mode açarına **bir dəfə** toxunmaq (hətta sınamaq üçün) sistemi izləməni **həmişəlik** söndürürdü, geri qaytarmağın **heç bir** yolu yox idi — bu, eyni "bu, bug-dırmı?" sualının **iki dəfə** soruşulmasına səbəb oldu, hər ikisində də kök səbəb kod deyil, unudulmuş bir köhnə override idi.
+
+**Dərs:** bir UI elementinə (açar, seçim, tənzimləmə) **avtomatik/defolt davranışı əzən** bir əl-ilə-override imkanı verəndə, override-ın özü ilə **eyni committə**, ona bir "sıfırla/defolt-a qayıt" yolu da (uzun-basma, ayrıca düymə, "Sistem" adlı üçüncü seçim — forması önəmli deyil) əlavə edin. Bunu "sonra əlavə edərik" deyə təxirə salmaq, hər override-in "bu, niyə işləmir?" sualının mənbəyinə çevrilməsinə səbəb olur.
+
 ---
 
-## Hissə 19: Lüğət
+## Hissə 24: Lüğət
 
 | Termin | Sadə izah |
 |---|---|
 | **API** | Application Programming Interface — proqramların bir-biri ilə "danışmaq" üçün istifadə etdiyi qaydalar toplusu. Burada: mobil tətbiqin backend server-i ilə danışdığı HTTP sorğu/cavab formatı. |
+| **AppState** | React Native-in tətbiqin cari vəziyyətini (`active` — ön-planda, `background` — fonda) izləmək üçün verdiyi API; "tətbiq ön-plana qayıtdı" kimi hadisələri tutmaq üçün işlədilir. |
 | **Async/await** | Gözləmə tələb edən (məsələn şəbəkə) əməliyyatları, kodu bloklamadan, sadə "addım-addım" oxunan formada yazmaq üsulu. |
 | **Axios** | JavaScript üçün populyar HTTP sorğu kitabxanası, interceptor dəstəyi ilə tanınır. |
 | **Component (komponent)** | React-də UI-ın kiçik, təkrar-istifadə oluna bilən tikinti daşı — props alıb JSX qaytaran funksiya (və ya sinif). |
@@ -1764,14 +2317,19 @@ Hissə 15-in "Basket və Checkout axını" bölməsində ətraflı izah olunub: 
 | **Interface** | TypeScript-də bir obyektin "formasını" (hansı sahələri, hansı tiplərlə olmalıdır) təsvir edən bəyanat. |
 | **JSX** | JavaScript daxilində HTML-ə bənzəyən sintaksislə UI təsviri yazmağa imkan verən genişlənmə (Babel tərəfindən adi JS-ə çevrilir). |
 | **JSI (JavaScript Interface)** | React Native-in New Architecture-ında, JS və native kod arasında **birbaşa, sinxron** əlaqə quran mexanizm (köhnə "Bridge"-i əvəz edir). |
+| **Keychain / Keystore** | iOS/Android-in öz, tətbiqin JS/native kodundan **kənar** işləyən təhlükəsizlik alt-sistemi — həssas məlumatları (bu layihədə: MMKV-nin şifrələmə açarını) qorumaq üçün istifadə olunur. |
 | **Metro** | React Native-in öz JS bundler-i (kodu telefon üçün icra oluna bilən formaya yığan alət) — veb-dəki Webpack/Vite-ə bənzəyir. |
 | **MMKV** | Telefon diskində açar-dəyər formatında, çox sürətli və **sinxron** məlumat saxlamaq üçün native kitabxana. |
 | **Native modul** | JS ilə yanaşı, platformanın öz dilində (Kotlin/Swift) yazılmış, telefonun aparat/OS imkanlarına (kamera, yaddaş və s.) çıxış verən kitabxana hissəsi. |
 | **Optimistic update** | Server cavabını **gözləmədən**, dəyişikliyi dərhal ekranda göstərmək, sonra arxa planda təsdiqləmək (xəta olsa geri almaq) UX texnikası. |
+| **Persister (TanStack Query-də)** | Query keşini yaddaşdan kənar (bu layihədə MMKV-yə) yazıb-oxuyan mexanizm — tətbiq bağlanıb-açılsa belə keşin qorunmasını təmin edir. |
 | **Prop (property)** | Bir React komponentinə **kənardan** ötürülən, komponentin özü tərəfindən dəyişdirilə bilməyən məlumat. |
 | **Provider** | Bir Context-in dəyərini komponent ağacının bir hissəsinə "yayan" komponent (məsələn `SafeAreaProvider`). |
+| **Query key (TanStack Query-də)** | Bir sorğunu keşdə **unikal tanıyan** açar (array formasında); eyni açarlı çağırışlar eyni keş sətrini paylaşır. |
 | **Race condition (yarış vəziyyəti)** | Bir neçə asinxron əməliyyatın **nəticələrinin sırası** gözlənilməz olması nəticəsində yaranan səhv (məsələn, gec başlayan, amma tez bitən sorğunun köhnə nəticəni "üstələməsi"). |
+| **Reverse geocoding** | Bir GPS koordinatını (enlik/uzunluq) oxunaqlı bir ünvana ("Nərimanov küç. 5" kimi) çevirmək əməliyyatı — bu layihədə Nominatim servisi ilə edilir. |
 | **Selector (Zustand-da)** | Bir store-dan **yalnız lazım olan** hissəni "seçib" oxumaq funksiyası, lazımsız yenidən-render-lərin qarşısını alır. |
+| **Stale/Fresh (TanStack Query-də)** | Bir keşlənmiş sorğunun "hələ etibarlı" (fresh, `staleTime` bitməyib) ya "yenidən yoxlanmalı" (stale) olduğunu bildirən vəziyyət — stale sorğular fon-da avtomatik yenilənir, köhnə dəyər isə yeni cavab gələnə qədər ekranda qalır. |
 | **State** | Bir komponentin öz daxili, dəyişə bilən (və dəyişəndə komponentin yenidən render olunmasına səbəb olan) yaddaşı. |
 | **Store (Zustand-da)** | Tətbiqin bir hissəsinin qlobal, bir çox komponent arasında paylaşılan state-ini saxlayan mərkəzi obyekt. |
 | **Type guard** | Bir `if` şərti vasitəsilə, TypeScript-ə "bu blokun içində, bu dəyərin tipi daha dardır" bildirən naxış. |
