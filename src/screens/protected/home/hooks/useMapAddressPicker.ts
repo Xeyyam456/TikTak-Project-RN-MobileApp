@@ -14,7 +14,7 @@ const LOCATE_ZOOM = 15;
 /**
  * Map refs plus the two async actions behind them: flying the camera to the
  * device's GPS position, and reverse-geocoding whatever the fixed centre pin
- * is currently over. Colocated with the component — nothing else uses it.
+ * is currently over.
  */
 export default function useMapAddressPicker(
   onSelect: (address: string) => void,

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Modal, Text, TouchableOpacity, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Button from '@shared/components/Button';
-import MapAddressPicker from '@shared/components/MapAddressPicker';
+import MapAddressPicker from '../MapAddressPicker';
 import TextField from '@shared/components/TextField';
 import { MapPinIcon } from '@shared/components/icons';
 import { updateProfile } from '@shared/services/profile.service';
