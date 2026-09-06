@@ -1,4 +1,4 @@
-import i18n from '@shared/i18n/i18n';
+import i18n from '@shared/i18n';
 
 export function validateName(value: string): string | undefined {
   if (!value.trim()) return i18n.t('validation.nameRequired');

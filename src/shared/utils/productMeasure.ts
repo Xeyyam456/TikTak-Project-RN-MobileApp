@@ -1,4 +1,4 @@
-import i18n from '@shared/i18n/i18n';
+import i18n from '@shared/i18n';
 import type { ProductMeasure } from '@typings/api';
 
 const PRODUCT_MEASURE_KEYS: Record<ProductMeasure, string> = {
