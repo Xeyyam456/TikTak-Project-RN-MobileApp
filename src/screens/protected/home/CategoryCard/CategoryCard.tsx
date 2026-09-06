@@ -11,13 +11,18 @@ function CategoryCard({ category, onPress }: CategoryCardProps) {
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.7}>
       {category.img_url ? (
-        <Image source={{ uri: category.img_url }} style={styles.cardImage} />
+        <Image source={{ uri: category.img_url }} style={styles.image} />
       ) : (
-        <View style={[styles.cardImage, styles.cardImagePlaceholder]} />
+        <View style={[styles.image, styles.imagePlaceholder]} />
       )}
-      <Text style={styles.cardLabel} numberOfLines={1}>
-        {category.name}
-      </Text>
+      {/* Fixed-height box rather than a fixed-height Text: it centres a
+          one-line and a two-line name alike, where textAlignVertical would
+          only do so on Android. */}
+      <View style={styles.labelBox}>
+        <Text style={styles.label} numberOfLines={2}>
+          {category.name}
+        </Text>
+      </View>
     </TouchableOpacity>
   );
 }
