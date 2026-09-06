@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
-import { FONTS } from '../../../theme/fonts';
-import type { ThemeColors } from '../../../theme/colors';
+import { FONTS } from '../../../../theme/fonts';
+import type { ThemeColors } from '../../../../theme/colors';
 
 // Row, empty-state and footer styles live with their own components in
 // BasketRow/, BasketEmptyState/ and BasketFooter/ — this file only covers
