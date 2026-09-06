@@ -7,12 +7,12 @@ import { initReactI18next } from 'react-i18next';
 // launch even though nothing is actually broken.
 import 'intl-pluralrules';
 import { getLanguage } from '@shared/api/settingsStorage';
-import azScreens from './locales/az/screens.json';
-import azShared from './locales/az/shared.json';
-import enScreens from './locales/en/screens.json';
-import enShared from './locales/en/shared.json';
-import ruScreens from './locales/ru/screens.json';
-import ruShared from './locales/ru/shared.json';
+import azScreens from '../locales/az/screens.json';
+import azShared from '../locales/az/shared.json';
+import enScreens from '../locales/en/screens.json';
+import enShared from '../locales/en/shared.json';
+import ruScreens from '../locales/ru/screens.json';
+import ruShared from '../locales/ru/shared.json';
 
 // Deep merge, not a shallow {...a, ...b} spread — shared.json and
 // screens.json can legitimately both contribute keys under the same
