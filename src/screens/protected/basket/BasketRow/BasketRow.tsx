@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
-import { TrashIcon } from '@shared/components/icons';
+import { TrashIcon } from '@shared/icons';
 import { useTheme } from '../../../../theme/ThemeContext';
 import { createStyles } from './BasketRow.styles';
 import type { BasketRowProps } from './BasketRow.types';

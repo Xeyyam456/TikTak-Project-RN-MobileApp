@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import Button from '@shared/components/Button';
 import MapAddressPicker from '../MapAddressPicker';
 import TextField from '@shared/components/TextField';
-import { MapPinIcon } from '@shared/components/icons';
+import { MapPinIcon } from '@shared/icons';
 import { updateProfile } from '@shared/services/profile.service';
 import { getApiErrorMessage } from '@shared/utils/apiError';
 import { showSuccessToast } from '@shared/utils/toast';

@@ -3,7 +3,7 @@ import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import BottomSheet from '@shared/components/BottomSheet';
 import Button from '@shared/components/Button';
-import { HeartIcon } from '@shared/components/icons';
+import { HeartIcon } from '@shared/icons';
 import { getProduct, toggleFavorite } from '@shared/services/product.service';
 import { showSuccessToast } from '@shared/utils/toast';
 import { useTheme } from '../../../../theme/ThemeContext';
