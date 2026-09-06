@@ -6,7 +6,7 @@ import { useNavigation, useRoute, type RouteProp } from '@react-navigation/nativ
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Button from '@shared/components/Button';
 import ScreenHeader from '@shared/components/ScreenHeader';
-import { CheckIcon } from '@shared/components/icons';
+import { CheckIcon } from '@shared/icons';
 import { notifyOrderPlaced } from '@shared/utils/notifications';
 import type { RootStackParamList } from '@typings/navigation';
 import { useTheme } from '../../../../theme/ThemeContext';

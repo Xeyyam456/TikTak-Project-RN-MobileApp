@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import ScreenHeader from '@shared/components/ScreenHeader';
-import { FacebookIcon, MailIcon, WhatsAppIcon } from '@shared/components/icons';
+import { FacebookIcon, MailIcon, WhatsAppIcon } from '@shared/icons';
 import { SUPPORT_EMAIL, SUPPORT_FACEBOOK_URL, SUPPORT_WHATSAPP_NUMBER } from '@shared/config/env';
 import { showErrorToast } from '@shared/utils/toast';
 import { useTheme } from '../../../../theme/ThemeContext';

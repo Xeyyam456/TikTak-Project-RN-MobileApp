@@ -3,7 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { HomeIcon, SearchIcon, UserIcon } from '@shared/components/icons';
+import { HomeIcon, SearchIcon, UserIcon } from '@shared/icons';
 import { FONTS } from '../theme/fonts';
 import { useTheme } from '../theme/ThemeContext';
 import type { ThemeColors } from '../theme/colors';

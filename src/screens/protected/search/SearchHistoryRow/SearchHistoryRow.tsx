@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Text, TouchableOpacity } from 'react-native';
-import { ClockIcon, CloseIcon } from '@shared/components/icons';
+import { ClockIcon, CloseIcon } from '@shared/icons';
 import { useTheme } from '../../../../theme/ThemeContext';
 import { createStyles } from './SearchHistoryRow.styles';
 import type { SearchHistoryRowProps } from './SearchHistoryRow.types';

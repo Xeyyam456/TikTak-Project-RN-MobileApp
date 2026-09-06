@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ConfirmModal from '@shared/components/ConfirmModal';
-import { TrashIcon } from '@shared/components/icons';
+import { TrashIcon } from '@shared/icons';
 import { useBasketStore } from '@shared/store/basket.store';
 import { useTheme } from '../../../../theme/ThemeContext';
 import type { ClearBasketModalProps } from './ClearBasketModal.types';
