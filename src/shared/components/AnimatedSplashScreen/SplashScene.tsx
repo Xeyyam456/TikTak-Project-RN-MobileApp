@@ -1,7 +1,12 @@
 import Svg from 'react-native-svg';
 import DrawnPath from './DrawnPath';
 import FallingFruit from './FallingFruit';
-import { SCENE_HEIGHT, SCENE_WIDTH } from './AnimatedSplashScreen.styles';
+import {
+  SCENE_HEIGHT,
+  SCENE_WIDTH,
+  VIEWBOX_HEIGHT,
+  VIEWBOX_WIDTH,
+} from './AnimatedSplashScreen.styles';
 import {
   BODY_D,
   BODY_DASH,
@@ -24,7 +29,7 @@ function SplashScene({ play }: { play: boolean }) {
     <Svg
       width={SCENE_WIDTH}
       height={SCENE_HEIGHT}
-      viewBox={`0 0 ${SCENE_WIDTH} ${SCENE_HEIGHT}`}
+      viewBox={`0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`}
     >
       <DrawnPath
         d={HANDLE_D}
