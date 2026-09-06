@@ -32,10 +32,16 @@ export const createStyles = (colors: ThemeColors) =>
       borderRadius: 10,
       overflow: 'hidden',
     },
+    // The fixed height lives on the box, not the Text, so a one-line and a
+    // two-line title are both centred in the same space and the price below
+    // sits at the same spot on every card.
+    cardTitleBox: {
+      height: 34,
+      justifyContent: 'center',
+    },
     cardTitle: {
       fontSize: 13,
       lineHeight: 17,
-      height: 34,
       color: colors.textPrimary,
       fontFamily: FONTS.medium,
       textAlign: 'center',

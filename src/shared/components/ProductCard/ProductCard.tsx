@@ -32,9 +32,11 @@ function ProductCard({
           resizeMode="cover"
         />
       </View>
-      <Text style={styles.cardTitle} numberOfLines={2}>
-        {product.title}
-      </Text>
+      <View style={styles.cardTitleBox}>
+        <Text style={styles.cardTitle} numberOfLines={2}>
+          {product.title}
+        </Text>
+      </View>
 
       {quantity > 0 ? (
         <>
