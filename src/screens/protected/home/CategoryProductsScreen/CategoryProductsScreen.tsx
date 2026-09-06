@@ -32,8 +32,8 @@ import EmptyCategoryState from '../EmptyCategoryState';
 import ProductDetailSheet from '../ProductDetailSheet';
 import { useTheme } from '../../../../theme/ThemeContext';
 import { createStyles } from './CategoryProductsScreen.styles';
-import { useCategoryChipsScroll } from './useCategoryChipsScroll';
-import { useCategoryProductsData } from './useCategoryProductsData';
+import { useCategoryChipsScroll } from '../hooks/useCategoryChipsScroll';
+import { useCategoryProductsData } from '../hooks/useCategoryProductsData';
 
 const SKELETON_COUNT = 6;
 

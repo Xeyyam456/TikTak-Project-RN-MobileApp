@@ -15,7 +15,7 @@ import CampaignCard from '../CampaignCard';
 import CategoryCard from '../CategoryCard';
 import { useTheme } from '../../../../theme/ThemeContext';
 import { COLUMNS, createStyles } from './HomeScreen.styles';
-import { useHomeData } from './useHomeData';
+import { useHomeData } from '../hooks/useHomeData';
 
 const SKELETON_COUNT = 6;
 
