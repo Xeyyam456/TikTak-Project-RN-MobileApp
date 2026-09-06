@@ -13,11 +13,11 @@ import {
 } from '@react-navigation/native';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import Toast from 'react-native-toast-message';
-import BootSplash from 'react-native-bootsplash';
 import * as Sentry from '@sentry/react-native';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { navigationRef } from './src/navigation/navigationRef';
 import RootNavigator from './src/navigation/RootNavigator';
+import AnimatedSplashScreen from './src/shared/components/AnimatedSplashScreen';
 import ErrorBoundary from './src/shared/components/ErrorBoundary';
 import { toastConfig } from './src/shared/utils/toast';
 import { SENTRY_DSN } from './src/shared/config/env';
@@ -43,20 +43,23 @@ Sentry.init({
 const CACHE_BUSTER = 'v1';
 
 function App() {
-  const [ready, setReady] = useState(false);
+  const [tokenReady, setTokenReady] = useState(false);
+  const [splashDone, setSplashDone] = useState(false);
 
   useEffect(() => {
-    initTokenStorage().then(() => {
-      setReady(true);
-      BootSplash.hide({ fade: true });
-    });
+    initTokenStorage().then(() => setTokenReady(true));
   }, []);
 
-  // The native splash view stays up (BootSplash.hide hasn't been called yet)
-  // for the brief moment it takes to read the MMKV encryption key out of the
-  // Keystore, so nothing needs to render here.
-  if (!ready) {
-    return null;
+  // AnimatedSplashScreen owns the native-splash hand-off itself (via
+  // react-native-bootsplash's useHideAnimation) and only starts its ~2.5s
+  // entrance/hold/exit animation once `tokenReady` flips true, so a slow
+  // Keystore read extends the wait instead of racing the animation. Nothing
+  // below (RootNavigator's `getAccessToken()` call in particular) may mount
+  // before tokenReady, so splashDone can't flip true any earlier either.
+  if (!splashDone) {
+    return (
+      <AnimatedSplashScreen ready={tokenReady} onFinish={() => setSplashDone(true)} />
+    );
   }
 
   return (
