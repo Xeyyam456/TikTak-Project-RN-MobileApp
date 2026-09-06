@@ -20,8 +20,8 @@ export const createStyles = (colors: ThemeColors) =>
       width: '100%',
       height: '100%',
     },
-    // Translucent-black scrims below are intentionally not theme-adaptive —
-    // same reasoning as shadowColor, they read the same in both themes.
+    // Intentionally not theme-adaptive — same reasoning as shadowColor, a
+    // translucent black scrim reads the same in both themes.
     avatarLoading: {
       ...StyleSheet.absoluteFillObject,
       alignItems: 'center',
@@ -33,15 +33,5 @@ export const createStyles = (colors: ThemeColors) =>
       color: colors.textPrimary,
       fontFamily: FONTS.bold,
       marginBottom: 4,
-    },
-    photoViewerOverlay: {
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: 'rgba(0, 0, 0, 0.9)',
-    },
-    photoViewerImage: {
-      width: '100%',
-      height: '80%',
     },
   });

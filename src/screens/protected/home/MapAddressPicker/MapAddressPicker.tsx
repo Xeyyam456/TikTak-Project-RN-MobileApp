@@ -1,22 +1,13 @@
-import { useMemo, useRef, useState } from 'react';
+import { useMemo } from 'react';
 import { ActivityIndicator, Modal, Text, TouchableOpacity, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import {
-  Camera,
-  LocationManager,
-  Map,
-  UserLocation,
-  type CameraRef,
-  type MapRef,
-} from '@maplibre/maplibre-react-native';
-import Button from '../Button';
-import ScreenHeader from '../ScreenHeader';
-import { LocateIcon, MapPinIcon } from '../icons';
-import { reverseGeocode } from '@shared/services/geocoding.service';
-import { getApiErrorMessage } from '@shared/utils/apiError';
-import { showErrorToast } from '@shared/utils/toast';
-import { useTheme } from '../../../theme/ThemeContext';
+import { Camera, Map, UserLocation } from '@maplibre/maplibre-react-native';
+import Button from '@shared/components/Button';
+import ScreenHeader from '@shared/components/ScreenHeader';
+import { LocateIcon, MapPinIcon } from '@shared/components/icons';
+import useMapAddressPicker from '../hooks/useMapAddressPicker';
+import { useTheme } from '../../../../theme/ThemeContext';
 import { createStyles } from './MapAddressPicker.styles';
 import type { MapAddressPickerProps } from './MapAddressPicker.types';
 
@@ -24,7 +15,6 @@ import type { MapAddressPickerProps } from './MapAddressPicker.types';
 // shown until (and unless) the user taps "locate me".
 const DEFAULT_CENTER: [number, number] = [49.8671, 40.4093];
 const DEFAULT_ZOOM = 11;
-const LOCATE_ZOOM = 15;
 // OpenFreeMap — free vector tiles, no API key/billing account required
 // (see the Google Maps discussion this replaced). Self-hostable if their
 // public instance ever becomes a reliability concern.
@@ -35,50 +25,8 @@ function MapAddressPicker({ visible, onClose, onSelect }: MapAddressPickerProps)
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const { t } = useTranslation();
-  const mapRef = useRef<MapRef>(null);
-  const cameraRef = useRef<CameraRef>(null);
-  const [resolving, setResolving] = useState(false);
-  const [locating, setLocating] = useState(false);
-
-  async function handleLocateMe() {
-    setLocating(true);
-    try {
-      const granted = await LocationManager.requestPermissions();
-      if (!granted) {
-        showErrorToast(t('mapAddressPicker.locationPermissionDenied'));
-        return;
-      }
-      const position = await LocationManager.getCurrentPosition();
-      if (!position) {
-        showErrorToast(t('mapAddressPicker.locationUnavailable'));
-        return;
-      }
-      cameraRef.current?.flyTo({
-        center: [position.coords.longitude, position.coords.latitude],
-        zoom: LOCATE_ZOOM,
-        duration: 800,
-      });
-    } catch (error) {
-      showErrorToast(getApiErrorMessage(error));
-    } finally {
-      setLocating(false);
-    }
-  }
-
-  async function handleConfirm() {
-    if (!mapRef.current) return;
-    setResolving(true);
-    try {
-      const [lon, lat] = await mapRef.current.getCenter();
-      const address = await reverseGeocode(lat, lon);
-      onSelect(address);
-      onClose();
-    } catch (error) {
-      showErrorToast(getApiErrorMessage(error));
-    } finally {
-      setResolving(false);
-    }
-  }
+  const { mapRef, cameraRef, resolving, locating, locateMe, confirmCenter } =
+    useMapAddressPicker(onSelect, onClose);
 
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
@@ -95,7 +43,7 @@ function MapAddressPicker({ visible, onClose, onSelect }: MapAddressPickerProps)
           </View>
           <TouchableOpacity
             style={styles.locateButton}
-            onPress={handleLocateMe}
+            onPress={locateMe}
             disabled={locating}
           >
             {locating ? (
@@ -110,7 +58,7 @@ function MapAddressPicker({ visible, onClose, onSelect }: MapAddressPickerProps)
           <Text style={styles.hint}>{t('mapAddressPicker.hint')}</Text>
           <Button
             title={t('mapAddressPicker.confirm')}
-            onPress={handleConfirm}
+            onPress={confirmCenter}
             loading={resolving}
           />
         </View>
