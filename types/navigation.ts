@@ -8,6 +8,7 @@ export type RootStackParamList = {
   Basket: undefined;
   Checkout: undefined;
   OrderSuccess: { orderNumber: string };
+  Campaigns: undefined;
 };
 
 export type ProtectedTabParamList = {
