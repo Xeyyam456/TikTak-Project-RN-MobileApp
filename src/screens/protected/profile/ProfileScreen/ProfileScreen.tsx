@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
 import ConfirmModal from '@shared/components/ConfirmModal';
 import ErrorState from '@shared/components/ErrorState';
-import { LogoutIcon } from '@shared/components/icons';
+import { LogoutIcon } from '@shared/icons';
 import useReload from '@shared/hooks/useReload';
 import { getProfile } from '@shared/services/profile.service';
 import { queryKeys } from '@shared/queries/queryKeys';

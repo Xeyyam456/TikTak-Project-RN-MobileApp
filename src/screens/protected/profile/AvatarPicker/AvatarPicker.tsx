@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { ActivityIndicator, Image, Text, TouchableOpacity, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import BottomSheet from '@shared/components/BottomSheet';
-import { EyeIcon, ImageIcon, UserIcon } from '@shared/components/icons';
+import { EyeIcon, ImageIcon, UserIcon } from '@shared/icons';
 import MenuRow from '../MenuRow';
 import PhotoViewerModal from '../PhotoViewerModal';
 import useAvatarUpload from '../hooks/useAvatarUpload';

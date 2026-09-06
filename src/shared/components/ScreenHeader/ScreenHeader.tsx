@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { ArrowLeftIcon } from '@shared/components/icons';
+import { ArrowLeftIcon } from '@shared/icons';
 import { useTheme } from '../../../theme/ThemeContext';
 import { createStyles } from './ScreenHeader.styles';
 import type { ScreenHeaderProps } from './ScreenHeader.types';

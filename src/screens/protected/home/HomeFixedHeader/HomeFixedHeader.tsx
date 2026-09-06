@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { EditIcon } from '@shared/components/icons';
+import { EditIcon } from '@shared/icons';
 import CampaignCard from '../CampaignCard';
 import { useTheme } from '../../../../theme/ThemeContext';
 import { createStyles } from './HomeFixedHeader.styles';
