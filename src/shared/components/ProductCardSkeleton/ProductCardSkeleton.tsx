@@ -14,7 +14,7 @@ function ProductCardSkeleton() {
     <View style={styles.card}>
       <Skeleton style={styles.image} />
       <Skeleton height={17} borderRadius={4} />
-      <Skeleton width="60%" height={17} borderRadius={4} style={{ alignSelf: 'center' }} />
+      <Skeleton width="60%" height={17} borderRadius={4} style={styles.skeletonPrice} />
       <Skeleton height={34} borderRadius={17} />
     </View>
   );
