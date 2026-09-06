@@ -1,7 +1,10 @@
 {
   "extends": "@react-native/typescript-config",
   "compilerOptions": {
-    "types": ["jest"],
+    // Overrides the base config, which hardcodes ["jest"]. This project
+    // deliberately has no test suite and @types/jest is not installed, so
+    // inheriting that value fails the build with TS2688.
+    "types": [],
     "baseUrl": ".",
     "paths": {
       "@assets/*": ["assets/*"],

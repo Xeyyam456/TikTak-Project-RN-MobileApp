@@ -50,7 +50,7 @@ function CampaignsScreen() {
       ) : loading ? (
         <View style={styles.listContent}>
           {Array.from({ length: SKELETON_COUNT }).map((_, index) => (
-            <Skeleton key={index} height={CARD_HEIGHT} borderRadius={10} style={{ marginBottom: 16 }} />
+            <Skeleton key={index} height={CARD_HEIGHT} borderRadius={10} style={styles.skeletonCard} />
           ))}
         </View>
       ) : campaigns.length === 0 ? (

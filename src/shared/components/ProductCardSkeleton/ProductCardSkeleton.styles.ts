@@ -19,4 +19,7 @@ export const createStyles = (colors: ThemeColors) =>
       alignSelf: 'center',
       borderRadius: 10,
     },
+    skeletonPrice: {
+      alignSelf: 'center',
+    },
   });
