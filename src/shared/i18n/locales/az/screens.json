@@ -99,6 +99,10 @@
     "addressLabel": "Çatdırılma ünvanı:",
     "noAddress": "Ünvan seçilməyib"
   },
+  "campaigns": {
+    "title": "Kampaniyalar",
+    "emptyText": "Hazırda aktiv kampaniya yoxdur"
+  },
   "productDetail": {
     "addedToFavorites": "{{title}} favoritlərə əlavə edildi",
     "removedFromFavorites": "{{title}} favoritlərdən silindi",

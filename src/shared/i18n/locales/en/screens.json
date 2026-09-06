@@ -99,6 +99,10 @@
     "addressLabel": "Delivery address:",
     "noAddress": "No address selected"
   },
+  "campaigns": {
+    "title": "Campaigns",
+    "emptyText": "No active campaigns right now"
+  },
   "productDetail": {
     "addedToFavorites": "{{title}} added to favorites",
     "removedFromFavorites": "{{title}} removed from favorites",

@@ -99,6 +99,10 @@
     "addressLabel": "Адрес доставки:",
     "noAddress": "Адрес не выбран"
   },
+  "campaigns": {
+    "title": "Акции",
+    "emptyText": "Сейчас нет активных акций"
+  },
   "productDetail": {
     "addedToFavorites": "{{title}} добавлен в избранное",
     "removedFromFavorites": "{{title}} удалён из избранного",
