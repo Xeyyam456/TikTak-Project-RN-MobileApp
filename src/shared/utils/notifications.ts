@@ -3,7 +3,7 @@ import notifee, {
   TriggerType,
   type TimestampTrigger,
 } from '@notifee/react-native';
-import i18n from '../i18n/i18n';
+import i18n from '@shared/i18n';
 
 const ORDERS_CHANNEL_ID = 'orders';
 // No real backend push exists yet (see CLAUDE.md) — this simulates the

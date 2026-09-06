@@ -1,4 +1,4 @@
-import i18n from '@shared/i18n/i18n';
+import i18n from '@shared/i18n';
 import { showSuccessToast } from '@shared/utils/toast';
 import type { Basket, Product } from '@typings/api';
 import { findItem } from './basket.helpers';
