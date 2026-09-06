@@ -9,8 +9,8 @@ import AuthSwitchLink from '@shared/components/AuthSwitchLink';
 import Button from '@shared/components/Button';
 import TextField from '@shared/components/TextField';
 import type { RootStackParamList } from '@typings/navigation';
-import useRegisterForm from '../hooks/useRegisterForm';
-import { useTheme } from '../../../theme/ThemeContext';
+import useRegisterForm from '../../hooks/useRegisterForm';
+import { useTheme } from '../../../../theme/ThemeContext';
 import { createStyles } from './RegisterScreen.styles';
 
 function RegisterScreen() {
