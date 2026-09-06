@@ -2,128 +2,28 @@
  * @format
  */
 
-import { useEffect, useState } from 'react';
-import { StatusBar, StyleSheet } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import {
-  DarkTheme as NavigationDarkTheme,
-  DefaultTheme as NavigationDefaultTheme,
-  NavigationContainer,
-} from '@react-navigation/native';
-import { KeyboardProvider } from 'react-native-keyboard-controller';
-import Toast from 'react-native-toast-message';
-import * as Sentry from '@sentry/react-native';
-import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
-import { navigationRef } from './src/navigation/navigationRef';
-import RootNavigator from './src/navigation/RootNavigator';
 import AnimatedSplashScreen from './src/shared/components/AnimatedSplashScreen';
-import ErrorBoundary from './src/shared/components/ErrorBoundary';
-import { toastConfig } from './src/shared/utils/toast';
-import { SENTRY_DSN } from './src/shared/config/env';
-import { initTokenStorage } from './src/shared/api/tokenStorage';
-import { queryClient } from './src/shared/api/queryClient';
-import { queryPersister } from './src/shared/api/queryStorage';
-import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
-// Side-effect import — runs i18next's synchronous init (see i18n.ts) before
-// anything below renders. Must load before RootNavigator/AppShell, so it's
-// imported here rather than lazily from whichever screen happens to use
-// useTranslation() first.
+import AppShell from './src/app/AppShell';
+import Providers from './src/app/Providers';
+import useAppBootstrap from './src/app/hooks/useAppBootstrap';
+// Side-effect imports, both of which must run before anything renders:
+// sentry.ts calls Sentry.init(), i18n.ts runs i18next's synchronous init so
+// the first render already has the right language.
+import './src/shared/config/sentry';
 import './src/shared/i18n/i18n';
 
-Sentry.init({
-  dsn: SENTRY_DSN,
-  enabled: !__DEV__,
-  tracesSampleRate: 0.2,
-});
-
-// Bump this if a cached query's shape ever changes in a way old persisted
-// data wouldn't satisfy (e.g. a field rename) — mismatched persister.buster
-// makes restoreClient() discard the old cache instead of rehydrating it.
-const CACHE_BUSTER = 'v1';
-
 function App() {
-  const [tokenReady, setTokenReady] = useState(false);
-  const [splashDone, setSplashDone] = useState(false);
+  const { tokenReady, splashDone, finishSplash } = useAppBootstrap();
 
-  useEffect(() => {
-    initTokenStorage().then(() => setTokenReady(true));
-  }, []);
-
-  // AnimatedSplashScreen owns the native-splash hand-off itself (via
-  // react-native-bootsplash's useHideAnimation) and only starts its ~2.5s
-  // entrance/hold/exit animation once `tokenReady` flips true, so a slow
-  // Keystore read extends the wait instead of racing the animation. Nothing
-  // below (RootNavigator's `getAccessToken()` call in particular) may mount
-  // before tokenReady, so splashDone can't flip true any earlier either.
   if (!splashDone) {
-    return (
-      <AnimatedSplashScreen ready={tokenReady} onFinish={() => setSplashDone(true)} />
-    );
+    return <AnimatedSplashScreen ready={tokenReady} onFinish={finishSplash} />;
   }
 
   return (
-    // ThemeProvider wraps ErrorBoundary (not the other way around) on
-    // purpose — ErrorBoundary's own fallback UI renders a <Button>, which
-    // calls useTheme() internally, so the boundary's fallback needs a
-    // theme context available even when everything below it has crashed.
-    // ThemeProvider itself is simple/stable enough not to need catching.
-    <ThemeProvider>
-      <ErrorBoundary>
-        <PersistQueryClientProvider
-          client={queryClient}
-          persistOptions={{ persister: queryPersister, maxAge: 24 * 60 * 60 * 1000, buster: CACHE_BUSTER }}
-        >
-          <GestureHandlerRootView style={styles.root}>
-            <KeyboardProvider>
-              <SafeAreaProvider>
-                <AppShell />
-              </SafeAreaProvider>
-            </KeyboardProvider>
-          </GestureHandlerRootView>
-        </PersistQueryClientProvider>
-      </ErrorBoundary>
-    </ThemeProvider>
-  );
-}
-
-// Split out from App() so it can call useTheme() — that hook needs to run
-// under <ThemeProvider>, which wraps App()'s own return value.
-function AppShell() {
-  const { isDark, colors } = useTheme();
-
-  return (
-    <>
-      <StatusBar
-        translucent
-        backgroundColor="transparent"
-        barStyle={isDark ? 'light-content' : 'dark-content'}
-      />
-      <NavigationContainer
-        ref={navigationRef}
-        theme={{
-          ...(isDark ? NavigationDarkTheme : NavigationDefaultTheme),
-          colors: {
-            ...(isDark ? NavigationDarkTheme.colors : NavigationDefaultTheme.colors),
-            background: colors.background,
-            card: colors.surface,
-            border: colors.border,
-            text: colors.textPrimary,
-            primary: colors.primary,
-          },
-        }}
-      >
-        <RootNavigator />
-      </NavigationContainer>
-      <Toast config={toastConfig} />
-    </>
+    <Providers>
+      <AppShell />
+    </Providers>
   );
 }
 
 export default App;
-
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-  },
-});
