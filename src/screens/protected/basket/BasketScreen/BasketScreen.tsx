@@ -15,11 +15,11 @@ import ErrorState from '@shared/components/ErrorState';
 import ScreenHeader from '@shared/components/ScreenHeader';
 import { useBasketStore } from '@shared/store/basket.store';
 import type { RootStackParamList } from '@typings/navigation';
-import BasketEmptyState from './BasketEmptyState';
-import BasketFooter from './BasketFooter';
-import BasketRow from './BasketRow';
-import ClearBasketModal from './ClearBasketModal';
-import { useTheme } from '../../../theme/ThemeContext';
+import BasketEmptyState from '../BasketEmptyState';
+import BasketFooter from '../BasketFooter';
+import BasketRow from '../BasketRow';
+import ClearBasketModal from '../ClearBasketModal';
+import { useTheme } from '../../../../theme/ThemeContext';
 import { createStyles } from './BasketScreen.styles';
 
 function BasketScreen() {
