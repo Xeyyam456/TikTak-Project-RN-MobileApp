@@ -21,7 +21,7 @@ import type { RootStackParamList } from '@typings/navigation';
 import CampaignDetailSheet from '../CampaignDetailSheet';
 import { useTheme } from '../../../../theme/ThemeContext';
 import { CARD_HEIGHT, createStyles } from './CampaignsScreen.styles';
-import { useCampaignsData } from './useCampaignsData';
+import { useCampaignsData } from '../hooks/useCampaignsData';
 
 const FALLBACK_CAMPAIGN_IMAGE =
   'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLvSMU5gdda6lqS8a-kjktyTUE6rLzlVr6LA&s';
