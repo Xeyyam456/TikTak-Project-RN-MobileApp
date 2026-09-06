@@ -1,5 +1,6 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from 'axios';
 import { BASE_URL } from '@shared/config/env';
+import i18n from '@shared/i18n/i18n';
 import { showErrorToast } from '@shared/utils/toast';
 import type { ApiEnvelope, AuthTokens } from '@typings/api';
 import { resetToWelcome } from '../../navigation/navigationRef';
@@ -89,7 +90,7 @@ httpClient.interceptors.response.use(
 
       await clearTokens();
       queryClient.clear();
-      showErrorToast('Sessiyanızın müddəti bitdi, yenidən daxil olun');
+      showErrorToast(i18n.t('apiError.sessionExpired'));
       resetToWelcome();
     }
 
