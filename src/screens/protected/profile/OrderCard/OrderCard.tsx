@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { EyeIcon } from '@shared/components/icons';
+import { EyeIcon } from '@shared/icons';
 import { formatOrderDate, getOrderStatusMeta } from '@shared/utils/order';
 import { useTheme } from '../../../../theme/ThemeContext';
 import { createStyles } from './OrderCard.styles';

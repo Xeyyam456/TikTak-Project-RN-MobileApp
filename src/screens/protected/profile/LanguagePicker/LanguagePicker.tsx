@@ -7,7 +7,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { ChevronRightIcon } from '@shared/components/icons';
+import { ChevronRightIcon } from '@shared/icons';
 import { getLanguage, setLanguage, type Language } from '@shared/api/settingsStorage';
 import { useTheme } from '../../../../theme/ThemeContext';
 import { createStyles } from './LanguagePicker.styles';

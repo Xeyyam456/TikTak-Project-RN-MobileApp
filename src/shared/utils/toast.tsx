@@ -3,7 +3,7 @@ import Toast, { BaseToast, ErrorToast, ToastConfig } from 'react-native-toast-me
 import { FONTS } from '../../theme/fonts';
 import type { ThemeColors } from '../../theme/colors';
 import { useTheme } from '../../theme/ThemeContext';
-import { CheckIcon, AlertIcon } from '../components/icons';
+import { CheckIcon, AlertIcon } from '@shared/icons';
 
 // Rendered by react-native-toast-message as `config[type](toastProps)`
 // during <Toast config={toastConfig} />'s own render pass (that component

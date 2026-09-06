@@ -9,7 +9,7 @@ import {
   HelpIcon,
   LogoutIcon,
   SettingsIcon,
-} from '@shared/components/icons';
+} from '@shared/icons';
 import type { ProfileStackParamList } from '@typings/navigation';
 import MenuRow from '../MenuRow';
 import { styles } from './ProfileMenu.styles';

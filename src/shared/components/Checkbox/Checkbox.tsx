@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useTheme } from '../../../theme/ThemeContext';
-import { CheckIcon } from '../icons';
+import { CheckIcon } from '@shared/icons';
 import { createStyles } from './Checkbox.styles';
 import type { CheckboxProps } from './Checkbox.types';
 

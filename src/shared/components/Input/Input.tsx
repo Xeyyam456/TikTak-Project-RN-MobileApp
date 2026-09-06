@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Pressable, TextInput, TextInputProps, View } from 'react-native';
 import { useTheme } from '../../../theme/ThemeContext';
-import { EyeIcon, EyeOffIcon } from '../icons';
+import { EyeIcon, EyeOffIcon } from '@shared/icons';
 import { createStyles } from './Input.styles';
 
 const MASK_CHAR = '•';

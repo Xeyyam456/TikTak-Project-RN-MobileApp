@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import ConfirmModal from '@shared/components/ConfirmModal';
 import ScreenHeader from '@shared/components/ScreenHeader';
 import ThemeSwitch from '@shared/components/ThemeSwitch';
-import { TrashIcon } from '@shared/components/icons';
+import { TrashIcon } from '@shared/icons';
 import { APP_VERSION } from '@shared/config/appInfo';
 import { showSuccessToast } from '@shared/utils/toast';
 import LanguagePicker from '../LanguagePicker';

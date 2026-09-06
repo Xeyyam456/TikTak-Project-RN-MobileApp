@@ -3,7 +3,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { CartIcon } from '@shared/components/icons';
+import { CartIcon } from '@shared/icons';
 import { useBasketStore } from '@shared/store/basket.store';
 import { useTheme } from '../../../theme/ThemeContext';
 import type { RootStackParamList } from '@typings/navigation';

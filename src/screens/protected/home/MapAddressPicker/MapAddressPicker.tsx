@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Camera, Map, UserLocation } from '@maplibre/maplibre-react-native';
 import Button from '@shared/components/Button';
 import ScreenHeader from '@shared/components/ScreenHeader';
-import { LocateIcon, MapPinIcon } from '@shared/components/icons';
+import { LocateIcon, MapPinIcon } from '@shared/icons';
 import useMapAddressPicker from '../hooks/useMapAddressPicker';
 import { useTheme } from '../../../../theme/ThemeContext';
 import { createStyles } from './MapAddressPicker.styles';

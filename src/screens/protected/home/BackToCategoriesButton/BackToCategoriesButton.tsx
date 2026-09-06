@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Text, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { GridIcon } from '@shared/components/icons';
+import { GridIcon } from '@shared/icons';
 import { useTheme } from '../../../../theme/ThemeContext';
 import { createStyles } from './BackToCategoriesButton.styles';
 
