@@ -6,6 +6,7 @@ import BottomTabNavigator from './BottomTabNavigator';
 import BasketScreen from '../screens/protected/basket';
 import CheckoutScreen from '../screens/protected/checkout/CheckoutScreen';
 import OrderSuccessScreen from '../screens/protected/checkout/OrderSuccessScreen';
+import CampaignsScreen from '../screens/protected/campaigns/CampaignsScreen';
 import { RootStackParamList } from '@typings/navigation';
 import { getAccessToken } from '@shared/api/tokenStorage';
 
@@ -26,6 +27,7 @@ function RootNavigator() {
       <Stack.Screen name="Basket" component={BasketScreen} />
       <Stack.Screen name="Checkout" component={CheckoutScreen} />
       <Stack.Screen name="OrderSuccess" component={OrderSuccessScreen} />
+      <Stack.Screen name="Campaigns" component={CampaignsScreen} />
     </Stack.Navigator>
   );
 }

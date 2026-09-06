@@ -6,10 +6,10 @@ import { useNavigation, useScrollToTop } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import ErrorState from '@shared/components/ErrorState';
 import Skeleton from '@shared/components/Skeleton';
-import { ChevronRightIcon } from '@shared/components/icons';
+import { EditIcon } from '@shared/components/icons';
 import useReload from '@shared/hooks/useReload';
 import type { Category } from '@typings/api';
-import type { HomeStackParamList } from '@typings/navigation';
+import type { HomeStackParamList, RootStackParamList } from '@typings/navigation';
 import AddressEditModal from '../AddressEditModal';
 import CampaignCard from '../CampaignCard';
 import CategoryCard from '../CategoryCard';
@@ -58,6 +58,15 @@ function HomeScreen() {
   const categoryListRef = useRef<FlatList<Category>>(null);
   const { refreshing, onRefresh } = useReload(retry);
 
+  // Campaigns has no per-campaign detail data from the backend (list-only
+  // endpoint, see campaign.service.ts), so every banner opens the same
+  // full campaigns list rather than a campaign-specific screen.
+  function goToCampaigns() {
+    (navigation as unknown as NativeStackNavigationProp<RootStackParamList>).navigate(
+      'Campaigns',
+    );
+  }
+
   // Lets tapping the already-focused "Əsas" tab scroll back to the top
   // (the category cards), matching native tab-bar "tap again to go top".
   useScrollToTop(categoryListRef);
@@ -83,7 +92,7 @@ function HomeScreen() {
                 {profile?.address ?? t('home.noAddress')}
               </Text>
             </View>
-            <ChevronRightIcon size={20} color={colors.textMuted} />
+            <EditIcon size={22} color={colors.textMuted} />
           </TouchableOpacity>
 
           {campaigns.length > 0 && (
@@ -95,7 +104,11 @@ function HomeScreen() {
               showsHorizontalScrollIndicator={false}
               keyExtractor={item => String(item.id)}
               style={styles.campaignCarousel}
-              renderItem={({ item }) => <CampaignCard campaign={item} />}
+              renderItem={({ item }) => (
+                <TouchableOpacity activeOpacity={0.85} onPress={goToCampaigns}>
+                  <CampaignCard campaign={item} />
+                </TouchableOpacity>
+              )}
               onScrollToIndexFailed={() => {}}
             />
           )}
