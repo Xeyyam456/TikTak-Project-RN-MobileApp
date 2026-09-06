@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Text, View } from 'react-native';
-import i18n from '@shared/i18n';
+import i18n from '@shared/i18n/i18n';
 import { useTheme } from '../../../theme/ThemeContext';
 import Button from '../Button';
 import { createStyles } from './ErrorBoundary.styles';

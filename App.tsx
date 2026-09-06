@@ -29,7 +29,7 @@ import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
 // anything below renders. Must load before RootNavigator/AppShell, so it's
 // imported here rather than lazily from whichever screen happens to use
 // useTranslation() first.
-import './src/shared/i18n';
+import './src/shared/i18n/i18n';
 
 Sentry.init({
   dsn: SENTRY_DSN,
