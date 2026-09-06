@@ -23,7 +23,7 @@ function OrderCardSkeleton() {
       <View style={styles.divider} />
       <View style={styles.cardBottom}>
         <View style={styles.addressBlock}>
-          <Skeleton width={100} height={12} style={{ marginBottom: 6 }} />
+          <Skeleton width={100} height={12} style={styles.skeletonLabel} />
           <Skeleton width="80%" height={14} />
         </View>
         <Skeleton width={34} height={34} borderRadius={17} />
