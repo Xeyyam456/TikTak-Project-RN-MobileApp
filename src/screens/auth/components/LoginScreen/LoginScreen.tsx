@@ -10,8 +10,8 @@ import Button from '@shared/components/Button';
 import Checkbox from '@shared/components/Checkbox';
 import TextField from '@shared/components/TextField';
 import type { RootStackParamList } from '@typings/navigation';
-import useLoginForm from '../hooks/useLoginForm';
-import { useTheme } from '../../../theme/ThemeContext';
+import useLoginForm from '../../hooks/useLoginForm';
+import { useTheme } from '../../../../theme/ThemeContext';
 import { createStyles } from './LoginScreen.styles';
 
 function LoginScreen() {

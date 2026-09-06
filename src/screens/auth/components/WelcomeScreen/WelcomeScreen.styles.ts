@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
-import { FONTS } from '../../../theme/fonts';
-import type { ThemeColors } from '../../../theme/colors';
+import { FONTS } from '../../../../theme/fonts';
+import type { ThemeColors } from '../../../../theme/colors';
 
 export const createStyles = (colors: ThemeColors) =>
   StyleSheet.create({
