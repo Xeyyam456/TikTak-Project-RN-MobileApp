@@ -3,8 +3,8 @@ import { Circle, Path } from 'react-native-svg';
 // Small generic fruit silhouettes used only as pieces "poured" into the
 // splash's line-drawn basket — plain shapes, not a redraw of the app's
 // actual bootsplash logo mark. Each is defined around its own local
-// center (see FRUIT_SHAPES' cx/cy in AnimatedSplashScreen.tsx) so the
-// falling animation can translate+rotate it as a group.
+// center (see each FRUITS entry's cx/cy in AnimatedSplashScreen.tsx) so
+// the falling animation can translate+rotate it as a group.
 
 export function AppleShape() {
   return (
