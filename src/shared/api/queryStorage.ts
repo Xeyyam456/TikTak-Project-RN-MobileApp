@@ -19,3 +19,18 @@ export const queryPersister = createAsyncStoragePersister({
     },
   },
 });
+
+// Bump this if a cached query's shape ever changes in a way old persisted
+// data wouldn't satisfy (e.g. a field rename) — a mismatched buster makes
+// restoreClient() discard the old cache instead of rehydrating it.
+const CACHE_BUSTER = 'v1';
+
+// Kept next to the persister it configures: maxAge must stay in step with
+// queryClient's gcTime (both 24h), otherwise an unused query drops from
+// memory before it would be written to disk and persistence silently does
+// nothing.
+export const persistOptions = {
+  persister: queryPersister,
+  maxAge: 24 * 60 * 60 * 1000,
+  buster: CACHE_BUSTER,
+};
