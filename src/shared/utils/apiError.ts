@@ -1,5 +1,5 @@
 import { isAxiosError } from 'axios';
-import i18n from '@shared/i18n';
+import i18n from '@shared/i18n/i18n';
 
 export function getApiErrorMessage(error: unknown): string {
   if (isAxiosError<{ message?: string }>(error)) {
