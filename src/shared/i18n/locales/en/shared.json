@@ -12,7 +12,8 @@
     "addToBasket": "Add to basket"
   },
   "apiError": {
-    "fallback": "Something went wrong, please try again"
+    "fallback": "Something went wrong, please try again",
+    "sessionExpired": "Your session has expired, please sign in again"
   },
   "orderStatus": {
     "pending": "Received",

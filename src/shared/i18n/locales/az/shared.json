@@ -12,7 +12,8 @@
     "addToBasket": "Səbətə əlavə et"
   },
   "apiError": {
-    "fallback": "Xəta baş verdi, yenidən cəhd edin"
+    "fallback": "Xəta baş verdi, yenidən cəhd edin",
+    "sessionExpired": "Sessiyanızın müddəti bitdi, yenidən daxil olun"
   },
   "orderStatus": {
     "pending": "Qəbul edilib",
