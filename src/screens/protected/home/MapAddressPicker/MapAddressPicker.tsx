@@ -3,12 +3,12 @@ import { ActivityIndicator, Modal, Text, TouchableOpacity, View } from 'react-na
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Camera, Map, UserLocation } from '@maplibre/maplibre-react-native';
-import Button from '../Button';
-import ScreenHeader from '../ScreenHeader';
-import { LocateIcon, MapPinIcon } from '../icons';
-import { useTheme } from '../../../theme/ThemeContext';
+import Button from '@shared/components/Button';
+import ScreenHeader from '@shared/components/ScreenHeader';
+import { LocateIcon, MapPinIcon } from '@shared/components/icons';
+import useMapAddressPicker from '../hooks/useMapAddressPicker';
+import { useTheme } from '../../../../theme/ThemeContext';
 import { createStyles } from './MapAddressPicker.styles';
-import useMapAddressPicker from './useMapAddressPicker';
 import type { MapAddressPickerProps } from './MapAddressPicker.types';
 
 // Baku — sensible default center for an Azerbaijan-only delivery app,
