@@ -1,9 +1,5 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  useReanimatedKeyboardAnimation,
-  type KeyboardAwareScrollViewRef,
-} from 'react-native-keyboard-controller';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { login } from '@shared/services/auth.service';
@@ -15,12 +11,14 @@ import {
   validatePhone,
 } from '@shared/utils/validation';
 import type { RootStackParamList } from '@typings/navigation';
+import useAuthFormScroll from './useAuthFormScroll';
 
 /** Login form state, validation and the sign-in request. */
 export default function useLoginForm() {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { t } = useTranslation();
+  const { scrollRef, handleFieldFocus } = useAuthFormScroll();
 
   const [phone, setPhoneState] = useState('+994');
   const [password, setPassword] = useState('');
@@ -28,9 +26,6 @@ export default function useLoginForm() {
   const [formError, setFormError] = useState<string>();
   const [loading, setLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-
-  const scrollRef = useRef<KeyboardAwareScrollViewRef>(null);
-  const { progress } = useReanimatedKeyboardAnimation();
 
   async function handleSubmit() {
     const nextErrors = {
@@ -51,17 +46,6 @@ export default function useLoginForm() {
     } finally {
       setLoading(false);
     }
-  }
-
-  // Guarantees the submit button is reachable when an early field is
-  // focused. 0ms if the keyboard is already up, ~300ms if it still has to
-  // animate open — otherwise the scroll races the keyboard and jumps.
-  function handleFieldFocus() {
-    const keyboardAlreadyOpen = progress.value > 0.5;
-    setTimeout(
-      () => scrollRef.current?.scrollToEnd({ animated: true }),
-      keyboardAlreadyOpen ? 0 : 300,
-    );
   }
 
   return {
