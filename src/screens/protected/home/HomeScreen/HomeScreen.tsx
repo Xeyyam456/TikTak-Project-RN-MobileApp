@@ -1,39 +1,19 @@
 import { useMemo, useRef, useState } from 'react';
-import { FlatList, RefreshControl, Text, TouchableOpacity, View } from 'react-native';
-import { useTranslation } from 'react-i18next';
+import { FlatList, RefreshControl, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useScrollToTop } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import ErrorState from '@shared/components/ErrorState';
-import Skeleton from '@shared/components/Skeleton';
-import { EditIcon } from '@shared/components/icons';
 import useReload from '@shared/hooks/useReload';
 import type { Category } from '@typings/api';
 import type { HomeStackParamList, RootStackParamList } from '@typings/navigation';
 import AddressEditModal from '../AddressEditModal';
-import CampaignCard from '../CampaignCard';
 import CategoryCard from '../CategoryCard';
+import CategoryGridSkeleton from '../CategoryGridSkeleton';
+import HomeFixedHeader from '../HomeFixedHeader';
 import { useTheme } from '../../../../theme/ThemeContext';
 import { COLUMNS, createStyles } from './HomeScreen.styles';
 import { useHomeData } from '../hooks/useHomeData';
-
-const SKELETON_COUNT = 6;
-
-function CategoryGridSkeleton() {
-  const { colors } = useTheme();
-  const styles = useMemo(() => createStyles(colors), [colors]);
-
-  return (
-    <View style={styles.skeletonGrid}>
-      {Array.from({ length: SKELETON_COUNT }).map((_, index) => (
-        <View key={index} style={styles.skeletonCard}>
-          <Skeleton style={styles.skeletonCardImage} />
-          <Skeleton height={14} borderRadius={4} width="80%" />
-        </View>
-      ))}
-    </View>
-  );
-}
 
 function HomeScreen() {
   const insets = useSafeAreaInsets();
@@ -41,7 +21,6 @@ function HomeScreen() {
     useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
-  const { t } = useTranslation();
 
   const {
     profile,
@@ -58,9 +37,8 @@ function HomeScreen() {
   const categoryListRef = useRef<FlatList<Category>>(null);
   const { refreshing, onRefresh } = useReload(retry);
 
-  // Campaigns has no per-campaign detail data from the backend (list-only
-  // endpoint, see campaign.service.ts), so every banner opens the same
-  // full campaigns list rather than a campaign-specific screen.
+  // The backend has no per-campaign detail endpoint (campaign.service.ts),
+  // so every banner opens the same full list rather than one campaign.
   function goToCampaigns() {
     (navigation as unknown as NativeStackNavigationProp<RootStackParamList>).navigate(
       'Campaigns',
@@ -74,53 +52,19 @@ function HomeScreen() {
   return (
     <View style={styles.flex}>
       {!error && (
-        // Fixed above the category grid on purpose — the address bar and
-        // campaign banner used to live in the grid FlatList's
-        // ListHeaderComponent, which scrolls with the list content, so they
-        // rose up and disappeared as soon as there were enough categories
-        // to scroll. They now sit outside the FlatList entirely so only the
-        // category grid scrolls underneath them.
-        <View style={styles.fixedHeader}>
-          <TouchableOpacity
-            style={styles.addressCard}
-            onPress={() => setAddressModalVisible(true)}
-            activeOpacity={0.7}
-          >
-            <View style={styles.addressTextGroup}>
-              <Text style={styles.addressLabel}>{t('home.addressLabel')}</Text>
-              <Text style={styles.addressValue} numberOfLines={1}>
-                {profile?.address ?? t('home.noAddress')}
-              </Text>
-            </View>
-            <EditIcon size={22} color={colors.textMuted} />
-          </TouchableOpacity>
-
-          {campaigns.length > 0 && (
-            <FlatList
-              ref={campaignListRef}
-              data={campaigns}
-              horizontal
-              pagingEnabled
-              showsHorizontalScrollIndicator={false}
-              keyExtractor={item => String(item.id)}
-              style={styles.campaignCarousel}
-              renderItem={({ item }) => (
-                <TouchableOpacity activeOpacity={0.85} onPress={goToCampaigns}>
-                  <CampaignCard campaign={item} />
-                </TouchableOpacity>
-              )}
-              onScrollToIndexFailed={() => {}}
-            />
-          )}
-        </View>
+        <HomeFixedHeader
+          address={profile?.address}
+          campaigns={campaigns}
+          campaignListRef={campaignListRef}
+          onAddressPress={() => setAddressModalVisible(true)}
+          onCampaignPress={goToCampaigns}
+        />
       )}
 
       {error ? (
         <ErrorState message={error} onRetry={retry} />
       ) : loading ? (
-        <View style={styles.listContent}>
-          <CategoryGridSkeleton />
-        </View>
+        <CategoryGridSkeleton />
       ) : (
         <FlatList
           ref={categoryListRef}
