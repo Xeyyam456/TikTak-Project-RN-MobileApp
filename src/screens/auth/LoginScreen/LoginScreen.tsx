@@ -1,11 +1,7 @@
-import { useMemo, useRef, useState } from 'react';
+import { useMemo } from 'react';
 import { Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import {
-  KeyboardAwareScrollView,
-  useReanimatedKeyboardAnimation,
-  type KeyboardAwareScrollViewRef,
-} from 'react-native-keyboard-controller';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -13,15 +9,8 @@ import AuthSwitchLink from '@shared/components/AuthSwitchLink';
 import Button from '@shared/components/Button';
 import Checkbox from '@shared/components/Checkbox';
 import TextField from '@shared/components/TextField';
-import { login } from '@shared/services/auth.service';
-import { getApiErrorMessage } from '@shared/utils/apiError';
-import { showSuccessToast } from '@shared/utils/toast';
 import type { RootStackParamList } from '@typings/navigation';
-import {
-  applyAzPhonePrefix,
-  validatePassword,
-  validatePhone,
-} from '@shared/utils/validation';
+import useLoginForm from '../hooks/useLoginForm';
 import { useTheme } from '../../../theme/ThemeContext';
 import { createStyles } from './LoginScreen.styles';
 
@@ -33,47 +22,20 @@ function LoginScreen() {
   const styles = useMemo(() => createStyles(colors), [colors]);
   const { t } = useTranslation();
 
-  const [phone, setPhone] = useState('+994');
-  const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState<{ phone?: string; password?: string }>(
-    {},
-  );
-  const [formError, setFormError] = useState<string>();
-  const [loading, setLoading] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
-
-  const scrollRef = useRef<KeyboardAwareScrollViewRef>(null);
-  const { progress } = useReanimatedKeyboardAnimation();
-
-  async function handleSubmit() {
-    const nextErrors = {
-      phone: validatePhone(phone),
-      password: validatePassword(password),
-    };
-    setErrors(nextErrors);
-    if (Object.values(nextErrors).some(Boolean)) return;
-
-    setFormError(undefined);
-    setLoading(true);
-    try {
-      await login({ phone, password }, rememberMe);
-      showSuccessToast(t('login.successToast'));
-      navigation.reset({ index: 0, routes: [{ name: 'Main' }] });
-    } catch (error) {
-      setFormError(getApiErrorMessage(error));
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  function scrollToButton() {
-    scrollRef.current?.scrollToEnd({ animated: true });
-  }
-
-  function handleFieldFocus() {
-    const keyboardAlreadyOpen = progress.value > 0.5;
-    setTimeout(scrollToButton, keyboardAlreadyOpen ? 0 : 300);
-  }
+  const {
+    phone,
+    setPhone,
+    password,
+    setPassword,
+    rememberMe,
+    setRememberMe,
+    errors,
+    formError,
+    loading,
+    scrollRef,
+    handleFieldFocus,
+    handleSubmit,
+  } = useLoginForm();
 
   return (
     <KeyboardAwareScrollView
@@ -94,7 +56,7 @@ function LoginScreen() {
           placeholder={t('login.phonePlaceholder')}
           keyboardType="phone-pad"
           value={phone}
-          onChangeText={text => setPhone(applyAzPhonePrefix(text))}
+          onChangeText={setPhone}
           onFocus={handleFieldFocus}
           error={errors.phone}
         />
