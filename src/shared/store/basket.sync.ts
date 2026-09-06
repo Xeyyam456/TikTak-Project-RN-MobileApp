@@ -48,7 +48,9 @@ export function scheduleBasketSync(
   const baselineBasket = pending ? pending.baselineBasket : currentBasket;
   const netDelta = (pending?.netDelta ?? 0) + delta;
   const timer = setTimeout(() => {
-    void flushBasketChange(productId, productForToast, set);
+    // Not awaited on purpose: this is the debounce timer firing, and
+    // flushBasketChange handles its own errors internally.
+    flushBasketChange(productId, productForToast, set);
   }, DEBOUNCE_MS);
 
   pendingChanges.set(productId, { timer, netDelta, baselineBasket });

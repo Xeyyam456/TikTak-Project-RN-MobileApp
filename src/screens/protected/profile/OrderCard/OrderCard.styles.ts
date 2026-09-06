@@ -94,4 +94,7 @@ export const createStyles = (colors: ThemeColors) =>
       alignItems: 'center',
       justifyContent: 'center',
     },
+    skeletonLabel: {
+      marginBottom: 6,
+    },
   });

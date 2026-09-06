@@ -56,4 +56,7 @@ export const createStyles = (colors: ThemeColors) =>
       fontFamily: FONTS.medium,
       textAlign: 'center',
     },
+    skeletonCard: {
+      marginBottom: 16,
+    },
   });

@@ -3,7 +3,7 @@
  */
 
 import { useEffect, useState } from 'react';
-import { StatusBar } from 'react-native';
+import { StatusBar, StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import {
@@ -74,7 +74,7 @@ function App() {
           client={queryClient}
           persistOptions={{ persister: queryPersister, maxAge: 24 * 60 * 60 * 1000, buster: CACHE_BUSTER }}
         >
-          <GestureHandlerRootView style={{ flex: 1 }}>
+          <GestureHandlerRootView style={styles.root}>
             <KeyboardProvider>
               <SafeAreaProvider>
                 <AppShell />
@@ -121,3 +121,9 @@ function AppShell() {
 }
 
 export default App;
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
+});
