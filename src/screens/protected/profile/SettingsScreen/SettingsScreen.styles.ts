@@ -2,6 +2,7 @@ import { StyleSheet } from 'react-native';
 import { FONTS } from '../../../../theme/fonts';
 import type { ThemeColors } from '../../../../theme/colors';
 
+// The language section's own styles live in LanguagePicker/.
 export const createStyles = (colors: ThemeColors) =>
   StyleSheet.create({
     flex: {
@@ -33,25 +34,17 @@ export const createStyles = (colors: ThemeColors) =>
       paddingHorizontal: 16,
       paddingVertical: 12,
     },
-    languageRow: {
+    actionRow: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
       paddingHorizontal: 16,
       paddingVertical: 16,
     },
-    languageRowBorder: {
-      borderTopWidth: 1,
-      borderTopColor: colors.border,
-    },
-    languageLabel: {
+    rowLabel: {
       fontSize: 15,
       fontFamily: FONTS.regular,
       color: colors.textPrimary,
-    },
-    languageLabelActive: {
-      fontFamily: FONTS.semiBold,
-      color: colors.primary,
     },
     hint: {
       fontSize: 12,

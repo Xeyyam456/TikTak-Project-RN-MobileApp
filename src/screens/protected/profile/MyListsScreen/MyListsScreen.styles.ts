@@ -1,28 +1,14 @@
 import { StyleSheet } from 'react-native';
-import { GRID_GAP, HORIZONTAL_PADDING } from '@shared/components/ProductCard';
 import { FONTS } from '../../../../theme/fonts';
 import type { ThemeColors } from '../../../../theme/colors';
 
+// Grid layout lives in the shared ProductGrid/ProductGridSkeleton — this
+// file only covers the screen shell.
 export const createStyles = (colors: ThemeColors) =>
   StyleSheet.create({
     flex: {
       flex: 1,
       backgroundColor: colors.background,
-    },
-    skeletonGrid: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      paddingHorizontal: HORIZONTAL_PADDING,
-      paddingTop: 16,
-    },
-    listContent: {
-      paddingHorizontal: HORIZONTAL_PADDING,
-    },
-    cardWrapper: {
-      marginBottom: GRID_GAP,
-    },
-    cardWrapperRight: {
-      marginLeft: GRID_GAP,
     },
     emptyText: {
       marginTop: 32,
