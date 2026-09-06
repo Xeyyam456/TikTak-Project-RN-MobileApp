@@ -1,17 +1,10 @@
-import { Dimensions, StyleSheet } from 'react-native';
-import {
-  COLUMNS,
-  GRID_GAP,
-  HORIZONTAL_PADDING,
-} from '../HomeScreen/HomeScreen.styles';
+import { StyleSheet } from 'react-native';
+import { GRID_GAP, HORIZONTAL_PADDING } from '../HomeScreen/HomeScreen.styles';
+import { CARD_RADIUS, CARD_WIDTH } from '../CategoryCard';
 
-// Card width mirrors CategoryCard's own grid math so the placeholder grid
-// lines up exactly with the real one it stands in for.
-const CARD_WIDTH =
-  (Dimensions.get('window').width -
-    HORIZONTAL_PADDING * 2 -
-    GRID_GAP * (COLUMNS - 1)) /
-  COLUMNS;
+// Re-exported so the skeleton sizes its blocks from the real card's own
+// constants rather than repeating the grid math.
+export { CARD_RADIUS, CARD_WIDTH };
 
 export const styles = StyleSheet.create({
   container: {
@@ -24,11 +17,7 @@ export const styles = StyleSheet.create({
   },
   card: {
     width: CARD_WIDTH,
-    gap: 6,
-  },
-  cardImage: {
-    width: '100%',
-    aspectRatio: 1,
-    borderRadius: 10,
+    alignItems: 'center',
+    gap: 7,
   },
 });
