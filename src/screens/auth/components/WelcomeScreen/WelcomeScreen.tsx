@@ -8,7 +8,7 @@ import AuthSwitchLink from '@shared/components/AuthSwitchLink';
 import Button from '@shared/components/Button';
 import FruitImage from '@assets/images/images1.svg';
 import type { RootStackParamList } from '@typings/navigation';
-import { useTheme } from '../../../theme/ThemeContext';
+import { useTheme } from '../../../../theme/ThemeContext';
 import { createStyles } from './WelcomeScreen.styles';
 
 function WelcomeScreen() {
