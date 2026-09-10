@@ -8,6 +8,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { updateProfile } from '@shared/services/profile.service';
 import { queryKeys } from '@shared/queries/queryKeys';
 import { getApiErrorMessage } from '@shared/utils/apiError';
+import { showSuccessToast } from '@shared/utils/toast';
 import { validateName, validatePassword } from '@shared/utils/validation';
 import type { UserProfile } from '@typings/api';
 
@@ -78,6 +79,10 @@ export default function useAccountInfoForm(profile: UserProfile | undefined) {
       queryClient.setQueryData(queryKeys.profile, updated);
       setPassword('');
       setPasswordRepeat('');
+      const successKey = changingPassword
+        ? 'accountInfo.passwordChangedToast'
+        : 'accountInfo.saveSuccessToast';
+      showSuccessToast(t(successKey));
     } catch (error) {
       setFormError(getApiErrorMessage(error));
     } finally {
