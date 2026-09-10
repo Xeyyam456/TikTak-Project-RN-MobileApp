@@ -122,7 +122,9 @@
     "passwordRepeatLabel": "Confirm password",
     "save": "Save",
     "addressRequired": "Enter an address",
-    "passwordMismatch": "Passwords don't match"
+    "passwordMismatch": "Passwords don't match",
+    "saveSuccessToast": "Your details are saved",
+    "passwordChangedToast": "Password changed successfully"
   },
   "avatarPicker": {
     "title": "Profile photo",
