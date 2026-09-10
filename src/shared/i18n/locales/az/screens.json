@@ -122,7 +122,9 @@
     "passwordRepeatLabel": "Şifrənin təkrarı",
     "save": "Yadda saxla",
     "addressRequired": "Ünvan daxil edin",
-    "passwordMismatch": "Şifrələr uyğun gəlmir"
+    "passwordMismatch": "Şifrələr uyğun gəlmir",
+    "saveSuccessToast": "Məlumatlar yadda saxlanıldı",
+    "passwordChangedToast": "Şifrə uğurla dəyişdirildi"
   },
   "avatarPicker": {
     "title": "Profil şəkli",

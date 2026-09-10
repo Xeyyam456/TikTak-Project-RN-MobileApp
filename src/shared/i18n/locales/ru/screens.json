@@ -122,7 +122,9 @@
     "passwordRepeatLabel": "Повтор пароля",
     "save": "Сохранить",
     "addressRequired": "Введите адрес",
-    "passwordMismatch": "Пароли не совпадают"
+    "passwordMismatch": "Пароли не совпадают",
+    "saveSuccessToast": "Данные сохранены",
+    "passwordChangedToast": "Пароль успешно изменён"
   },
   "avatarPicker": {
     "title": "Фото профиля",
