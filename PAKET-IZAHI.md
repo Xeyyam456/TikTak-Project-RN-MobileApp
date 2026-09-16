@@ -69,9 +69,15 @@ RN CLI-nin default "yeni layihə" boş ekranının paketi — RN template-inin t
 
 ### `react-native-safe-area-context` (5.8.0)
 
-**Nə üçün:** Notch/status bar/naviqasiya zolağı kimi "təhlükəsiz sahə" məlumatını (`useSafeAreaInsets`) verir — demək olar hər ekranda `paddingTop: insets.top` kimi işlədilir. `SafeAreaProvider` `src/app/Providers/Providers.tsx`-də quraşdırılıb.
+**Nə üçün:** Notch/status bar/naviqasiya zolağı kimi "təhlükəsiz sahə" məlumatını (`useSafeAreaInsets`) verir — demək olar hər ekranda `paddingTop: insets.top` kimi işlədilir. `SafeAreaProvider` `src/app/Providers/Providers.tsx`-də, tək dəfə, ağacın kökündə quraşdırılıb — hər ekranın öz provider-i olsaydı, hər biri insets-i OS-dən təzədən sorğulayardı, mənasız təkrar.
 
 **Niyə bu, əl ilə `Platform.OS === 'ios' ? 44 : 24` kimi sabit dəyərlər deyil?** Cihazlar arasında notch/kamera-deşiyi ölçüləri **fərqlidir** (məsələn Dynamic Island olan iPhone-lar). Sabit dəyər bəzi cihazlarda düzgün, bəzilərində səhv olardı. Bu paket OS-dən **real** dəyəri sorğulayır — React Navigation-un özü də daxili olaraq buna söykənir, ona görə əlavə asılılıq deyil, məcburi tələbdir.
+
+**Harada və necə işlədilir — layihə boyu 20+ fayl.** İstifadə demək olar həmişə eyni naxışdadır: `const insets = useSafeAreaInsets()`, sonra `style`-a `insets.top`/`insets.bottom` əlavə edilir. Konkret nümunələr:
+- **Üst insets** — `AppHeader` (Home tab-ının basket-ikonlu bar-ı) və auth ekranları (`WelcomeScreen`, `LoginScreen`, `RegisterScreen`) status bar-ın altına düşməsin deyə `paddingTop: insets.top` işlədir.
+- **Alt insets — sabit "footer" düymələri.** `BasketFooter`, `CheckoutFooter`, `TabBar` və custom `BottomSheet` hamısı `paddingBottom: insets.bottom + <əlavə boşluq>` şəklində işlədir (məs. `TabBar.tsx:41` → `insets.bottom + 10`, `BasketFooter.tsx:18` → `insets.bottom + 16`) — Android-in gesture-naviqasiya zolağı və ya iPhone-un home-indicator-u düymənin üstünə minməsin deyə.
+
+**Qeyd — bu paketin özünün `<SafeAreaView>` komponenti layihədə heç yerdə istifadə olunmur, yalnız `useSafeAreaInsets` hook-u.** Qərar deyil, ardıcıllıqdır: `<SafeAreaView>` bütün kənarlara avtomatik padding verir və layout-a daha az nəzarət saxlayır, `useSafeAreaInsets` isə hər komponentə **hansı kənara, nə qədər** padding lazım olduğunu özü seçmək imkanı verir (məsələn footer-ə yalnız alt insets, `AppHeader`-ə yalnız üst insets). Bu həm də `CLAUDE.md`-dəki bir gotcha ilə birbaşa bağlıdır: sabit-mövqeli (`position: 'absolute'`) footer-lərin `marginBottom` ilə "aşağı itələnə" bilməməsi problemi — həll `insets.bottom`-u **normal-flow** `paddingBottom`-a əlavə etməkdir, footer-i `position: 'absolute'` edib insets-ə güvənmək deyil.
 
 ---
 
