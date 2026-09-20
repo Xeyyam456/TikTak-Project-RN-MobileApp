@@ -6,6 +6,7 @@
     // inheriting that value fails the build with TS2688.
     "types": [],
     "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
     "paths": {
       "@assets/*": ["assets/*"],
       "@shared/*": ["src/shared/*"],
