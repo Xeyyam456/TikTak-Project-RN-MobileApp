@@ -118,7 +118,7 @@
     "emailLabel": "E-mail",
     "phoneLabel": "Phone number",
     "passwordLabel": "Password",
-    "passwordPlaceholder": "New password (leave blank to keep it)",
+    "passwordPlaceholder": "New password (optional)",
     "passwordRepeatLabel": "Confirm password",
     "save": "Save",
     "addressRequired": "Enter an address",

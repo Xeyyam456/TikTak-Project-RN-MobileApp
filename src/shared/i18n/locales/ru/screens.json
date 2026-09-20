@@ -118,7 +118,7 @@
     "emailLabel": "E-mail",
     "phoneLabel": "Номер телефона",
     "passwordLabel": "Пароль",
-    "passwordPlaceholder": "Новый пароль (оставьте пустым, если не хотите менять)",
+    "passwordPlaceholder": "Новый пароль (необязательно)",
     "passwordRepeatLabel": "Повтор пароля",
     "save": "Сохранить",
     "addressRequired": "Введите адрес",
