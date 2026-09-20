@@ -1122,7 +1122,8 @@ Tiktak/
     │   │   └── hooks/         ← useLoginForm, useRegisterForm, useAuthFormScroll
     │   └── protected/         ← Giriş-sonrası
     │       ├── home/          ← HomeScreen, CategoryProductsScreen, kartlar,
-    │       │                     AddressEditModal, MapAddressPicker + hooks/
+    │       │                     AddressEditModal, MapAddressPicker,
+    │       │                     SavedAddressListModal/List/Row + hooks/
     │       ├── basket/        ← BasketScreen, BasketRow, BasketFooter, ...
     │       ├── checkout/      ← CheckoutScreen, CheckoutForm, PaymentMethodPicker,
     │       │                     OrderItemsBox, OrderSuccessScreen
@@ -3875,6 +3876,36 @@ Bir müddət `tiktak://` sxemi ilə deep linking (kənardan linklə tətbiqin ko
 Sonra istifadəçinin açıq istəyi ilə **tamamilə geri çıxarıldı**: "açılacaq real bir link olmadığına görə praktiki istifadə yeri yoxdur".
 
 Bu qeyd sənəddə saxlanılır ki, gələcəkdə kimsə "niyə deep linking yoxdur?" deyə soruşanda cavab məlum olsun: **texniki maneə deyil, əhatə dairəsi qərarı**. Yenidən lazım olsa, sıfırdan araşdırmağa ehtiyac yoxdur.
+
+### Yadda saxlanılan ünvanlar — niyə "mock" (uydurma) siyahı?
+
+`AddressEditModal`-a ikinci bir sətir əlavə olunub: "Yadda saxlanılan ünvanlar". Basılanda `SavedAddressListModal` açılır — 10 ədəd Bakı ünvanı olan sadə bir siyahı. Hər hansı birinə klikləyəndə həmin ünvan mətn sahəsinə düşür, sonra istifadəçi adi "Yadda saxla" düyməsi ilə onu serverə göndərir (`PUT /profile`).
+
+**Niyə real "ünvan kitabçası" deyil, uydurma siyahıdır?** Çünki backend-də bunun üçün API **yoxdur**. `docs/api.md`-ə baxsanız, ünvanla bağlı yalnız iki şey görəcəksiniz: `PUT /profile`-ın `address` sahəsi (tək bir mətn) və `POST /orders/checkout`-un `address` sahəsi (sifariş anında həmin mətnin sürəti). Nə `/addresses` siyahısı, nə "bunu yadda saxla" əməliyyatı, nə "hansı ünvan aktivdir" işarəsi — heç biri yoxdur.
+
+Yəni iki seçim var idi:
+1. Real ünvan kitabçası üçün **əvvəlcə backend-ə** yeni endpoint-lər yazdırmaq (bu, tək başına frontend işi deyil).
+2. Hazırkı `profile.address` (tək sahə) sistemini toxunmadan saxlayıb, istifadəçiyə **sürətli seçim** təcrübəsi vermək — sadəcə əvvəlcədən hazır bir neçə ünvanı göstərib, seçiləni köhnə axına (mətn sahəsi → Save düyməsi → `PUT /profile`) ötürmək.
+
+İkincisi seçildi, çünki backend dəyişikliyi olmadan, mövcud "Xəritədən seç" axını ilə **eyni naxışda** işləyir — istifadəçi üçün iki fərqli "ünvan seç" davranışı öyrənməli olmur.
+
+**Kod harada yaşayır:**
+
+```
+screens/protected/home/
+├── SavedAddressListModal/   ← siyahını göstərən modal (başlıq + Ləğv et)
+├── SavedAddressList/        ← sətirlərin ScrollView-u (modal DAXİLİNDƏ işlədilir)
+├── SavedAddressRow/         ← bir sətir (pin ikonu + mətn)
+└── hooks/
+    ├── useSavedAddresses.ts   ← 10 ünvanlıq sabit array (MOCK_ADDRESSES)
+    └── useAddressEditForm.ts  ← manual mətn sahəsi + PUT /profile məntiqi
+```
+
+Diqqət: `SavedAddressList` özü **modal deyil** — sadəcə sətirləri sadalayan bir siyahı komponentidir. `SavedAddressListModal` onu bir `<Modal>`-ın içinə qoyur. Bölmənin səbəbi Hissə 6-dakı "hər komponent bir iş görsün" prinsipidir: sabah eyni siyahı başqa bir modalda da lazım olsa (məsələn, boş ünvan sahəsinin altında inline göstərmək), `SavedAddressList`-i olduğu kimi başqa yerə köçürmək kifayətdir.
+
+**`useAddressEditForm.ts` niyə ayrıca hook-dur?** `AddressEditModal.tsx`-ə saxlanılan-ünvanlar sətri əlavə olunanda fayl Hissə 6-dakı ~110 sətir qaydasını keçdi. İki alətdən (alt-komponent çıxar / hook-a çıxar) ikincisi seçildi, çünki mətn sahəsinin state-i (`addressInput`, `addressError`, `saving`) və onun `PUT /profile` məntiqi **JSX-dən asılı olmayan təmiz məntiqdir** — komponentin özü isə sadəcə bu state-i göstərib düymələri düzür.
+
+**Dizayn tarixçəsi (niyə indiki formadadır):** ilk versiyada saxlanılan ünvanlar `AddressEditModal`-ın **içində**, TextField-in üstündə birbaşa siyahı kimi göründü, hər sətrə klik isə ayrıca kiçik bir "təsdiq et" modalı açırdı (klikləyən kimi avtomatik `PUT /profile` göndərilirdi). İstifadəçi bunu bəyənmədi — səbəb, tətbiqdə artıq mövcud olan "Xəritədən seç" axını fərqli işləyirdi (seçim mətn sahəsini doldurur, avtomatik saxlamır). İki fərqli "ünvan seç" davranışı bir modalda yan-yana olması qarışıqlıq yaradardı. Nəticədə hazırkı forma qərarlaşdırıldı: ayrıca siyahı modalı, seçim isə yalnız mətn sahəsini doldurur — `MapAddressPicker`-in `onSelect` davranışı ilə **bir-birinin eynisi**.
 
 ---
 
