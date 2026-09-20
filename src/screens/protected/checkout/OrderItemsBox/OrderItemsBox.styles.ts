@@ -16,15 +16,13 @@ export const createStyles = (colors: ThemeColors) =>
     boxFixed: {
       flex: 0,
     },
-    // One-off decorative box color, left as-is (not a semantic token) —
-    // same convention as the category/campaign card pastels.
     boxBackground: {
       position: 'absolute',
       top: 0,
       left: 0,
       right: 0,
       bottom: 0,
-      backgroundColor: '#b8bbb5',
+      backgroundColor: colors.border,
       borderRadius: 12,
     },
     scroll: {
