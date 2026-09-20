@@ -118,7 +118,7 @@
     "emailLabel": "E-mail",
     "phoneLabel": "Telefon nömrəsi",
     "passwordLabel": "Şifrə",
-    "passwordPlaceholder": "Yeni şifrə (dəyişmək istəməsəniz boş buraxın)",
+    "passwordPlaceholder": "Yeni şifrə (istəməsəniz boş buraxın)",
     "passwordRepeatLabel": "Şifrənin təkrarı",
     "save": "Yadda saxla",
     "addressRequired": "Ünvan daxil edin",
