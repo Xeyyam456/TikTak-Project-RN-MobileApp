@@ -1,13 +1,13 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Modal, Text, TouchableOpacity, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Button from '@shared/components/Button';
 import MapAddressPicker from '../MapAddressPicker';
+import SavedAddressListModal from '../SavedAddressListModal';
 import TextField from '@shared/components/TextField';
-import { MapPinIcon } from '@shared/icons';
-import { updateProfile } from '@shared/services/profile.service';
-import { getApiErrorMessage } from '@shared/utils/apiError';
-import { showSuccessToast } from '@shared/utils/toast';
+import useAddressEditForm from '../hooks/useAddressEditForm';
+import useSavedAddresses from '../hooks/useSavedAddresses';
+import { ClockIcon, MapPinIcon } from '@shared/icons';
 import { useTheme } from '../../../../theme/ThemeContext';
 import { createStyles } from './AddressEditModal.styles';
 import type { AddressEditModalProps } from './AddressEditModal.types';
@@ -16,41 +16,10 @@ function AddressEditModal({ visible, profile, onClose, onSaved }: AddressEditMod
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const { t } = useTranslation();
-  const [addressInput, setAddressInput] = useState('');
-  const [addressError, setAddressError] = useState<string>();
-  const [saving, setSaving] = useState(false);
   const [mapPickerVisible, setMapPickerVisible] = useState(false);
-
-  useEffect(() => {
-    if (visible) {
-      setAddressInput(profile?.address ?? '');
-      setAddressError(undefined);
-    }
-  }, [visible, profile?.address]);
-
-  async function handleSave() {
-    if (!profile) return;
-    const trimmed = addressInput.trim();
-    if (!trimmed) {
-      setAddressError(t('addressEditModal.addressRequired'));
-      return;
-    }
-
-    setAddressError(undefined);
-    setSaving(true);
-    try {
-      const updated = await updateProfile({
-        full_name: profile.full_name,
-        address: trimmed,
-      });
-      onSaved(updated);
-      showSuccessToast(t('addressEditModal.successToast'));
-    } catch (error) {
-      setAddressError(getApiErrorMessage(error));
-    } finally {
-      setSaving(false);
-    }
-  }
+  const [savedListVisible, setSavedListVisible] = useState(false);
+  const { addresses: savedAddresses } = useSavedAddresses();
+  const form = useAddressEditForm(visible, profile, onSaved);
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
@@ -60,11 +29,18 @@ function AddressEditModal({ visible, profile, onClose, onSaved }: AddressEditMod
           <TextField
             label={t('addressEditModal.addressLabel')}
             placeholder={t('addressEditModal.addressPlaceholder')}
-            value={addressInput}
-            onChangeText={setAddressInput}
-            error={addressError}
+            value={form.addressInput}
+            onChangeText={form.setAddressInput}
+            error={form.addressError}
             autoFocus
           />
+          <TouchableOpacity
+            style={styles.pickFromMapRow}
+            onPress={() => setSavedListVisible(true)}
+          >
+            <ClockIcon size={18} color={colors.primary} />
+            <Text style={styles.pickFromMapText}>{t('addressEditModal.savedAddresses')}</Text>
+          </TouchableOpacity>
           <TouchableOpacity
             style={styles.pickFromMapRow}
             onPress={() => setMapPickerVisible(true)}
@@ -72,7 +48,11 @@ function AddressEditModal({ visible, profile, onClose, onSaved }: AddressEditMod
             <MapPinIcon size={18} color={colors.primary} />
             <Text style={styles.pickFromMapText}>{t('addressEditModal.pickFromMap')}</Text>
           </TouchableOpacity>
-          <Button title={t('addressEditModal.save')} onPress={handleSave} loading={saving} />
+          <Button
+            title={t('addressEditModal.save')}
+            onPress={form.handleSave}
+            loading={form.saving}
+          />
           <Text style={styles.modalCancel} onPress={onClose}>
             {t('addressEditModal.cancel')}
           </Text>
@@ -82,7 +62,13 @@ function AddressEditModal({ visible, profile, onClose, onSaved }: AddressEditMod
       <MapAddressPicker
         visible={mapPickerVisible}
         onClose={() => setMapPickerVisible(false)}
-        onSelect={setAddressInput}
+        onSelect={form.setAddressInput}
+      />
+      <SavedAddressListModal
+        visible={savedListVisible}
+        addresses={savedAddresses}
+        onClose={() => setSavedListVisible(false)}
+        onSelect={form.setAddressInput}
       />
     </Modal>
   );
