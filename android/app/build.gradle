@@ -103,6 +103,11 @@ android {
             signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            // aapt2 crashes compiling the fully-transparent bootsplash_logo.png
+            // placeholders (real splash is JS-drawn) during mergeReleaseResources
+            // — debug builds don't hit this since AGP already disables crunching
+            // for debuggable build types. See CLAUDE.md's Gotchas section.
+            crunchPngs false
         }
     }
 
