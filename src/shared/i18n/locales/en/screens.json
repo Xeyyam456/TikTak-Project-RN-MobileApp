@@ -87,7 +87,8 @@
     "cancel": "Cancel",
     "addressRequired": "Enter an address",
     "successToast": "Delivery address updated",
-    "pickFromMap": "Pick from map"
+    "pickFromMap": "Pick from map",
+    "savedAddresses": "Saved addresses"
   },
   "categoryProducts": {
     "backToCategories": "Back to categories"
