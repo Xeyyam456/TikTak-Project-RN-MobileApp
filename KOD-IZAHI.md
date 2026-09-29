@@ -1430,7 +1430,7 @@ Bu, React Native-in tələb etdiyi qeydiyyatdır: "tətbiqin adı budur, kök ko
 
 Niyə `.js`, `.tsx` deyil? Çünki bu fayl React Native şablonundan gəlir və heç bir tip məntiqi daşımır — sadəcə iki sətir qeydiyyat.
 
-> **Qeyd:** əgər gələcəkdə **fonda** işləyən bir bildiriş handler-i əlavə olunarsa, onun qeydiyyatı məhz burada, `registerComponent`-dən **əvvəl** olmalıdır — `App.tsx`-in içində yox. Səbəb: tətbiq tam bağlı ikən gələn bildiriş React ağacı **ümumiyyətlə qurulmamış** icra olunur, komponentin içindəki qeydiyyat isə o an hələ mövcud olmur. Hazırda layihədə belə bir handler yoxdur (bütün bildirişlər tətbiq açıq ikən planlaşdırılır, bax Hissə 21).
+> **Qeyd:** əgər gələcəkdə **fonda** işləyən bir bildiriş handler-i əlavə olunarsa, onun qeydiyyatı məhz burada, `registerComponent`-dən **əvvəl** olmalıdır — `App.tsx`-in içində yox. Səbəb: tətbiq tam bağlı ikən gələn bildiriş React ağacı **ümumiyyətlə qurulmamış** icra olunur, komponentin içindəki qeydiyyat isə o an hələ mövcud olmur. Hazırda layihədə belə bir handler yoxdur (yeganə bildiriş tətbiq açıq ikən, sifariş verilən an dərhal göstərilir, bax Hissə 21).
 
 ### 2. `App.tsx` — nazik giriş komponenti
 
@@ -2748,7 +2748,7 @@ setPhone: (text: string) => setPhoneState(applyAzPhonePrefix(text)),
 
 ### Home axını
 
-**`HomeScreen`** — `useHomeData()` hook-u üç sorğunu paralel idarə edir (profil, kateqoriyalar, kampaniyalar). Detallar Hissə 18-dədir.
+**`HomeScreen`** — `useHomeData()` hook-u üç sorğunu paralel idarə edir (profil, kateqoriyalar, kampaniyalar). Detallar Hissə 18-dədir. Kateqoriya kartlarının `FlatList`-i `showsVerticalScrollIndicator={false}` ilə qurulub: sürüşdürəndə sağ kənarda scroll bar görünmür (layihənin digər siyahıları — axtarış, səbət, sifarişlər, kampaniyalar — ilə eyni qayda).
 
 **Sabit başlıq — real bir bug-ın həlli.**
 
@@ -3059,6 +3059,23 @@ Rendered fewer hooks than expected
 Həll: hər girişi **əsl komponentə** çevirmək və JSX kimi render etmək. İndi `useTheme()` `SuccessToastView`-un öz hook siyahısındadır.
 
 > **Diqqət:** ESLint-in `react-hooks/rules-of-hooks` qaydası bu problemi **düzgün göstərirdi**. Onu `// eslint-disable` ilə susdurmaq — gizli, gec partlayan bir bomba qoymaq olardı. Linter xəbərdarlığını susdurmazdan əvvəl **niyə** xəbərdarlıq etdiyini anlamaq lazımdır.
+
+### Toast-un görünüşü (`toast.styles.ts`)
+
+Görünüş `toast.styles.ts`-dəki `createStyles(colors)` fabrikindədir və uğur ilə xəta toast-u **eyni** kartdan istifadə edir:
+
+| Element | Dəyər |
+|---|---|
+| Fon | `TOAST_BACKGROUND = '#3F51B5'` (indiqo) — faylın yuxarısında tək sabit, rəngi dəyişmək üçün yalnız bunu dəyişmək kifayətdir |
+| Forma | `borderRadius: 16`, sol kənar xətti yoxdur (`borderLeftWidth: 0`) |
+| Mətn | `colors.white`, 15px, `FONTS.semiBold` |
+| İkon | 32px dairə, `rgba(255,255,255,0.25)` fon, içində ağ `CheckIcon` / `AlertIcon` |
+
+Fon **sabit** rəngdir, temaya görə dəyişmir. Ona görə mətn və ikon da sabit ağdır — tema mətn rəngi (`colors.textPrimary`) tünd fonda oxunmazdı.
+
+Uğur və xəta yalnız **ikonla** fərqlənir, rənglə yox. Xətanı ayrıca rənglə (məsələn qırmızı) göstərmək lazım olsa, `toast` stilini iki hissəyə bölüb `SuccessToastView`/`ErrorToastView`-a ayrı fon vermək lazımdır.
+
+> **Qeyd:** əvvəlki krem kartdan (dark modda da krem qalırdı) keçilib. Tünd pill, tema kartı və yaşıl/qırmızı dolu variantlar sınandı, indiqo kart seçildi. Əvvəlki variantlar commit olunmayıb, git tarixçəsində yoxdur.
 
 ### Toast-un yeri
 
@@ -3696,7 +3713,7 @@ Fərqi bilmək vacibdir:
 | Nə lazımdır | Firebase layihəsi, server infrastrukturu | Heç nə |
 | Tətbiq bağlıdırsa | İşləyir | Yalnız əvvəlcədən planlaşdırılıbsa işləyir |
 
-Burada olan — ikincisidir. Sifariş veriləndən sonra telefon **özü-özünə** iki bildiriş göstərir. Server bunlardan xəbərsizdir.
+Burada olan — ikincisidir. Sifariş veriləndən sonra telefon **özü-özünə** "Sifarişiniz qəbul edildi" bildirişini göstərir. Server bundan xəbərsizdir.
 
 Niyə belə? Çünki backend-də push infrastrukturu yoxdur. Firebase-ə bağlı bir paket seçmək — istifadə olunmayacaq bir ekosistemi (Firebase layihəsi, `google-services.json` idarəsi) layihəyə gətirmək olardı.
 
@@ -3748,17 +3765,7 @@ await notifee.displayNotification({
 });
 ```
 
-**Addım 4: 30 saniyəlik gecikməli bildiriş planlaşdır.**
-
-```ts
-const trigger: TimestampTrigger = {
-  type: TriggerType.TIMESTAMP,
-  timestamp: Date.now() + PREPARING_DELAY_MS,
-};
-await notifee.createTriggerNotification({ /* ... */ }, trigger);
-```
-
-Bu, "sifarişiniz hazırlanır" bildirişini **simulyasiya edir** — normalda serverdən gələcək bir push. Kodda bu, şərhlə açıq yazılıb ki, kimsə gələcəkdə bunu əsl push zənn etməsin.
+**Yalnız bir bildiriş var.** Əvvəllər bunun ardınca 30 saniyə sonra "sifarişiniz hazırlanır" adlı ikinci, planlaşdırılmış bildiriş gəlirdi (`createTriggerNotification`, serverdən push simulyasiyası). O, istəyə görə silindi: indi yalnız "Sifarişiniz qəbul edildi" bildirişi göstərilir. Backend push olmadığı üçün "hazırlanır", "yoldadır" kimi status bildirişlərini tətbiq özü doğru bilə bilməz.
 
 ### Bildiriş mətnləri i18n-dən gəlir
 
