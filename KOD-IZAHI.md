@@ -862,7 +862,9 @@ Komponentləri Lego detalları kimi düşünün: kiçik detallar (`Button`, `Inp
 
 ```tsx
 <View style={styles.header}>
-  <Text style={styles.logo}>TIK TAK</Text>
+  <Text style={styles.logo}>
+    TIK<Text style={styles.logoAccent}>TAK</Text>
+  </Text>
 </View>
 ```
 
@@ -1805,7 +1807,7 @@ function HomeStackNavigator() {
 
 Diqqət: `<AppHeader />` `Stack.Navigator`-un **içində deyil, üstündədir**.
 
-Niyə? Çünki "TIK TAK" logosu və səbət ikonu **bütün Home tabına** aiddir, ayrı-ayrı ekranlara yox. Navigator-un içinə qoysaydıq, hər ekran öz nüsxəsini render edərdi — ekran keçidində başlıq da **animasiya ilə sürüşərdi**, halbuki o, yerində sabit qalmalıdır.
+Niyə? Çünki "TIKTAK" logosu və səbət ikonu **bütün Home tabına** aiddir, ayrı-ayrı ekranlara yox. Navigator-un içinə qoysaydıq, hər ekran öz nüsxəsini render edərdi — ekran keçidində başlıq da **animasiya ilə sürüşərdi**, halbuki o, yerində sabit qalmalıdır.
 
 İndiki quruluşda yalnız aşağıdakı ekran hissəsi dəyişir, başlıq tərpənmir.
 
@@ -2674,7 +2676,7 @@ Bu, real olaraq baş verib: istifadəçi məhsul əlavə edir, başqa ekrana ke�
 
 | Komponent | Harada | Nə göstərir |
 |---|---|---|
-| `AppHeader` | Home tabının üstündə, **sabit** | "TIK TAK" logosu + səbət ikonu |
+| `AppHeader` | Home tabının üstündə, **sabit** | "TIKTAK" logosu ("TIK" mətn rəngində, "TAK" `colors.primary` yaşılında, iç-içə `<Text>`) + səbət ikonu |
 | `ScreenHeader` | İtələnən ekranlarda | Geri düyməsi + ekranın başlığı |
 
 Fərqli məqsədlər, fərqli davranış: `AppHeader` ekran dəyişəndə **tərpənmir**, `ScreenHeader` isə hər ekranın öz hissəsidir və onunla birlikdə gəlib-gedir.
