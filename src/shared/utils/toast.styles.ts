@@ -2,13 +2,14 @@ import { StyleSheet } from 'react-native';
 import { FONTS } from '../../theme/fonts';
 import type { ThemeColors } from '../../theme/colors';
 
+const TOAST_BACKGROUND = '#3F51B5';
+
 export const createStyles = (colors: ThemeColors) =>
   StyleSheet.create({
     toast: {
-      backgroundColor: '#FFF8E1',
+      backgroundColor: TOAST_BACKGROUND,
       borderLeftWidth: 0,
-      borderTopWidth: 3,
-      borderRadius: 24,
+      borderRadius: 16,
       height: undefined,
       paddingVertical: 12,
       elevation: 4,
@@ -17,21 +18,11 @@ export const createStyles = (colors: ThemeColors) =>
       shadowOpacity: 0.15,
       shadowRadius: 6,
     },
-    successAccent: {
-      borderTopColor: colors.primary,
-    },
-    errorAccent: {
-      borderTopColor: colors.danger,
-    },
     content: {
-      paddingHorizontal: 14,
+      paddingHorizontal: 12,
     },
-    // Fixed dark text, not colors.textPrimary — the toast card itself is
-    // staying a fixed cream regardless of theme (see `toast.backgroundColor`
-    // above), so its text needs to stay readable against that, not follow
-    // dark mode's light text color.
     text1: {
-      color: '#1A1A1A',
+      color: colors.white,
       fontSize: 15,
       fontFamily: FONTS.semiBold,
     },
@@ -41,12 +32,12 @@ export const createStyles = (colors: ThemeColors) =>
       borderRadius: 16,
       alignItems: 'center',
       justifyContent: 'center',
-      marginLeft: 14,
+      marginLeft: 12,
     },
     successCircle: {
-      backgroundColor: colors.primaryTint,
+      backgroundColor: 'rgba(255,255,255,0.25)',
     },
     errorCircle: {
-      backgroundColor: colors.dangerTint,
+      backgroundColor: 'rgba(255,255,255,0.25)',
     },
   });
