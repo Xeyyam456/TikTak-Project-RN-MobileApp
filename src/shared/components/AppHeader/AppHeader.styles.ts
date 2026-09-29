@@ -25,6 +25,9 @@ export const createStyles = (colors: ThemeColors) =>
       color: colors.textPrimary,
       fontFamily: FONTS.extraBold,
     },
+    logoAccent: {
+      color: colors.primary,
+    },
     cartWrapper: {
       position: 'relative',
     },

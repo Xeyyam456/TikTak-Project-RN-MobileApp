@@ -26,7 +26,9 @@ function AppHeader() {
 
   return (
     <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
-      <Text style={styles.logo}>TIK TAK</Text>
+      <Text style={styles.logo}>
+        TIK<Text style={styles.logoAccent}>TAK</Text>
+      </Text>
       <TouchableOpacity
         style={styles.cartWrapper}
         hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
