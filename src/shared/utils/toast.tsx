@@ -23,13 +23,13 @@ function SuccessToastView(props: ToastConfigParams<any>) {
   return (
     <BaseToast
       {...props}
-      style={[styles.toast, styles.successAccent]}
+      style={styles.toast}
       contentContainerStyle={styles.content}
       text1Style={styles.text1}
       text1NumberOfLines={2}
       renderLeadingIcon={() => (
         <View style={[styles.iconCircle, styles.successCircle]}>
-          <CheckIcon size={16} color={colors.primary} />
+          <CheckIcon size={16} color={colors.white} />
         </View>
       )}
     />
@@ -42,13 +42,13 @@ function ErrorToastView(props: ToastConfigParams<any>) {
   return (
     <ErrorToast
       {...props}
-      style={[styles.toast, styles.errorAccent]}
+      style={styles.toast}
       contentContainerStyle={styles.content}
       text1Style={styles.text1}
       text1NumberOfLines={2}
       renderLeadingIcon={() => (
         <View style={[styles.iconCircle, styles.errorCircle]}>
-          <AlertIcon size={16} color={colors.danger} />
+          <AlertIcon size={16} color={colors.white} />
         </View>
       )}
     />
