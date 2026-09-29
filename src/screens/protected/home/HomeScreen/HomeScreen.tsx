@@ -77,6 +77,7 @@ function HomeScreen() {
           keyExtractor={item => String(item.id)}
           numColumns={COLUMNS}
           columnWrapperStyle={styles.row}
+          showsVerticalScrollIndicator={false}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }

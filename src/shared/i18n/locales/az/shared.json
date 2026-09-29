@@ -55,9 +55,7 @@
   "notifications": {
     "channelName": "Sifarişlər",
     "orderPlacedTitle": "Sifarişiniz qəbul edildi",
-    "orderPlacedBody": "#{{orderNumber}} nömrəli sifarişiniz uğurla qeydə alındı.",
-    "orderPreparingTitle": "Sifarişiniz hazırlanır",
-    "orderPreparingBody": "#{{orderNumber}} nömrəli sifarişiniz hazırlanmağa başladı."
+    "orderPlacedBody": "#{{orderNumber}} nömrəli sifarişiniz uğurla qeydə alındı."
   },
   "mapAddressPicker": {
     "title": "Xəritədən ünvan seç",
