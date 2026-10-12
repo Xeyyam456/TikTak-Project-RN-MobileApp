@@ -4,11 +4,12 @@ Meyvə-tərəvəz sifarişi üçün React Native mobil tətbiqi — Azərbaycan,
 
 | | |
 |---|---|
-| **Platforma** | Android (iOS hələ qurulmayıb — [aşağıya bax](#bilinən-məhdudiyyətlər)) |
+| **Platforma** | Android + iOS (iOS simulatorda işləyir — [aşağıya bax](#bilinən-məhdudiyyətlər)) |
 | **React Native** | 0.83.10 (New Architecture) |
 | **Dil** | TypeScript |
 | **Paket adı** | `com.tiktak` |
 | **Min. Android** | 7.0 (API 24) |
+| **Min. iOS** | 15.1 |
 | **Versiya** | 1.4.4 |
 
 ---
@@ -62,9 +63,18 @@ Welcome → Qeydiyyat / Giriş → Əsas səhifə (kateqoriyalar)
 ## Tələblər
 
 - **Node.js** ≥ 20
+
+**Android üçün:**
+
 - **JDK 17** (Temurin tövsiyə olunur)
 - **Android SDK** (compileSdk 36) + Android Studio və ya `sdkmanager`
 - Fiziki Android cihaz və ya emulyator
+
+**iOS üçün (yalnız macOS):**
+
+- **Xcode** (26.5 ilə sınanıb) + iOS Simulator runtime
+- **Ruby** + **Bundler** — CocoaPods `Gemfile`-dakı versiya ilə işə salınır
+- Watchman — məcburi deyil, tövsiyə olunur
 
 ---
 
@@ -90,6 +100,8 @@ npm start
 
 **2. Tətbiqi cihaza qurun.**
 
+### Android
+
 > ⚠️ **`npm run android` bu layihədə işləmir.** Node-un yeni versiyaları (CVE-2024-27980 düzəlişindən sonra) `.bat` fayllarının birbaşa işə salınmasını bloklayır, React Native CLI isə Gradle-ı məhz belə çağırır.
 
 Onun əvəzinə Gradle-ı birbaşa çağırın (**PowerShell**-də, Git Bash-də yox):
@@ -109,12 +121,34 @@ adb reverse tcp:8081 tcp:8081
 
 (Cihaz yenidən qoşulanda bu yönləndirmə itir — `Unable to load script` xətası görsəniz, əmri təkrarlayın.)
 
+### iOS (macOS)
+
+İlk dəfə (və `package.json`-da native paket dəyişəndə) Pod-ları quraşdırın:
+
+```bash
+bundle install
+cd ios && bundle exec pod install && cd ..
+```
+
+Sonra simulatorda işə salın:
+
+```bash
+npm run ios -- --simulator "iPhone 17"
+```
+
+Xcode-da açmaq lazım olsa, `ios/Tiktak.xcworkspace` faylını açın (`.xcodeproj`-u yox).
+
+> **Simulatorda başqa tətbiq açılıb "React Native version mismatch" xətası verirsə** — o, Metro-ya qoşulmuş başqa RN layihəsinin tətbiqidir. TikTak-ı yuxarıdakı əmrlə quraşdırıb onu açın.
+
+> `ios/Podfile`-ın `post_install` bloku iki iOS-a xas düzəliş edir: MapLibre-nin Swift Package-ini qoşur və Xcode 26.5-də `glog` modulunun NitroModules (MMKV) build-ini sındırmasının qarşısını alır. Bu blok hər `pod install`-da işləyir — silməyin.
+
 ### Faydalı əmrlər
 
 | Əmr | Nə edir |
 |---|---|
 | `npm start` | Metro dev server |
 | `npm start -- --reset-cache` | Metro-nu keşi təmizləyərək başladır |
+| `npm run ios` | iOS simulatorda build edib işə salır (yalnız macOS) |
 | `npm run lint` | ESLint |
 | `npx tsc --noEmit` | TypeScript tip yoxlaması |
 | `npm run apk` | Release APK yaradır |
@@ -187,7 +221,7 @@ Konvensiyalar:
 
 ## Bilinən məhdudiyyətlər
 
-- **iOS qurulmayıb.** İnkişaf maşını Windows-dur; `ios/` qovluğuna ilk commit-dən bəri toxunulmayıb. Kod cross-platform yazılıb, amma **sınanmayıb** — klaviatura idarəsi və özəl `BottomSheet` kimi yerlərdə `Platform.OS` budaqları lazım ola bilər.
+- **iOS yalnız simulatorda sınanıb.** Tətbiq iOS Simulator-da (iPhone 17, iOS 26.5, Xcode 26.5) build olunur və işləyir: splash animasiyası, Welcome və Əsas səhifə yoxlanılıb. **Fiziki iPhone-da sınanmayıb**, bütün ekranlar da iOS-da ayrıca yoxlanmayıb — klaviatura idarəsi və özəl `BottomSheet` kimi yalnız Android-də sınanmış yerlərdə `Platform.OS` budaqları lazım ola bilər. Əsas inkişaf maşını Windows-dur, iOS build üçün macOS lazımdır.
 - **Avtomatlaşdırılmış test yoxdur.** Bu, şüurlu qərardır (səbəb `PAKET-IZAHI.md`-nin 15-ci bölməsindədir). Yoxlama `npm run lint` + `npx tsc --noEmit` + cihazda əl ilə test ilə aparılır.
 - **Şəkil keşləmə yoxdur.** `expo-image` bu React Native versiyası ilə uyğun gəlmir (təfərrüat `CLAUDE.md`-dədir).
 - **Push bildiriş yoxdur.** Backend-də push infrastrukturu olmadığı üçün bildirişlər tamamilə yerlidir.
