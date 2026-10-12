@@ -49,6 +49,9 @@ export interface UserProfile {
   id: number;
   full_name: string;
   phone: string;
+  // Not in docs/api.md's `GET /profile` response yet — optional so the
+  // Account screen shows it if the backend ever returns it, blank otherwise.
+  email?: string | null;
   address: string | null;
   img_url: string | null;
   role: UserRole;
