@@ -24,6 +24,21 @@ target 'Tiktak' do
   )
 
   post_install do |installer|
+    $MLRN.post_install(installer)
+
+    # Xcode 26.5: glog's headers include log_severity.h/vlog_is_on.h inside
+    # `namespace google`, which breaks NitroModules' Swift C++ interop build
+    # unless those two are textual (non-modular) headers.
+    glog_headers = "#{installer.sandbox.root}/Headers/Public/glog/glog"
+    File.write("#{installer.sandbox.root}/Target Support Files/glog/glog.modulemap", <<~MODULEMAP)
+      module glog {
+        umbrella header "glog-umbrella.h"
+        textual header "#{glog_headers}/log_severity.h"
+        textual header "#{glog_headers}/vlog_is_on.h"
+
+        export *
+      }
+    MODULEMAP
     react_native_post_install(
       installer,
       config[:reactNativePath],
