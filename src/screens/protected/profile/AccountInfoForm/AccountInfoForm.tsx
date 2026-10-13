@@ -10,12 +10,6 @@ import { useTheme } from '../../../../theme/ThemeContext';
 import { createStyles } from './AccountInfoForm.styles';
 import type { AccountInfoFormProps } from './AccountInfoForm.types';
 
-// Not editable and not sent on save — the backend's `PUT /profile` has no
-// email field (docs/api.md, `UserProfile` type), so there's nowhere for a
-// user-entered value to persist yet. Fixed placeholder for design fidelity
-// until the API supports it, same treatment as the read-only phone field.
-const PLACEHOLDER_EMAIL = 'Xeyyamelizade5@gmail.com';
-
 function AccountInfoForm({ profile, refreshing, onRefresh }: AccountInfoFormProps) {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
@@ -54,7 +48,8 @@ function AccountInfoForm({ profile, refreshing, onRefresh }: AccountInfoFormProp
         />
         <TextField
           label={t('accountInfo.emailLabel')}
-          value={PLACEHOLDER_EMAIL}
+          // Read-only and not sent on save — `PUT /profile` has no email field.
+          value={profile?.email ?? ''}
           editable={false}
           style={styles.disabledInput}
         />

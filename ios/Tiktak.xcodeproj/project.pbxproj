@@ -9,15 +9,16 @@
 /* Begin PBXBuildFile section */
 		0C80B921A6F3F58F76C31292 /* libPods-Tiktak.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-Tiktak.a */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		5172861177BB4AC1A92609F3 /* Roboto-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 751CF3F8E7A4411DBBB2551A /* Roboto-Bold.ttf */; };
+		6E98D4EF4331FDF7888F1BD9 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		5172861177BB4AC1A92609F3 /* Roboto-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 751CF3F8E7A4411DBBB2551A /* Roboto-Bold.ttf */; };
-		C665F800D59E4C4E92A53635 /* Roboto-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 592110D12EDE4375A107BFAE /* Roboto-ExtraBold.ttf */; };
-		FEC68D4F689447FC9A147C08 /* Roboto-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A6CC9A2C426D412DBD4FA956 /* Roboto-Medium.ttf */; };
-		F681BE600DBE42B893E45807 /* Roboto-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 16EE29132F1449EEADD25E93 /* Roboto-Regular.ttf */; };
+		91C03D5A0D3140A0B2E61EB0 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 28CDA7AA7F084644825A53E6 /* Colors.xcassets */; };
 		AFE4268D8C7C4B918D44ACF5 /* Roboto-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 910002E15B6F4E5281790D5A /* Roboto-SemiBold.ttf */; };
 		BA77446146E8493C9783082A /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E0ACCB811B6A4491BF3651B2 /* BootSplash.storyboard */; };
-		91C03D5A0D3140A0B2E61EB0 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 28CDA7AA7F084644825A53E6 /* Colors.xcassets */; };
+		C665F800D59E4C4E92A53635 /* Roboto-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 592110D12EDE4375A107BFAE /* Roboto-ExtraBold.ttf */; };
+		F681BE600DBE42B893E45807 /* Roboto-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 16EE29132F1449EEADD25E93 /* Roboto-Regular.ttf */; };
+		FEC68D4F689447FC9A147C08 /* Roboto-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A6CC9A2C426D412DBD4FA956 /* Roboto-Medium.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,19 +26,19 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Tiktak/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Tiktak/Info.plist; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = Tiktak/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		16EE29132F1449EEADD25E93 /* Roboto-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Regular.ttf"; path = "../assets/fonts/Roboto-Regular.ttf"; sourceTree = "<group>"; };
+		28CDA7AA7F084644825A53E6 /* Colors.xcassets */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = folder.assetcatalog; name = Colors.xcassets; path = Tiktak/Colors.xcassets; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-Tiktak.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tiktak.debug.xcconfig"; path = "Target Support Files/Pods-Tiktak/Pods-Tiktak.debug.xcconfig"; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-Tiktak.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tiktak.release.xcconfig"; path = "Target Support Files/Pods-Tiktak/Pods-Tiktak.release.xcconfig"; sourceTree = "<group>"; };
+		592110D12EDE4375A107BFAE /* Roboto-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-ExtraBold.ttf"; path = "../assets/fonts/Roboto-ExtraBold.ttf"; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-Tiktak.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tiktak.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		751CF3F8E7A4411DBBB2551A /* Roboto-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Bold.ttf"; path = "../assets/fonts/Roboto-Bold.ttf"; sourceTree = "<group>"; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = Tiktak/AppDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Tiktak/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		910002E15B6F4E5281790D5A /* Roboto-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-SemiBold.ttf"; path = "../assets/fonts/Roboto-SemiBold.ttf"; sourceTree = "<group>"; };
+		A6CC9A2C426D412DBD4FA956 /* Roboto-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Medium.ttf"; path = "../assets/fonts/Roboto-Medium.ttf"; sourceTree = "<group>"; };
+		E0ACCB811B6A4491BF3651B2 /* BootSplash.storyboard */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = BootSplash.storyboard; path = Tiktak/BootSplash.storyboard; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		751CF3F8E7A4411DBBB2551A /* Roboto-Bold.ttf */ = {isa = PBXFileReference; name = "Roboto-Bold.ttf"; path = "../assets/fonts/Roboto-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		592110D12EDE4375A107BFAE /* Roboto-ExtraBold.ttf */ = {isa = PBXFileReference; name = "Roboto-ExtraBold.ttf"; path = "../assets/fonts/Roboto-ExtraBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		A6CC9A2C426D412DBD4FA956 /* Roboto-Medium.ttf */ = {isa = PBXFileReference; name = "Roboto-Medium.ttf"; path = "../assets/fonts/Roboto-Medium.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		16EE29132F1449EEADD25E93 /* Roboto-Regular.ttf */ = {isa = PBXFileReference; name = "Roboto-Regular.ttf"; path = "../assets/fonts/Roboto-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		910002E15B6F4E5281790D5A /* Roboto-SemiBold.ttf */ = {isa = PBXFileReference; name = "Roboto-SemiBold.ttf"; path = "../assets/fonts/Roboto-SemiBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		E0ACCB811B6A4491BF3651B2 /* BootSplash.storyboard */ = {isa = PBXFileReference; name = "BootSplash.storyboard"; path = "Tiktak/BootSplash.storyboard"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		28CDA7AA7F084644825A53E6 /* Colors.xcassets */ = {isa = PBXFileReference; name = "Colors.xcassets"; path = "Tiktak/Colors.xcassets"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = folder.assetcatalog; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,6 +74,19 @@
 				5DCACB8F33CDC322A6C60F78 /* libPods-Tiktak.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		57137B2B14EC4D5A8434C545 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				751CF3F8E7A4411DBBB2551A /* Roboto-Bold.ttf */,
+				592110D12EDE4375A107BFAE /* Roboto-ExtraBold.ttf */,
+				A6CC9A2C426D412DBD4FA956 /* Roboto-Medium.ttf */,
+				16EE29132F1449EEADD25E93 /* Roboto-Regular.ttf */,
+				910002E15B6F4E5281790D5A /* Roboto-SemiBold.ttf */,
+			);
+			name = Resources;
+			path = "";
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -114,19 +128,6 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
-		57137B2B14EC4D5A8434C545 /* Resources */ = {
-			isa = "PBXGroup";
-			children = (
-				751CF3F8E7A4411DBBB2551A /* Roboto-Bold.ttf */,
-				592110D12EDE4375A107BFAE /* Roboto-ExtraBold.ttf */,
-				A6CC9A2C426D412DBD4FA956 /* Roboto-Medium.ttf */,
-				16EE29132F1449EEADD25E93 /* Roboto-Regular.ttf */,
-				910002E15B6F4E5281790D5A /* Roboto-SemiBold.ttf */,
-			);
-			name = Resources;
-			sourceTree = "<group>";
-			path = "";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -141,12 +142,16 @@
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				00EEFC60759A1932668264C0 /* [CP] Embed Pods Frameworks */,
 				E235C05ADACE081382539298 /* [CP] Copy Pods Resources */,
+				540162405C75306A3A8DC6F2 /* [MapLibre React Native] Remove MapLibre.xcframework-ios.signature */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = Tiktak;
+			packageProductDependencies = (
+				104AC80511DC22DD2C1639C4 /* MapLibre */,
+			);
 			productName = Tiktak;
 			productReference = 13B07F961A680F5B00A75B9A /* Tiktak.app */;
 			productType = "com.apple.product-type.application";
@@ -173,6 +178,9 @@
 				Base,
 			);
 			mainGroup = 83CBB9F61A601CBA00E9B192;
+			packageReferences = (
+				50924CD79194AD1DB14BEEB5 /* XCRemoteSwiftPackageReference "maplibre-gl-native-distribution" */,
+			);
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -196,6 +204,7 @@
 				AFE4268D8C7C4B918D44ACF5 /* Roboto-SemiBold.ttf in Resources */,
 				BA77446146E8493C9783082A /* BootSplash.storyboard in Resources */,
 				91C03D5A0D3140A0B2E61EB0 /* Colors.xcassets in Resources */,
+				6E98D4EF4331FDF7888F1BD9 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -234,6 +243,25 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Tiktak/Pods-Tiktak-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		540162405C75306A3A8DC6F2 /* [MapLibre React Native] Remove MapLibre.xcframework-ios.signature */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "[MapLibre React Native] Remove MapLibre.xcframework-ios.signature";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "rm -rf \"$CONFIGURATION_BUILD_DIR/MapLibre.xcframework-ios.signature\"";
 		};
 		C38B50BA6285516D6DCD4F65 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -403,6 +431,7 @@
 				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
@@ -411,7 +440,10 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
+				USE_HERMES = true;
 			};
 			name = Debug;
 		};
@@ -468,6 +500,7 @@
 					"\"$(inherited)\"",
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
@@ -476,7 +509,9 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				USE_HERMES = true;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -503,6 +538,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		50924CD79194AD1DB14BEEB5 /* XCRemoteSwiftPackageReference "maplibre-gl-native-distribution" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/maplibre/maplibre-gl-native-distribution";
+			requirement = {
+				kind = exactVersion;
+				version = 6.26.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		104AC80511DC22DD2C1639C4 /* MapLibre */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 50924CD79194AD1DB14BEEB5 /* XCRemoteSwiftPackageReference "maplibre-gl-native-distribution" */;
+			productName = MapLibre;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 83CBB9F71A601CBA00E9B192 /* Project object */;
 }
