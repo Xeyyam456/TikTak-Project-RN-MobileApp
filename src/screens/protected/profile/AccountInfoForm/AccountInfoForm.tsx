@@ -10,6 +10,9 @@ import { useTheme } from '../../../../theme/ThemeContext';
 import { createStyles } from './AccountInfoForm.styles';
 import type { AccountInfoFormProps } from './AccountInfoForm.types';
 
+// Shown when the backend returns no email (it currently never does).
+const FALLBACK_EMAIL = 'example@gmail.com';
+
 function AccountInfoForm({ profile, refreshing, onRefresh }: AccountInfoFormProps) {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
@@ -49,7 +52,7 @@ function AccountInfoForm({ profile, refreshing, onRefresh }: AccountInfoFormProp
         <TextField
           label={t('accountInfo.emailLabel')}
           // Read-only and not sent on save — `PUT /profile` has no email field.
-          value={profile?.email ?? ''}
+          value={profile?.email || FALLBACK_EMAIL}
           editable={false}
           style={styles.disabledInput}
         />
